@@ -1,0 +1,304 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+@import "@fontsource-variable/geist";
+@config "../tailwind.config.js";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --font-sans: "Geist Variable", sans-serif;
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-overlay: var(--overlay);
+  --color-destructive: var(--error);
+  --color-selected: var(--selected);
+  --color-selected-foreground: var(--selected-foreground);
+  --color-disabled: var(--disabled);
+  --color-disabled-foreground: var(--disabled-foreground);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-success-subtle: var(--success-subtle);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-warning-subtle: var(--warning-subtle);
+  --color-error: var(--error);
+  --color-error-foreground: var(--error-foreground);
+  --color-error-subtle: var(--error-subtle);
+  --color-info: var(--info);
+  --color-info-foreground: var(--info-foreground);
+  --color-info-subtle: var(--info-subtle);
+
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.625rem;
+  --radius-xl: 0.75rem;
+}
+
+@layer base {
+  :root {
+    color-scheme: light;
+
+    --text-50: #f8fafc;
+    --text-100: #f1f5f9;
+    --text-200: #e2e8f0;
+    --text-300: #cbd5e1;
+    --text-400: #94a3b8;
+    --text-500: #64748b;
+    --text-600: #475569;
+    --text-700: #334155;
+    --text-800: #1e293b;
+    --text-900: #0f172a;
+    --text-950: #020617;
+
+    --background-50: #f7f8fc;
+    --background-100: #eef1f6;
+    --background-200: #dce2ea;
+    --background-300: #c6cfdb;
+    --background-400: #98a5b5;
+    --background-500: #69778a;
+    --background-600: #4e5c6d;
+    --background-700: #374151;
+    --background-800: #1f2937;
+    --background-900: #111827;
+    --background-950: #080c14;
+
+    --primary-50: #eaeafb;
+    --primary-100: #d6d4f7;
+    --primary-200: #ada9ef;
+    --primary-300: #847ee7;
+    --primary-400: #5b54de;
+    --primary-500: #3129d6;
+    --primary-600: #2821ab;
+    --primary-700: #1e1881;
+    --primary-800: #141056;
+    --primary-900: #0a082b;
+    --primary-950: #050415;
+
+    --secondary-50: #f8fafc;
+    --secondary-100: #f1f5f9;
+    --secondary-200: #e2e8f0;
+    --secondary-300: #cbd5e1;
+    --secondary-400: #94a3b8;
+    --secondary-500: #64748b;
+    --secondary-600: #475569;
+    --secondary-700: #334155;
+    --secondary-800: #1e293b;
+    --secondary-900: #0f172a;
+    --secondary-950: #020617;
+
+    --accent-50: #eff6ff;
+    --accent-100: #dbeafe;
+    --accent-200: #bfdbfe;
+    --accent-300: #93c5fd;
+    --accent-400: #60a5fa;
+    --accent-500: #3b82f6;
+    --accent-600: #2563eb;
+    --accent-700: #1d4ed8;
+    --accent-800: #1e40af;
+    --accent-900: #1e3a8a;
+    --accent-950: #172554;
+
+    --background: var(--background-50);
+    --foreground: var(--text-950);
+    --card: #ffffff;
+    --card-foreground: var(--text-950);
+    --popover: #ffffff;
+    --popover-foreground: var(--text-950);
+    --primary: var(--primary-700);
+    --primary-foreground: var(--text-50);
+    --secondary: var(--secondary-100);
+    --secondary-foreground: var(--text-900);
+    --muted: var(--background-100);
+    --muted-foreground: var(--text-600);
+    --accent: var(--accent-100);
+    --accent-foreground: var(--accent-900);
+    --border: var(--background-200);
+    --input: var(--background-200);
+    --ring: var(--primary-500);
+    --selected: var(--primary-700);
+    --selected-foreground: var(--text-50);
+    --disabled: var(--background-100);
+    --disabled-foreground: var(--text-400);
+    --success: #15803d;
+    --success-foreground: #f0fdf4;
+    --success-subtle: #ecfdf3;
+    --warning: #92400e;
+    --warning-foreground: #fffbeb;
+    --warning-subtle: #fef3c7;
+    --error: #b91c1c;
+    --error-foreground: #fef2f2;
+    --error-subtle: #feecec;
+    --info: var(--accent-700);
+    --info-foreground: #eff6ff;
+    --info-subtle: var(--accent-100);
+    --overlay: color-mix(in srgb, var(--text-950) 28%, transparent);
+    --radius: 0.5rem;
+    --shadow-surface: color-mix(in srgb, var(--text-950) 10%, transparent);
+    --shadow-overlay: color-mix(in srgb, var(--text-950) 20%, transparent);
+  }
+
+  .dark {
+    color-scheme: dark;
+
+    --text-50: #020617;
+    --text-100: #0f172a;
+    --text-200: #1e293b;
+    --text-300: #334155;
+    --text-400: #475569;
+    --text-500: #64748b;
+    --text-600: #94a3b8;
+    --text-700: #cbd5e1;
+    --text-800: #e2e8f0;
+    --text-900: #f1f5f9;
+    --text-950: #f8fafc;
+
+    --background-50: #080c14;
+    --background-100: #111827;
+    --background-200: #1f2937;
+    --background-300: #374151;
+    --background-400: #4e5c6d;
+    --background-500: #69778a;
+    --background-600: #98a5b5;
+    --background-700: #c6cfdb;
+    --background-800: #dce2ea;
+    --background-900: #eef1f6;
+    --background-950: #f7f8fc;
+
+    --primary-50: #050415;
+    --primary-100: #0a082b;
+    --primary-200: #141056;
+    --primary-300: #1e1881;
+    --primary-400: #2821ab;
+    --primary-500: #3129d6;
+    --primary-600: #5b54de;
+    --primary-700: #847ee7;
+    --primary-800: #ada9ef;
+    --primary-900: #d6d4f7;
+    --primary-950: #eaeafb;
+
+    --secondary-50: #020617;
+    --secondary-100: #0f172a;
+    --secondary-200: #1e293b;
+    --secondary-300: #334155;
+    --secondary-400: #475569;
+    --secondary-500: #64748b;
+    --secondary-600: #94a3b8;
+    --secondary-700: #cbd5e1;
+    --secondary-800: #e2e8f0;
+    --secondary-900: #f1f5f9;
+    --secondary-950: #f8fafc;
+
+    --accent-50: #172554;
+    --accent-100: #1e3a8a;
+    --accent-200: #1e40af;
+    --accent-300: #1d4ed8;
+    --accent-400: #2563eb;
+    --accent-500: #3b82f6;
+    --accent-600: #60a5fa;
+    --accent-700: #93c5fd;
+    --accent-800: #bfdbfe;
+    --accent-900: #dbeafe;
+    --accent-950: #eff6ff;
+    --card: var(--background-100);
+    --popover: var(--background-100);
+    --muted: var(--background-200);
+    --border: var(--background-300);
+    --input: var(--background-300);
+    --ring: var(--primary-700);
+    --disabled: var(--background-200);
+    --success: #86efac;
+    --success-foreground: #052e16;
+    --success-subtle: #0f2d1a;
+    --warning: #fbbf24;
+    --warning-foreground: #2b1700;
+    --warning-subtle: #352409;
+    --error: #fca5a5;
+    --error-foreground: #35090d;
+    --error-subtle: #3a1115;
+    --info: var(--accent-700);
+    --info-foreground: var(--accent-50);
+    --info-subtle: var(--accent-100);
+    --overlay: color-mix(in srgb, var(--text-50) 70%, transparent);
+    --shadow-surface: color-mix(in srgb, var(--text-50) 45%, transparent);
+    --shadow-overlay: color-mix(in srgb, var(--text-50) 70%, transparent);
+  }
+
+  html,
+  body,
+  #root {
+    @apply min-w-0 overflow-x-hidden overscroll-none;
+  }
+
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  html {
+    @apply font-sans;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    position: relative;
+  }
+
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+}
+
+@layer components {
+  .type-page-title {
+    @apply text-2xl leading-8 font-semibold;
+  }
+
+  .type-section-title {
+    @apply text-lg leading-7 font-semibold;
+  }
+
+  .type-card-title {
+    @apply text-base leading-6 font-semibold;
+  }
+
+  .type-body {
+    @apply text-sm leading-5 font-normal;
+  }
+
+  .type-helper {
+    @apply text-xs leading-4 font-normal text-muted-foreground;
+  }
+
+  .type-label {
+    @apply text-xs leading-4 font-semibold;
+  }
+
+  .type-button {
+    @apply text-sm leading-5 font-medium;
+  }
+
+  .type-table-head {
+    @apply text-xs leading-4 font-semibold;
+  }
+
+  .type-table-cell {
+    @apply text-sm leading-5 font-normal;
+  }
+}

@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="WordMatch.API.Tests/WordMatch.API.Tests.csproj" />
+  <Project Path="WordMatch.API/WordMatch.API.csproj" />
+</Solution>

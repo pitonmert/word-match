@@ -1,0 +1,32 @@
+namespace WordMatch.API.Features.Words;
+
+public enum WordTopic
+{
+    Actions,
+    Animals,
+    ArtsAndEntertainment,
+    BodyAndHealth,
+    CalendarAndTime,
+    Clothing,
+    Colors,
+    Countries,
+    Days,
+    Descriptions,
+    Education,
+    EmotionsAndPersonality,
+    FamilyAndPeople,
+    FoodAndDrink,
+    General,
+    HomeAndObjects,
+    JobsAndWork,
+    Months,
+    NatureAndWeather,
+    Numbers,
+    Places,
+    ShoppingAndMoney,
+    SocietyAndPolitics,
+    SportsAndLeisure,
+    TechnologyAndMedia,
+    Transportation,
+    TravelAndHolidays,
+}

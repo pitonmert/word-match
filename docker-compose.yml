@@ -1,0 +1,42 @@
+name: word-match
+
+services:
+  api:
+    build:
+      context: ./WordMatch.API
+      dockerfile: Dockerfile
+    environment:
+      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:?Set ASPNETCORE_ENVIRONMENT in .env}
+      ASPNETCORE_HTTP_PORTS: ${ASPNETCORE_HTTP_PORTS:?Set ASPNETCORE_HTTP_PORTS in .env}
+      ConnectionStrings__DefaultConnection: ${ConnectionStrings__DefaultConnection:?Set ConnectionStrings__DefaultConnection in .env}
+      Database__AutoMigrate: "false"
+      DataProtection__KeyPath: /var/lib/wordmatch/data-protection
+      Https__Redirect: "false"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    ports:
+      - "127.0.0.1:${WORDMATCH_API_PORT:?Set WORDMATCH_API_PORT in .env}:8080"
+    volumes:
+      - wordmatch-data-protection:/var/lib/wordmatch/data-protection
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8080/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+
+  web:
+    build:
+      context: ./WordMatch.Web
+      dockerfile: Dockerfile
+    depends_on:
+      api:
+        condition: service_healthy
+    ports:
+      - "${WORDMATCH_WEB_BIND_ADDRESS:-127.0.0.1}:${WORDMATCH_WEB_PORT:?Set WORDMATCH_WEB_PORT in .env}:8080"
+    restart: unless-stopped
+
+volumes:
+  wordmatch-data-protection:
+    name: wordmatch-data-protection

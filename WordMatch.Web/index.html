@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="tr" translate="no">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="google" content="notranslate" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Word Match</title>
+    <script>
+      (function () {
+        try {
+          var stored = window.localStorage.getItem("word-match-theme");
+          var theme =
+            stored === "light" || stored === "dark" || stored === "system"
+              ? stored
+              : "system";
+          var isDark =
+            theme === "dark" ||
+            (theme === "system" &&
+              window.matchMedia("(prefers-color-scheme: dark)").matches);
+          document.documentElement.classList.add(isDark ? "dark" : "light");
+        } catch (error) {
+          document.documentElement.classList.add("light");
+        }
+      })();
+    </script>
+  </head>
+  <body
+    class="notranslate m-0 min-h-svh w-full min-w-0 overflow-x-hidden select-none"
+  >
+    <div id="root" class="notranslate"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

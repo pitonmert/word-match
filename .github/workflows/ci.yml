@@ -1,0 +1,76 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  api:
+    name: API (.NET)
+    runs-on: ubuntu-latest
+    env:
+      ConnectionStrings__DefaultConnection: Host=localhost;Port=5432;Database=word_match_ci;Username=ci;Password=ci
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Restore
+        run: dotnet restore WordMatch.API.slnx
+
+      - name: Build
+        run: dotnet build WordMatch.API.slnx --configuration Release --no-restore
+
+      - name: Test
+        run: dotnet test WordMatch.API.slnx --configuration Release --no-build --verbosity normal
+
+  web:
+    name: Web (React/Vite)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: WordMatch.Web
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: WordMatch.Web/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Check
+        run: npm run check
+
+  docker:
+    name: Docker images
+    runs-on: ubuntu-latest
+    env:
+      ASPNETCORE_ENVIRONMENT: Production
+      ASPNETCORE_HTTP_PORTS: 8080
+      ConnectionStrings__DefaultConnection: Host=localhost;Port=5432;Database=word_match_ci;Username=ci;Password=ci
+      WORDMATCH_API_PORT: 5218
+      WORDMATCH_WEB_BIND_ADDRESS: 127.0.0.1
+      WORDMATCH_WEB_PORT: 5172
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Build images
+        run: docker compose build
