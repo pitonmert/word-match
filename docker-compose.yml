@@ -2,6 +2,7 @@ name: word-match
 
 services:
   api:
+    image: word-match-api
     build:
       context: ./WordMatch.API
       dockerfile: Dockerfile
@@ -14,8 +15,6 @@ services:
       Https__Redirect: "false"
     extra_hosts:
       - "host.docker.internal:host-gateway"
-    ports:
-      - "127.0.0.1:${WORDMATCH_API_PORT:?Set WORDMATCH_API_PORT in .env}:8080"
     volumes:
       - wordmatch-data-protection:/var/lib/wordmatch/data-protection
     healthcheck:
@@ -27,16 +26,24 @@ services:
     restart: unless-stopped
 
   web:
+    image: word-match-web
     build:
       context: ./WordMatch.Web
       dockerfile: Dockerfile
     depends_on:
       api:
         condition: service_healthy
-    ports:
-      - "${WORDMATCH_WEB_BIND_ADDRESS:-127.0.0.1}:${WORDMATCH_WEB_PORT:?Set WORDMATCH_WEB_PORT in .env}:8080"
+    networks:
+      default: {}
+      cloudflare_network:
+        aliases:
+          - word-match-web
     restart: unless-stopped
 
 volumes:
   wordmatch-data-protection:
     name: wordmatch-data-protection
+
+networks:
+  cloudflare_network:
+    external: true

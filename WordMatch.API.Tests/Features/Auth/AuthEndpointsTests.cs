@@ -14,10 +14,10 @@ public class AuthEndpointsTests(WordMatchApiFactory factory) : IClassFixture<Wor
     {
         using var client = CreateIsolatedClient();
 
-        var categories = await client.GetAsync("/api/categories");
+        var study = await client.GetAsync("/api/study");
         var words = await client.GetAsync("/api/words");
 
-        Assert.Equal(HttpStatusCode.Unauthorized, categories.StatusCode);
+        Assert.Equal(HttpStatusCode.Unauthorized, study.StatusCode);
         Assert.Equal(HttpStatusCode.Unauthorized, words.StatusCode);
     }
 
@@ -214,6 +214,26 @@ public class AuthEndpointsTests(WordMatchApiFactory factory) : IClassFixture<Wor
 
         Assert.Equal(HttpStatusCode.TooManyRequests, limitedResponse.StatusCode);
         Assert.Equal(HttpStatusCode.Unauthorized, otherResponse.StatusCode);
+    }
+
+    [Fact]
+    public async Task Login_FromASecondDevice_LeavesBothDevicesSignedIn()
+    {
+        var credentials = CreateCredentials();
+        using var phone = CreateIsolatedClient();
+        using var laptop = CreateIsolatedClient();
+        await RegisterAsync(phone, credentials);
+
+        var response = await PostWithAntiforgeryAsync(
+            laptop,
+            "/api/auth/login",
+            new { identifier = credentials.Username, credentials.Password }
+        );
+
+        // Switching between devices is ordinary behaviour: neither session is ended.
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Equal(HttpStatusCode.OK, (await laptop.GetAsync("/api/auth/session")).StatusCode);
+        Assert.Equal(HttpStatusCode.OK, (await phone.GetAsync("/api/auth/session")).StatusCode);
     }
 
     private async Task RegisterAsync(HttpClient client, TestCredentials credentials)

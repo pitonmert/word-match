@@ -72,5 +72,5 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
-      - name: Build images
+      - name: Build images and verify API content
         run: docker compose build

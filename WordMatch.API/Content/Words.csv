@@ -1,0 +1,701 @@
+ImportKey,English,TurkishTranslations,PartOfSpeech,PastSimple,PastParticiple,IsIrregular,Level,Topic,TopicSortOrder,WordSortOrder,LearningGroupSortOrder
+wm-000001,afraid,"{""korkmuş"",""endişeli""}",Adjective,,,false,A1,EmotionsAndPersonality,1,1,1
+wm-000002,angry,"{""kızgın"",""öfkeli""}",Adjective,,,false,A1,EmotionsAndPersonality,1,2,1
+wm-000024,excited,"{""heyecanlı"",""coşkulu""}",Adjective,,,false,A1,EmotionsAndPersonality,1,3,1
+wm-000036,happy,"{""mutlu""}",Adjective,,,false,A1,EmotionsAndPersonality,1,4,1
+wm-000043,interested,"{""ilgili""}",Adjective,,,false,A1,EmotionsAndPersonality,1,5,1
+wm-000066,sad,"{""üzgün""}",Adjective,,,false,A1,EmotionsAndPersonality,1,6,2
+wm-000392,enjoy,"{""keyif almak"",""hoşlanmak""}",Verb,enjoyed,enjoyed,false,A1,EmotionsAndPersonality,1,7,2
+wm-000405,like,"{""beğenmek""}",Verb,liked,liked,false,A1,EmotionsAndPersonality,1,8,2
+wm-000409,love,"{""sevmek"",""âşık olmak""}",Verb,loved,loved,false,A1,EmotionsAndPersonality,1,9,2
+wm-000003,bad,"{""kötü"",""fena""}",Adjective,,,false,A1,Descriptions,2,1,1
+wm-000004,beautiful,"{""güzel""}",Adjective,,,false,A1,Descriptions,2,2,1
+wm-000005,big,"{""büyük"",""iri""}",Adjective,,,false,A1,Descriptions,2,3,1
+wm-000008,boring,"{""sıkıcı""}",Adjective,,,false,A1,Descriptions,2,4,1
+wm-000010,busy,"{""meşgul"",""yoğun""}",Adjective,,,false,A1,Descriptions,2,5,1
+wm-000012,clean,"{""temiz""}",Adjective,,,false,A1,Descriptions,2,6,2
+wm-000015,correct,"{""doğru"",""hatasız""}",Adjective,,,false,A1,Descriptions,2,7,2
+wm-000016,dangerous,"{""tehlikeli""}",Adjective,,,false,A1,Descriptions,2,8,2
+wm-000017,dark,"{""karanlık""}",Adjective,,,false,A1,Descriptions,2,9,2
+wm-000019,different,"{""farklı"",""değişik""}",Adjective,,,false,A1,Descriptions,2,10,2
+wm-000020,difficult,"{""zor""}",Adjective,,,false,A1,Descriptions,2,11,3
+wm-000021,dirty,"{""kirli""}",Adjective,,,false,A1,Descriptions,2,12,3
+wm-000022,early,"{""erken""}",Adjective,,,false,A1,Descriptions,2,13,3
+wm-000023,easy,"{""kolay""}",Adjective,,,false,A1,Descriptions,2,14,3
+wm-000025,exciting,"{""heyecan verici""}",Adjective,,,false,A1,Descriptions,2,15,3
+wm-000027,false,"{""yanlış"",""sahte""}",Adjective,,,false,A1,Descriptions,2,16,4
+wm-000028,famous,"{""ünlü"",""meşhur""}",Adjective,,,false,A1,Descriptions,2,17,4
+wm-000029,fast,"{""hızlı""}",Adjective,,,false,A1,Descriptions,2,18,4
+wm-000032,full,"{""dolu""}",Adjective,,,false,A1,Descriptions,2,19,4
+wm-000033,funny,"{""komik"",""eğlenceli""}",Adjective,,,false,A1,Descriptions,2,20,4
+wm-000034,good,"{""iyi""}",Adjective,,,false,A1,Descriptions,2,21,5
+wm-000037,hard,"{""sert""}",Adjective,,,false,A1,Descriptions,2,22,5
+wm-000039,high,"{""yüksek""}",Adjective,,,false,A1,Descriptions,2,23,5
+wm-000042,important,"{""önemli""}",Adjective,,,false,A1,Descriptions,2,24,5
+wm-000044,interesting,"{""ilginç""}",Adjective,,,false,A1,Descriptions,2,25,5
+wm-000045,large,"{""geniş"",""büyük""}",Adjective,,,false,A1,Descriptions,2,26,6
+wm-000046,late,"{""geç""}",Adjective,,,false,A1,Descriptions,2,27,6
+wm-000047,little,"{""küçük""}",Adjective,,,false,A1,Descriptions,2,28,6
+wm-000048,long,"{""uzun""}",Adjective,,,false,A1,Descriptions,2,29,6
+wm-000049,near,"{""yakın""}",Adjective,,,false,A1,Descriptions,2,30,6
+wm-000050,new,"{""yeni""}",Adjective,,,false,A1,Descriptions,2,31,7
+wm-000051,nice,"{""hoş""}",Adjective,,,false,A1,Descriptions,2,32,7
+wm-000052,old,"{""yaşlı"",""eski""}",Adjective,,,false,A1,Descriptions,2,33,7
+wm-000053,open,"{""açık""}",Adjective,,,false,A1,Descriptions,2,34,7
+wm-000055,personal,"{""kişisel"",""özel""}",Adjective,,,false,A1,Descriptions,2,35,7
+wm-000058,pretty,"{""güzel"",""şirin""}",Adjective,,,false,A1,Descriptions,2,36,8
+wm-000060,quiet,"{""sessiz""}",Adjective,,,false,A1,Descriptions,2,37,8
+wm-000062,ready,"{""hazır""}",Adjective,,,false,A1,Descriptions,2,38,8
+wm-000065,right,"{""doğru""}",Adjective,,,false,A1,Descriptions,2,39,8
+wm-000067,short,"{""kısa""}",Adjective,,,false,A1,Descriptions,2,40,8
+wm-000069,slow,"{""yavaş""}",Adjective,,,false,A1,Descriptions,2,41,9
+wm-000070,small,"{""küçük"",""ufak""}",Adjective,,,false,A1,Descriptions,2,42,9
+wm-000072,special,"{""özel""}",Adjective,,,false,A1,Descriptions,2,43,9
+wm-000073,strong,"{""güçlü""}",Adjective,,,false,A1,Descriptions,2,44,9
+wm-000075,tall,"{""uzun boylu""}",Adjective,,,false,A1,Descriptions,2,45,9
+wm-000076,terrible,"{""berbat""}",Adjective,,,false,A1,Descriptions,2,46,10
+wm-000078,true,"{""doğru"",""gerçek""}",Adjective,,,false,A1,Descriptions,2,47,10
+wm-000081,wonderful,"{""harika"",""muhteşem""}",Adjective,,,false,A1,Descriptions,2,48,10
+wm-000082,wrong,"{""yanlış""}",Adjective,,,false,A1,Descriptions,2,49,10
+wm-000084,young,"{""genç""}",Adjective,,,false,A1,Descriptions,2,50,10
+wm-000006,black,"{""siyah""}",Adjective,,,false,A1,Colors,3,1,1
+wm-000007,blue,"{""mavi""}",Adjective,,,false,A1,Colors,3,2,1
+wm-000009,brown,"{""kahverengi""}",Adjective,,,false,A1,Colors,3,3,1
+wm-000035,green,"{""yeşil""}",Adjective,,,false,A1,Colors,3,4,1
+wm-000054,orange,"{""turuncu""}",Adjective,,,false,A1,Colors,3,5,1
+wm-000056,pink,"{""pembe""}",Adjective,,,false,A1,Colors,3,6,2
+wm-000059,purple,"{""mor""}",Adjective,,,false,A1,Colors,3,7,2
+wm-000063,red,"{""kırmızı""}",Adjective,,,false,A1,Colors,3,8,2
+wm-000080,white,"{""beyaz""}",Adjective,,,false,A1,Colors,3,9,2
+wm-000083,yellow,"{""sarı""}",Adjective,,,false,A1,Colors,3,10,2
+wm-000011,cheap,"{""ucuz""}",Adjective,,,false,A1,ShoppingAndMoney,4,1,1
+wm-000026,expensive,"{""pahalı""}",Adjective,,,false,A1,ShoppingAndMoney,4,2,1
+wm-000057,poor,"{""fakir""}",Adjective,,,false,A1,ShoppingAndMoney,4,3,1
+wm-000064,rich,"{""zengin""}",Adjective,,,false,A1,ShoppingAndMoney,4,4,1
+wm-000109,bank,"{""banka"",""kıyı""}",Noun,,,false,A1,ShoppingAndMoney,4,5,1
+wm-000250,money,"{""para""}",Noun,,,false,A1,ShoppingAndMoney,4,6,2
+wm-000313,shopping,"{""alışveriş""}",Noun,,,false,A1,ShoppingAndMoney,4,7,2
+wm-000436,buy,"{""satın almak""}",Verb,bought,bought,true,A1,ShoppingAndMoney,4,8,2
+wm-000464,pay,"{""ödemek""}",Verb,paid,paid,true,A1,ShoppingAndMoney,4,9,2
+wm-000471,sell,"{""satmak""}",Verb,sold,sold,true,A1,ShoppingAndMoney,4,10,2
+wm-000478,spend,"{""harcamak""}",Verb,spent,spent,true,A1,ShoppingAndMoney,4,11,3
+wm-000013,cloudy,"{""bulutlu""}",Adjective,,,false,A1,NatureAndWeather,5,1,1
+wm-000014,cold,"{""soğuk""}",Adjective,,,false,A1,NatureAndWeather,5,2,1
+wm-000040,hot,"{""sıcak""}",Adjective,,,false,A1,NatureAndWeather,5,3,1
+wm-000061,rainy,"{""yağmurlu""}",Adjective,,,false,A1,NatureAndWeather,5,4,1
+wm-000071,snowy,"{""karlı""}",Adjective,,,false,A1,NatureAndWeather,5,5,1
+wm-000074,sunny,"{""güneşli""}",Adjective,,,false,A1,NatureAndWeather,5,6,2
+wm-000079,warm,"{""ılık"",""sıcak""}",Adjective,,,false,A1,NatureAndWeather,5,7,2
+wm-000095,air,"{""hava""}",Noun,,,false,A1,NatureAndWeather,5,8,2
+wm-000112,beach,"{""plaj"",""sahil""}",Noun,,,false,A1,NatureAndWeather,5,9,2
+wm-000184,fire,"{""ateş""}",Noun,,,false,A1,NatureAndWeather,5,10,2
+wm-000187,flower,"{""çiçek""}",Noun,,,false,A1,NatureAndWeather,5,11,3
+wm-000216,ice,"{""buz""}",Noun,,,false,A1,NatureAndWeather,5,12,3
+wm-000219,island,"{""ada""}",Noun,,,false,A1,NatureAndWeather,5,13,3
+wm-000254,mountain,"{""dağ""}",Noun,,,false,A1,NatureAndWeather,5,14,3
+wm-000298,river,"{""nehir"",""ırmak""}",Noun,,,false,A1,NatureAndWeather,5,15,3
+wm-000307,sea,"{""deniz""}",Noun,,,false,A1,NatureAndWeather,5,16,4
+wm-000319,snow,"{""kar""}",Noun,,,false,A1,NatureAndWeather,5,17,4
+wm-000348,tree,"{""ağaç""}",Noun,,,false,A1,NatureAndWeather,5,18,4
+wm-000362,weather,"{""hava durumu""}",Noun,,,false,A1,NatureAndWeather,5,19,4
+wm-000018,delicious,"{""lezzetli"",""enfes""}",Adjective,,,false,A1,FoodAndDrink,6,1,1
+wm-000098,apple,"{""elma""}",Noun,,,false,A1,FoodAndDrink,6,2,1
+wm-000123,bread,"{""ekmek""}",Noun,,,false,A1,FoodAndDrink,6,3,1
+wm-000126,burger,"{""hamburger""}",Noun,,,false,A1,FoodAndDrink,6,4,1
+wm-000128,butter,"{""tereyağı""}",Noun,,,false,A1,FoodAndDrink,6,5,1
+wm-000130,cake,"{""kek"",""pasta""}",Noun,,,false,A1,FoodAndDrink,6,6,2
+wm-000137,cheese,"{""peynir""}",Noun,,,false,A1,FoodAndDrink,6,7,2
+wm-000140,chocolate,"{""çikolata""}",Noun,,,false,A1,FoodAndDrink,6,8,2
+wm-000147,coffee,"{""kahve""}",Noun,,,false,A1,FoodAndDrink,6,9,2
+wm-000154,cream,"{""krema"",""kaymak""}",Noun,,,false,A1,FoodAndDrink,6,10,2
+wm-000171,egg,"{""yumurta""}",Noun,,,false,A1,FoodAndDrink,6,11,3
+wm-000188,food,"{""yiyecek"",""gıda""}",Noun,,,false,A1,FoodAndDrink,6,12,3
+wm-000191,fruit,"{""meyve""}",Noun,,,false,A1,FoodAndDrink,6,13,3
+wm-000224,juice,"{""meyve suyu""}",Noun,,,false,A1,FoodAndDrink,6,14,3
+wm-000241,meal,"{""öğün"",""yemek""}",Noun,,,false,A1,FoodAndDrink,6,15,3
+wm-000242,meat,"{""et""}",Noun,,,false,A1,FoodAndDrink,6,16,4
+wm-000245,milk,"{""süt""}",Noun,,,false,A1,FoodAndDrink,6,17,4
+wm-000286,potato,"{""patates""}",Noun,,,false,A1,FoodAndDrink,6,18,4
+wm-000296,rice,"{""pirinç""}",Noun,,,false,A1,FoodAndDrink,6,19,4
+wm-000302,salad,"{""salata""}",Noun,,,false,A1,FoodAndDrink,6,20,4
+wm-000321,soup,"{""çorba""}",Noun,,,false,A1,FoodAndDrink,6,21,5
+wm-000329,sugar,"{""şeker""}",Noun,,,false,A1,FoodAndDrink,6,22,5
+wm-000334,tea,"{""çay""}",Noun,,,false,A1,FoodAndDrink,6,23,5
+wm-000356,vegetable,"{""sebze""}",Noun,,,false,A1,FoodAndDrink,6,24,5
+wm-000358,waiter,"{""garson""}",Noun,,,false,A1,FoodAndDrink,6,25,5
+wm-000360,water,"{""su""}",Noun,,,false,A1,FoodAndDrink,6,26,6
+wm-000442,drink,"{""içmek""}",Verb,drank,drunk,true,A1,FoodAndDrink,6,27,6
+wm-000444,eat,"{""yemek""}",Verb,ate,eaten,true,A1,FoodAndDrink,6,28,6
+wm-000030,fat,"{""şişman""}",Adjective,,,false,A1,BodyAndHealth,7,1,1
+wm-000038,healthy,"{""sağlıklı""}",Adjective,,,false,A1,BodyAndHealth,7,2,1
+wm-000041,hungry,"{""aç"",""acıkmış""}",Adjective,,,false,A1,BodyAndHealth,7,3,1
+wm-000068,sick,"{""hasta""}",Adjective,,,false,A1,BodyAndHealth,7,4,1
+wm-000077,tired,"{""yorgun"",""bıkmış""}",Adjective,,,false,A1,BodyAndHealth,7,5,1
+wm-000101,arm,"{""kol""}",Noun,,,false,A1,BodyAndHealth,7,6,2
+wm-000107,back,"{""arka""}",Noun,,,false,A1,BodyAndHealth,7,7,2
+wm-000117,body,"{""vücut""}",Noun,,,false,A1,BodyAndHealth,7,8,2
+wm-000170,ear,"{""kulak""}",Noun,,,false,A1,BodyAndHealth,7,9,2
+wm-000175,eye,"{""göz""}",Noun,,,false,A1,BodyAndHealth,7,10,2
+wm-000176,face,"{""yüz""}",Noun,,,false,A1,BodyAndHealth,7,11,3
+wm-000203,hair,"{""saç"",""kıl""}",Noun,,,false,A1,BodyAndHealth,7,12,3
+wm-000204,hand,"{""el""}",Noun,,,false,A1,BodyAndHealth,7,13,3
+wm-000205,head,"{""baş"",""kafa"",""yönetici""}",Noun,,,false,A1,BodyAndHealth,7,14,3
+wm-000206,health,"{""sağlık""}",Noun,,,false,A1,BodyAndHealth,7,15,3
+wm-000229,leg,"{""bacak""}",Noun,,,false,A1,BodyAndHealth,7,16,4
+wm-000256,mouth,"{""ağız""}",Noun,,,false,A1,BodyAndHealth,7,17,4
+wm-000265,nurse,"{""hemşire""}",Noun,,,false,A1,BodyAndHealth,7,18,4
+wm-000346,tooth,"{""diş""}",Noun,,,false,A1,BodyAndHealth,7,19,4
+wm-000390,die,"{""ölmek""}",Verb,died,died,false,A1,BodyAndHealth,7,20,4
+wm-000476,sleep,"{""uyumak""}",Verb,slept,slept,true,A1,BodyAndHealth,7,21,5
+wm-000485,wake,"{""uyanmak""}",Verb,woke,woken,true,A1,BodyAndHealth,7,22,5
+wm-000486,wake up,"{""uyanmak""}",Verb,woke up,woken up,true,A1,BodyAndHealth,7,23,5
+wm-000031,few,"{""az""}",Adjective,,,false,A1,General,8,1,1
+wm-000152,conversation,"{""konuşma"",""sohbet""}",Noun,,,false,A1,General,8,2,1
+wm-000164,difference,"{""fark"",""ayrım""}",Noun,,,false,A1,General,8,3,1
+wm-000172,end,"{""son""}",Noun,,,false,A1,General,8,4,1
+wm-000177,fact,"{""gerçek"",""olgu""}",Noun,,,false,A1,General,8,5,1
+wm-000201,group,"{""grup""}",Noun,,,false,A1,General,8,6,2
+wm-000217,idea,"{""fikir""}",Noun,,,false,A1,General,8,7,2
+wm-000227,kind,"{""tür"",""çeşit""}",Noun,,,false,A1,General,8,8,2
+wm-000232,life,"{""hayat""}",Noun,,,false,A1,General,8,9,2
+wm-000233,line,"{""çizgi"",""satır""}",Noun,,,false,A1,General,8,10,2
+wm-000258,name,"{""isim""}",Noun,,,false,A1,General,8,11,3
+wm-000259,nationality,"{""milliyet"",""uyruk""}",Noun,,,false,A1,General,8,12,3
+wm-000264,number,"{""sayı"",""numara""}",Noun,,,false,A1,General,8,13,3
+wm-000274,part,"{""parça"",""bölüm""}",Noun,,,false,A1,General,8,14,3
+wm-000285,point,"{""puan"",""nokta""}",Noun,,,false,A1,General,8,15,3
+wm-000287,problem,"{""sorun""}",Noun,,,false,A1,General,8,16,4
+wm-000293,reason,"{""neden""}",Noun,,,false,A1,General,8,17,4
+wm-000295,result,"{""sonuç""}",Noun,,,false,A1,General,8,18,4
+wm-000297,right,"{""hak""}",Noun,,,false,A1,General,8,19,4
+wm-000341,thing,"{""şey""}",Noun,,,false,A1,General,8,20,4
+wm-000352,type,"{""tür"",""çeşit""}",Noun,,,false,A1,General,8,21,5
+wm-000361,way,"{""yol""}",Noun,,,false,A1,General,8,22,5
+wm-000085,one,"{""bir""}",Number,,,false,A1,Numbers,9,1,1
+wm-000086,sixteen,"{""on altı""}",Number,,,false,A1,Numbers,9,2,1
+wm-000087,ten,"{""on""}",Number,,,false,A1,Numbers,9,3,1
+wm-000088,three,"{""üç""}",Number,,,false,A1,Numbers,9,4,1
+wm-000089,two,"{""iki""}",Number,,,false,A1,Numbers,9,5,1
+wm-000090,action,"{""eylem"",""hareket""}",Noun,,,false,A1,Actions,10,1,1
+wm-000091,activity,"{""etkinlik"",""faaliyet""}",Noun,,,false,A1,Actions,10,2,1
+wm-000136,change,"{""değişim""}",Noun,,,false,A1,Actions,10,3,1
+wm-000380,add,"{""eklemek"",""ilave etmek""}",Verb,added,added,false,A1,Actions,10,4,1
+wm-000381,agree,"{""katılmak"",""aynı fikirde olmak""}",Verb,agreed,agreed,false,A1,Actions,10,5,1
+wm-000382,arrive,"{""varmak"",""ulaşmak""}",Verb,arrived,arrived,false,A1,Actions,10,6,2
+wm-000383,ask,"{""sormak"",""istemek""}",Verb,asked,asked,false,A1,Actions,10,7,2
+wm-000384,believe,"{""inanmak""}",Verb,believed,believed,false,A1,Actions,10,8,2
+wm-000385,call,"{""aramak"",""çağırmak""}",Verb,called,called,false,A1,Actions,10,9,2
+wm-000386,carry,"{""taşımak"",""götürmek""}",Verb,carried,carried,false,A1,Actions,10,10,2
+wm-000387,change,"{""değiştirmek""}",Verb,changed,changed,false,A1,Actions,10,11,3
+wm-000388,create,"{""oluşturmak""}",Verb,created,created,false,A1,Actions,10,12,3
+wm-000389,describe,"{""tanımlamak"",""tarif etmek""}",Verb,described,described,false,A1,Actions,10,13,3
+wm-000391,discuss,"{""tartışmak"",""görüşmek""}",Verb,discussed,discussed,false,A1,Actions,10,14,3
+wm-000394,fill,"{""doldurmak""}",Verb,filled,filled,false,A1,Actions,10,15,3
+wm-000395,follow,"{""takip etmek""}",Verb,followed,followed,false,A1,Actions,10,16,4
+wm-000396,guess,"{""tahmin etmek"",""sanmak""}",Verb,guessed,guessed,false,A1,Actions,10,17,4
+wm-000397,happen,"{""gerçekleşmek""}",Verb,happened,happened,false,A1,Actions,10,18,4
+wm-000398,help,"{""yardım etmek""}",Verb,helped,helped,false,A1,Actions,10,19,4
+wm-000399,imagine,"{""hayal etmek"",""düşünmek""}",Verb,imagined,imagined,false,A1,Actions,10,20,4
+wm-000400,include,"{""dahil etmek""}",Verb,included,included,false,A1,Actions,10,21,5
+wm-000401,introduce,"{""tanıtmak"",""tanıştırmak""}",Verb,introduced,introduced,false,A1,Actions,10,22,5
+wm-000402,join,"{""katılmak"",""birleşmek""}",Verb,joined,joined,false,A1,Actions,10,23,5
+wm-000403,laugh,"{""gülmek"",""kahkaha atmak""}",Verb,laughed,laughed,false,A1,Actions,10,24,5
+wm-000406,listen,"{""dinlemek""}",Verb,listened,listened,false,A1,Actions,10,25,5
+wm-000407,live,"{""yaşamak""}",Verb,lived,lived,false,A1,Actions,10,26,6
+wm-000408,look,"{""bakmak""}",Verb,looked,looked,false,A1,Actions,10,27,6
+wm-000410,move,"{""hareket etmek""}",Verb,moved,moved,false,A1,Actions,10,28,6
+wm-000411,need,"{""ihtiyaç duymak""}",Verb,needed,needed,false,A1,Actions,10,29,6
+wm-000412,open,"{""açmak""}",Verb,opened,opened,false,A1,Actions,10,30,6
+wm-000414,remember,"{""hatırlamak""}",Verb,remembered,remembered,false,A1,Actions,10,31,7
+wm-000415,repeat,"{""tekrarlamak"",""yinelemek""}",Verb,repeated,repeated,false,A1,Actions,10,32,7
+wm-000416,share,"{""paylaşmak""}",Verb,shared,shared,false,A1,Actions,10,33,7
+wm-000417,start,"{""başlamak""}",Verb,started,started,false,A1,Actions,10,34,7
+wm-000418,stay,"{""kalmak""}",Verb,stayed,stayed,false,A1,Actions,10,35,7
+wm-000419,stop,"{""durdurmak"",""durmak""}",Verb,stopped,stopped,false,A1,Actions,10,36,8
+wm-000420,talk,"{""konuşmak""}",Verb,talked,talked,false,A1,Actions,10,37,8
+wm-000421,thank,"{""teşekkür etmek""}",Verb,thanked,thanked,false,A1,Actions,10,38,8
+wm-000423,try,"{""denemek""}",Verb,tried,tried,false,A1,Actions,10,39,8
+wm-000424,turn,"{""dönmek""}",Verb,turned,turned,false,A1,Actions,10,40,8
+wm-000425,use,"{""kullanmak""}",Verb,used,used,false,A1,Actions,10,41,9
+wm-000426,wait,"{""beklemek""}",Verb,waited,waited,false,A1,Actions,10,42,9
+wm-000427,walk,"{""yürümek""}",Verb,walked,walked,false,A1,Actions,10,43,9
+wm-000428,want,"{""istemek""}",Verb,wanted,wanted,false,A1,Actions,10,44,9
+wm-000429,watch,"{""izlemek""}",Verb,watched,watched,false,A1,Actions,10,45,9
+wm-000431,be,"{""olmak""}",Verb,was/were,been,true,A1,Actions,10,46,10
+wm-000432,become,"{""olmak""}",Verb,became,become,true,A1,Actions,10,47,10
+wm-000433,begin,"{""başlamak""}",Verb,began,begun,true,A1,Actions,10,48,10
+wm-000434,bring,"{""getirmek""}",Verb,brought,brought,true,A1,Actions,10,49,10
+wm-000435,build,"{""inşa etmek""}",Verb,built,built,true,A1,Actions,10,50,10
+wm-000437,choose,"{""seçmek""}",Verb,chose,chosen,true,A1,Actions,10,51,11
+wm-000438,come,"{""gelmek""}",Verb,came,come,true,A1,Actions,10,52,11
+wm-000439,cut,"{""kesmek""}",Verb,cut,cut,true,A1,Actions,10,53,11
+wm-000440,do,"{""yapmak"",""etmek""}",Verb,did,done,true,A1,Actions,10,54,11
+wm-000445,fall,"{""düşmek""}",Verb,fell,fallen,true,A1,Actions,10,55,11
+wm-000446,feel,"{""hissetmek""}",Verb,felt,felt,true,A1,Actions,10,56,12
+wm-000447,find,"{""bulmak""}",Verb,found,found,true,A1,Actions,10,57,12
+wm-000449,forget,"{""unutmak""}",Verb,forgot,forgotten,true,A1,Actions,10,58,12
+wm-000450,get,"{""almak""}",Verb,got,gotten,true,A1,Actions,10,59,12
+wm-000451,give,"{""vermek""}",Verb,gave,given,true,A1,Actions,10,60,12
+wm-000452,go,"{""gitmek""}",Verb,went,gone,true,A1,Actions,10,61,13
+wm-000453,grow,"{""büyümek""}",Verb,grew,grown,true,A1,Actions,10,62,13
+wm-000454,have,"{""sahip olmak""}",Verb,had,had,true,A1,Actions,10,63,13
+wm-000455,hear,"{""duymak""}",Verb,heard,heard,true,A1,Actions,10,64,13
+wm-000456,keep,"{""tutmak""}",Verb,kept,kept,true,A1,Actions,10,65,13
+wm-000457,know,"{""bilmek""}",Verb,knew,known,true,A1,Actions,10,66,14
+wm-000458,leave,"{""ayrılmak""}",Verb,left,left,true,A1,Actions,10,67,14
+wm-000459,let,"{""bırakmak"",""izin vermek""}",Verb,let,let,true,A1,Actions,10,68,14
+wm-000460,lose,"{""kaybetmek""}",Verb,lost,lost,true,A1,Actions,10,69,14
+wm-000461,make,"{""yapmak""}",Verb,made,made,true,A1,Actions,10,70,14
+wm-000462,mean,"{""demek istemek""}",Verb,meant,meant,true,A1,Actions,10,71,15
+wm-000463,meet,"{""buluşmak""}",Verb,met,met,true,A1,Actions,10,72,15
+wm-000465,put,"{""koymak""}",Verb,put,put,true,A1,Actions,10,73,15
+wm-000468,run,"{""koşmak""}",Verb,ran,run,true,A1,Actions,10,74,15
+wm-000469,say,"{""demek"",""söylemek""}",Verb,said,said,true,A1,Actions,10,75,15
+wm-000470,see,"{""görmek""}",Verb,saw,seen,true,A1,Actions,10,76,16
+wm-000472,send,"{""göndermek""}",Verb,sent,sent,true,A1,Actions,10,77,16
+wm-000473,show,"{""göstermek""}",Verb,showed,shown,true,A1,Actions,10,78,16
+wm-000475,sit,"{""oturmak""}",Verb,sat,sat,true,A1,Actions,10,79,16
+wm-000477,speak,"{""konuşmak""}",Verb,spoke,spoken,true,A1,Actions,10,80,16
+wm-000479,stand,"{""durmak""}",Verb,stood,stood,true,A1,Actions,10,81,17
+wm-000480,take,"{""almak""}",Verb,took,taken,true,A1,Actions,10,82,17
+wm-000482,tell,"{""söylemek""}",Verb,told,told,true,A1,Actions,10,83,17
+wm-000483,think,"{""düşünmek""}",Verb,thought,thought,true,A1,Actions,10,84,17
+wm-000484,understand,"{""anlamak""}",Verb,understood,understood,true,A1,Actions,10,85,17
+wm-000488,win,"{""kazanmak""}",Verb,won,won,true,A1,Actions,10,86,18
+wm-000092,actor,"{""oyuncu"",""aktör""}",Noun,,,false,A1,ArtsAndEntertainment,11,1,1
+wm-000102,art,"{""sanat""}",Noun,,,false,A1,ArtsAndEntertainment,11,2,1
+wm-000141,cinema,"{""sinema""}",Noun,,,false,A1,ArtsAndEntertainment,11,3,1
+wm-000151,concert,"{""konser""}",Noun,,,false,A1,ArtsAndEntertainment,11,4,1
+wm-000155,culture,"{""kültür""}",Noun,,,false,A1,ArtsAndEntertainment,11,5,1
+wm-000162,design,"{""tasarım""}",Noun,,,false,A1,ArtsAndEntertainment,11,6,2
+wm-000183,festival,"{""festival"",""şenlik""}",Noun,,,false,A1,ArtsAndEntertainment,11,7,2
+wm-000202,guitar,"{""gitar""}",Noun,,,false,A1,ArtsAndEntertainment,11,8,2
+wm-000257,music,"{""müzik""}",Noun,,,false,A1,ArtsAndEntertainment,11,9,2
+wm-000269,painting,"{""tablo"",""resim""}",Noun,,,false,A1,ArtsAndEntertainment,11,10,2
+wm-000276,party,"{""parti""}",Noun,,,false,A1,ArtsAndEntertainment,11,11,3
+wm-000282,piano,"{""piyano""}",Noun,,,false,A1,ArtsAndEntertainment,11,12,3
+wm-000315,singer,"{""şarkıcı""}",Noun,,,false,A1,ArtsAndEntertainment,11,13,3
+wm-000441,draw,"{""çizmek""}",Verb,drew,drawn,true,A1,ArtsAndEntertainment,11,14,3
+wm-000474,sing,"{""şarkı söylemek""}",Verb,sang,sung,true,A1,ArtsAndEntertainment,11,15,3
+wm-000093,afternoon,"{""öğleden sonra""}",Noun,,,false,A1,CalendarAndTime,12,1,1
+wm-000094,age,"{""yaş"",""çağ""}",Noun,,,false,A1,CalendarAndTime,12,2,1
+wm-000106,autumn,"{""sonbahar"",""güz""}",Noun,,,false,A1,CalendarAndTime,12,3,1
+wm-000115,birthday,"{""doğum günü""}",Noun,,,false,A1,CalendarAndTime,12,4,1
+wm-000145,clock,"{""saat""}",Noun,,,false,A1,CalendarAndTime,12,5,1
+wm-000160,day,"{""gün""}",Noun,,,false,A1,CalendarAndTime,12,6,2
+wm-000173,evening,"{""akşam""}",Noun,,,false,A1,CalendarAndTime,12,7,2
+wm-000192,future,"{""gelecek""}",Noun,,,false,A1,CalendarAndTime,12,8,2
+wm-000213,hour,"{""saat""}",Noun,,,false,A1,CalendarAndTime,12,9,2
+wm-000246,minute,"{""dakika""}",Noun,,,false,A1,CalendarAndTime,12,10,2
+wm-000248,moment,"{""an""}",Noun,,,false,A1,CalendarAndTime,12,11,3
+wm-000251,month,"{""ay""}",Noun,,,false,A1,CalendarAndTime,12,12,3
+wm-000252,morning,"{""sabah""}",Noun,,,false,A1,CalendarAndTime,12,13,3
+wm-000262,night,"{""gece""}",Noun,,,false,A1,CalendarAndTime,12,14,3
+wm-000279,period,"{""dönem"",""süre""}",Noun,,,false,A1,CalendarAndTime,12,15,3
+wm-000323,spring,"{""ilkbahar""}",Noun,,,false,A1,CalendarAndTime,12,16,4
+wm-000344,time,"{""zaman""}",Noun,,,false,A1,CalendarAndTime,12,17,4
+wm-000364,week,"{""hafta""}",Noun,,,false,A1,CalendarAndTime,12,18,4
+wm-000365,weekend,"{""hafta sonu""}",Noun,,,false,A1,CalendarAndTime,12,19,4
+wm-000372,year,"{""yıl""}",Noun,,,false,A1,CalendarAndTime,12,20,4
+wm-000373,yesterday,"{""dün""}",Noun,,,false,A1,CalendarAndTime,12,21,5
+wm-000096,airport,"{""havalimanı"",""havaalanı""}",Noun,,,false,A1,TravelAndHolidays,13,1,1
+wm-000209,holiday,"{""tatil"",""bayram""}",Noun,,,false,A1,TravelAndHolidays,13,2,1
+wm-000212,hotel,"{""otel""}",Noun,,,false,A1,TravelAndHolidays,13,3,1
+wm-000349,trip,"{""gezi"",""yolculuk""}",Noun,,,false,A1,TravelAndHolidays,13,4,1
+wm-000355,vacation,"{""tatil"",""izin""}",Noun,,,false,A1,TravelAndHolidays,13,5,1
+wm-000422,travel,"{""seyahat etmek""}",Verb,traveled,traveled,false,A1,TravelAndHolidays,13,6,2
+wm-000097,animal,"{""hayvan""}",Noun,,,false,A1,Animals,14,1,1
+wm-000129,butterfly,"{""kelebek""}",Noun,,,false,A1,Animals,14,2,1
+wm-000134,cat,"{""kedi""}",Noun,,,false,A1,Animals,14,3,1
+wm-000138,chicken,"{""tavuk""}",Noun,,,false,A1,Animals,14,4,1
+wm-000166,dog,"{""köpek""}",Noun,,,false,A1,Animals,14,5,1
+wm-000185,fish,"{""balık""}",Noun,,,false,A1,Animals,14,6,2
+wm-000234,lion,"{""aslan""}",Noun,,,false,A1,Animals,14,7,2
+wm-000255,mouse,"{""fare""}",Noun,,,false,A1,Animals,14,8,2
+wm-000289,rabbit,"{""tavşan""}",Noun,,,false,A1,Animals,14,9,2
+wm-000310,sheep,"{""koyun""}",Noun,,,false,A1,Animals,14,10,2
+wm-000343,tiger,"{""kaplan""}",Noun,,,false,A1,Animals,14,11,3
+wm-000099,April,"{""Nisan""}",Noun,,,false,A1,Months,15,1,1
+wm-000104,August,"{""Ağustos""}",Noun,,,false,A1,Months,15,2,1
+wm-000161,December,"{""Aralık""}",Noun,,,false,A1,Months,15,3,1
+wm-000182,February,"{""Şubat""}",Noun,,,false,A1,Months,15,4,1
+wm-000221,January,"{""Ocak""}",Noun,,,false,A1,Months,15,5,1
+wm-000225,July,"{""Temmuz""}",Noun,,,false,A1,Months,15,6,2
+wm-000226,June,"{""Haziran""}",Noun,,,false,A1,Months,15,7,2
+wm-000239,March,"{""Mart""}",Noun,,,false,A1,Months,15,8,2
+wm-000240,May,"{""Mayıs""}",Noun,,,false,A1,Months,15,9,2
+wm-000263,November,"{""Kasım""}",Noun,,,false,A1,Months,15,10,2
+wm-000266,October,"{""Ekim""}",Noun,,,false,A1,Months,15,11,3
+wm-000309,September,"{""Eylül""}",Noun,,,false,A1,Months,15,12,3
+wm-000100,area,"{""alan""}",Noun,,,false,A1,Places,16,1,1
+wm-000125,building,"{""bina"",""yapı""}",Noun,,,false,A1,Places,16,2,1
+wm-000142,city,"{""şehir""}",Noun,,,false,A1,Places,16,3,1
+wm-000153,country,"{""ülke""}",Noun,,,false,A1,Places,16,4,1
+wm-000179,farm,"{""çiftlik""}",Noun,,,false,A1,Places,16,5,1
+wm-000238,map,"{""harita""}",Noun,,,false,A1,Places,16,6,2
+wm-000267,office,"{""ofis""}",Noun,,,false,A1,Places,16,7,2
+wm-000273,park,"{""park""}",Noun,,,false,A1,Places,16,8,2
+wm-000283,place,"{""yer""}",Noun,,,false,A1,Places,16,9,2
+wm-000294,restaurant,"{""restoran"",""lokanta""}",Noun,,,false,A1,Places,16,10,2
+wm-000312,shop,"{""mağaza"",""dükkân""}",Noun,,,false,A1,Places,16,11,3
+wm-000326,street,"{""sokak"",""cadde""}",Noun,,,false,A1,Places,16,12,3
+wm-000331,supermarket,"{""süpermarket""}",Noun,,,false,A1,Places,16,13,3
+wm-000371,world,"{""dünya""}",Noun,,,false,A1,Places,16,14,3
+wm-000103,article,"{""makale"",""madde""}",Noun,,,false,A1,Education,17,1,1
+wm-000118,book,"{""kitap""}",Noun,,,false,A1,Education,17,2,1
+wm-000143,classmate,"{""sınıf arkadaşı""}",Noun,,,false,A1,Education,17,3,1
+wm-000144,classroom,"{""sınıf"",""derslik""}",Noun,,,false,A1,Education,17,4,1
+wm-000148,college,"{""kolej"",""üniversite""}",Noun,,,false,A1,Education,17,5,1
+wm-000174,example,"{""örnek"",""misal""}",Noun,,,false,A1,Education,17,6,2
+wm-000197,grammar,"{""dil bilgisi"",""gramer""}",Noun,,,false,A1,Education,17,7,2
+wm-000207,history,"{""tarih""}",Noun,,,false,A1,Education,17,8,2
+wm-000211,homework,"{""ev ödevi""}",Noun,,,false,A1,Education,17,9,2
+wm-000228,language,"{""dil"",""lisan""}",Noun,,,false,A1,Education,17,10,2
+wm-000230,letter,"{""mektup"",""harf""}",Noun,,,false,A1,Education,17,11,3
+wm-000231,library,"{""kütüphane""}",Noun,,,false,A1,Education,17,12,3
+wm-000235,list,"{""liste""}",Noun,,,false,A1,Education,17,13,3
+wm-000268,page,"{""sayfa""}",Noun,,,false,A1,Education,17,14,3
+wm-000270,paper,"{""kâğıt""}",Noun,,,false,A1,Education,17,15,3
+wm-000271,paragraph,"{""paragraf""}",Noun,,,false,A1,Education,17,16,4
+wm-000277,pencil,"{""kurşun kalem""}",Noun,,,false,A1,Education,17,17,4
+wm-000288,question,"{""soru""}",Noun,,,false,A1,Education,17,18,4
+wm-000291,reader,"{""okuyucu""}",Noun,,,false,A1,Education,17,19,4
+wm-000292,reading,"{""okuma""}",Noun,,,false,A1,Education,17,20,4
+wm-000300,rule,"{""kural""}",Noun,,,false,A1,Education,17,21,5
+wm-000301,ruler,"{""cetvel""}",Noun,,,false,A1,Education,17,22,5
+wm-000304,school,"{""okul""}",Noun,,,false,A1,Education,17,23,5
+wm-000305,science,"{""bilim"",""fen""}",Noun,,,false,A1,Education,17,24,5
+wm-000306,scientist,"{""bilim insanı""}",Noun,,,false,A1,Education,17,25,5
+wm-000308,section,"{""bölüm"",""kısım""}",Noun,,,false,A1,Education,17,26,6
+wm-000317,skill,"{""beceri"",""yetenek""}",Noun,,,false,A1,Education,17,27,6
+wm-000325,story,"{""hikâye""}",Noun,,,false,A1,Education,17,28,6
+wm-000327,student,"{""öğrenci""}",Noun,,,false,A1,Education,17,29,6
+wm-000328,study,"{""çalışma""}",Noun,,,false,A1,Education,17,30,6
+wm-000335,teacher,"{""öğretmen""}",Noun,,,false,A1,Education,17,31,7
+wm-000340,test,"{""sınav"",""test""}",Noun,,,false,A1,Education,17,32,7
+wm-000368,word,"{""kelime""}",Noun,,,false,A1,Education,17,33,7
+wm-000404,learn,"{""öğrenmek""}",Verb,learned,learned,false,A1,Education,17,34,7
+wm-000466,read,"{""okumak""}",Verb,read,read,true,A1,Education,17,35,7
+wm-000481,teach,"{""öğretmek""}",Verb,taught,taught,true,A1,Education,17,36,8
+wm-000489,write,"{""yazmak""}",Verb,wrote,written,true,A1,Education,17,37,8
+wm-000105,aunt,"{""teyze"",""hala""}",Noun,,,false,A1,FamilyAndPeople,18,1,1
+wm-000121,boy,"{""erkek çocuk"",""oğlan""}",Noun,,,false,A1,FamilyAndPeople,18,2,1
+wm-000122,boyfriend,"{""erkek arkadaş"",""sevgili""}",Noun,,,false,A1,FamilyAndPeople,18,3,1
+wm-000124,brother,"{""erkek kardeş""}",Noun,,,false,A1,FamilyAndPeople,18,4,1
+wm-000139,child,"{""çocuk""}",Noun,,,false,A1,FamilyAndPeople,18,5,1
+wm-000157,dad,"{""baba""}",Noun,,,false,A1,FamilyAndPeople,18,6,2
+wm-000158,daddy,"{""babacığım""}",Noun,,,false,A1,FamilyAndPeople,18,7,2
+wm-000159,daughter,"{""kız evlat""}",Noun,,,false,A1,FamilyAndPeople,18,8,2
+wm-000178,family,"{""aile""}",Noun,,,false,A1,FamilyAndPeople,18,9,2
+wm-000181,father,"{""baba""}",Noun,,,false,A1,FamilyAndPeople,18,10,2
+wm-000190,friend,"{""arkadaş""}",Noun,,,false,A1,FamilyAndPeople,18,11,3
+wm-000194,girl,"{""kız""}",Noun,,,false,A1,FamilyAndPeople,18,12,3
+wm-000195,girlfriend,"{""kız arkadaş"",""sevgili""}",Noun,,,false,A1,FamilyAndPeople,18,13,3
+wm-000198,grandma,"{""büyükanne"",""nine""}",Noun,,,false,A1,FamilyAndPeople,18,14,3
+wm-000199,grandmother,"{""büyükanne"",""nine""}",Noun,,,false,A1,FamilyAndPeople,18,15,3
+wm-000200,grandpa,"{""dede"",""büyükbaba""}",Noun,,,false,A1,FamilyAndPeople,18,16,4
+wm-000215,husband,"{""koca"",""eş""}",Noun,,,false,A1,FamilyAndPeople,18,17,4
+wm-000237,man,"{""adam"",""erkek""}",Noun,,,false,A1,FamilyAndPeople,18,18,4
+wm-000247,mom,"{""anne""}",Noun,,,false,A1,FamilyAndPeople,18,19,4
+wm-000253,mother,"{""anne""}",Noun,,,false,A1,FamilyAndPeople,18,20,4
+wm-000272,parent,"{""ebeveyn""}",Noun,,,false,A1,FamilyAndPeople,18,21,5
+wm-000275,partner,"{""ortak"",""eş""}",Noun,,,false,A1,FamilyAndPeople,18,22,5
+wm-000278,people,"{""insanlar""}",Noun,,,false,A1,FamilyAndPeople,18,23,5
+wm-000280,person,"{""kişi""}",Noun,,,false,A1,FamilyAndPeople,18,24,5
+wm-000316,sister,"{""kız kardeş"",""abla""}",Noun,,,false,A1,FamilyAndPeople,18,25,5
+wm-000320,son,"{""erkek evlat"",""oğul""}",Noun,,,false,A1,FamilyAndPeople,18,26,6
+wm-000354,uncle,"{""amca"",""dayı""}",Noun,,,false,A1,FamilyAndPeople,18,27,6
+wm-000366,wife,"{""eş"",""karı""}",Noun,,,false,A1,FamilyAndPeople,18,28,6
+wm-000367,woman,"{""kadın""}",Noun,,,false,A1,FamilyAndPeople,18,29,6
+wm-000108,ball,"{""top""}",Noun,,,false,A1,SportsAndLeisure,19,1,1
+wm-000193,game,"{""oyun""}",Noun,,,false,A1,SportsAndLeisure,19,2,1
+wm-000208,hobby,"{""hobi"",""uğraş""}",Noun,,,false,A1,SportsAndLeisure,19,3,1
+wm-000284,player,"{""oyuncu""}",Noun,,,false,A1,SportsAndLeisure,19,4,1
+wm-000322,sport,"{""spor""}",Noun,,,false,A1,SportsAndLeisure,19,5,1
+wm-000332,swimming,"{""yüzme""}",Noun,,,false,A1,SportsAndLeisure,19,6,2
+wm-000336,team,"{""takım""}",Noun,,,false,A1,SportsAndLeisure,19,7,2
+wm-000339,tennis,"{""tenis""}",Noun,,,false,A1,SportsAndLeisure,19,8,2
+wm-000393,exercise,"{""egzersiz yapmak""}",Verb,exercised,exercised,false,A1,SportsAndLeisure,19,9,2
+wm-000413,play,"{""oynamak""}",Verb,played,played,false,A1,SportsAndLeisure,19,10,2
+wm-000110,bath,"{""banyo"",""küvet""}",Noun,,,false,A1,HomeAndObjects,20,1,1
+wm-000111,bathroom,"{""banyo"",""tuvalet""}",Noun,,,false,A1,HomeAndObjects,20,2,1
+wm-000113,bedroom,"{""yatak odası""}",Noun,,,false,A1,HomeAndObjects,20,3,1
+wm-000119,bottle,"{""şişe""}",Noun,,,false,A1,HomeAndObjects,20,4,1
+wm-000120,box,"{""kutu""}",Noun,,,false,A1,HomeAndObjects,20,5,1
+wm-000133,card,"{""kart""}",Noun,,,false,A1,HomeAndObjects,20,6,2
+wm-000135,chair,"{""sandalye""}",Noun,,,false,A1,HomeAndObjects,20,7,2
+wm-000156,cup,"{""fincan"",""kupa""}",Noun,,,false,A1,HomeAndObjects,20,8,2
+wm-000163,desk,"{""çalışma masası""}",Noun,,,false,A1,HomeAndObjects,20,9,2
+wm-000165,dish,"{""tabak"",""yemek""}",Noun,,,false,A1,HomeAndObjects,20,10,2
+wm-000167,doll,"{""oyuncak bebek""}",Noun,,,false,A1,HomeAndObjects,20,11,3
+wm-000168,door,"{""kapı""}",Noun,,,false,A1,HomeAndObjects,20,12,3
+wm-000186,floor,"{""zemin"",""kat""}",Noun,,,false,A1,HomeAndObjects,20,13,3
+wm-000196,glass,"{""bardak"",""cam""}",Noun,,,false,A1,HomeAndObjects,20,14,3
+wm-000210,home,"{""ev""}",Noun,,,false,A1,HomeAndObjects,20,15,3
+wm-000214,house,"{""ev""}",Noun,,,false,A1,HomeAndObjects,20,16,4
+wm-000299,room,"{""oda""}",Noun,,,false,A1,HomeAndObjects,20,17,4
+wm-000314,shower,"{""duş"",""sağanak""}",Noun,,,false,A1,HomeAndObjects,20,18,4
+wm-000333,table,"{""masa"",""tablo""}",Noun,,,false,A1,HomeAndObjects,20,19,4
+wm-000345,toilet,"{""tuvalet"",""klozet""}",Noun,,,false,A1,HomeAndObjects,20,20,4
+wm-000353,umbrella,"{""şemsiye""}",Noun,,,false,A1,HomeAndObjects,20,21,5
+wm-000359,wall,"{""duvar""}",Noun,,,false,A1,HomeAndObjects,20,22,5
+wm-000114,bicycle,"{""bisiklet""}",Noun,,,false,A1,Transportation,21,1,1
+wm-000116,boat,"{""tekne"",""sandal""}",Noun,,,false,A1,Transportation,21,2,1
+wm-000132,car,"{""araba""}",Noun,,,false,A1,Transportation,21,3,1
+wm-000169,driver,"{""sürücü"",""şoför""}",Noun,,,false,A1,Transportation,21,4,1
+wm-000324,station,"{""istasyon"",""durak""}",Noun,,,false,A1,Transportation,21,5,1
+wm-000347,train,"{""tren""}",Noun,,,false,A1,Transportation,21,6,2
+wm-000443,drive,"{""araba sürmek""}",Verb,drove,driven,true,A1,Transportation,21,7,2
+wm-000448,fly,"{""uçmak""}",Verb,flew,flown,true,A1,Transportation,21,8,2
+wm-000467,ride,"{""binmek"",""sürmek""}",Verb,rode,ridden,true,A1,Transportation,21,9,2
+wm-000127,business,"{""işletme""}",Noun,,,false,A1,JobsAndWork,22,1,1
+wm-000149,company,"{""şirket""}",Noun,,,false,A1,JobsAndWork,22,2,1
+wm-000180,farmer,"{""çiftçi""}",Noun,,,false,A1,JobsAndWork,22,3,1
+wm-000223,job,"{""iş"",""meslek""}",Noun,,,false,A1,JobsAndWork,22,4,1
+wm-000243,meeting,"{""toplantı"",""görüşme""}",Noun,,,false,A1,JobsAndWork,22,5,1
+wm-000369,work,"{""iş""}",Noun,,,false,A1,JobsAndWork,22,6,2
+wm-000370,worker,"{""işçi"",""çalışan""}",Noun,,,false,A1,JobsAndWork,22,7,2
+wm-000430,work,"{""çalışmak""}",Verb,worked,worked,false,A1,JobsAndWork,22,8,2
+wm-000131,camera,"{""kamera"",""fotoğraf makinesi""}",Noun,,,false,A1,TechnologyAndMedia,23,1,1
+wm-000150,computer,"{""bilgisayar""}",Noun,,,false,A1,TechnologyAndMedia,23,2,1
+wm-000218,information,"{""bilgi""}",Noun,,,false,A1,TechnologyAndMedia,23,3,1
+wm-000236,machine,"{""makine"",""cihaz""}",Noun,,,false,A1,TechnologyAndMedia,23,4,1
+wm-000260,news,"{""haberler""}",Noun,,,false,A1,TechnologyAndMedia,23,5,1
+wm-000261,newspaper,"{""gazete""}",Noun,,,false,A1,TechnologyAndMedia,23,6,2
+wm-000281,photo,"{""fotoğraf""}",Noun,,,false,A1,TechnologyAndMedia,23,7,2
+wm-000290,radio,"{""radyo""}",Noun,,,false,A1,TechnologyAndMedia,23,8,2
+wm-000337,telephone,"{""telefon""}",Noun,,,false,A1,TechnologyAndMedia,23,9,2
+wm-000338,television,"{""televizyon""}",Noun,,,false,A1,TechnologyAndMedia,23,10,2
+wm-000357,video,"{""video""}",Noun,,,false,A1,TechnologyAndMedia,23,11,3
+wm-000146,clothes,"{""giysi"",""kıyafet""}",Noun,,,false,A1,Clothing,24,1,1
+wm-000220,jacket,"{""ceket""}",Noun,,,false,A1,Clothing,24,2,1
+wm-000222,jeans,"{""kot pantolon""}",Noun,,,false,A1,Clothing,24,3,1
+wm-000311,shoe,"{""ayakkabı""}",Noun,,,false,A1,Clothing,24,4,1
+wm-000318,skirt,"{""etek""}",Noun,,,false,A1,Clothing,24,5,1
+wm-000350,trousers,"{""pantolon""}",Noun,,,false,A1,Clothing,24,6,2
+wm-000487,wear,"{""giymek"",""takmak""}",Verb,wore,worn,true,A1,Clothing,24,7,2
+wm-000189,Friday,"{""Cuma""}",Noun,,,false,A1,Days,25,1,1
+wm-000249,Monday,"{""Pazartesi""}",Noun,,,false,A1,Days,25,2,1
+wm-000303,Saturday,"{""Cumartesi""}",Noun,,,false,A1,Days,25,3,1
+wm-000330,Sunday,"{""Pazar""}",Noun,,,false,A1,Days,25,4,1
+wm-000342,Thursday,"{""Perşembe""}",Noun,,,false,A1,Days,25,5,1
+wm-000351,Tuesday,"{""Salı""}",Noun,,,false,A1,Days,25,6,1
+wm-000363,Wednesday,"{""Çarşamba""}",Noun,,,false,A1,Days,25,7,1
+wm-000244,member,"{""üye""}",Noun,,,false,A1,SocietyAndPolitics,26,1,1
+wm-000374,France,"{""Fransa""}",ProperNoun,,,false,A1,Countries,27,1,1
+wm-000375,Germany,"{""Almanya""}",ProperNoun,,,false,A1,Countries,27,2,1
+wm-000376,Italy,"{""İtalya""}",ProperNoun,,,false,A1,Countries,27,3,1
+wm-000377,Japan,"{""Japonya""}",ProperNoun,,,false,A1,Countries,27,4,1
+wm-000378,Spain,"{""İspanya""}",ProperNoun,,,false,A1,Countries,27,5,1
+wm-000379,Turkey,"{""Türkiye""}",ProperNoun,,,false,A1,Countries,27,6,2
+wm-000490,alive,"{""canlı""}",Adjective,,,false,A2,BodyAndHealth,1,1,1
+wm-000491,awake,"{""uyanık""}",Adjective,,,false,A2,BodyAndHealth,1,2,1
+wm-000498,dead,"{""ölü""}",Adjective,,,false,A2,BodyAndHealth,1,3,1
+wm-000538,bone,"{""kemik"",""kılçık""}",Noun,,,false,A2,BodyAndHealth,1,4,1
+wm-000565,haircut,"{""saç kesimi""}",Noun,,,false,A2,BodyAndHealth,1,5,1
+wm-000567,headache,"{""baş ağrısı""}",Noun,,,false,A2,BodyAndHealth,1,6,2
+wm-000568,heart,"{""kalp"",""yürek""}",Noun,,,false,A2,BodyAndHealth,1,7,2
+wm-000578,medicine,"{""ilaç"",""tıp""}",Noun,,,false,A2,BodyAndHealth,1,8,2
+wm-000582,neck,"{""boyun""}",Noun,,,false,A2,BodyAndHealth,1,9,2
+wm-000599,shoulder,"{""omuz""}",Noun,,,false,A2,BodyAndHealth,1,10,2
+wm-000492,blank,"{""boş""}",Adjective,,,false,A2,Descriptions,2,1,1
+wm-000493,bright,"{""parlak"",""aydınlık""}",Adjective,,,false,A2,Descriptions,2,2,1
+wm-000494,broken,"{""kırık"",""bozuk""}",Adjective,,,false,A2,Descriptions,2,3,1
+wm-000495,careful,"{""dikkatli"",""özenli""}",Adjective,,,false,A2,Descriptions,2,4,1
+wm-000497,closed,"{""kapalı""}",Adjective,,,false,A2,Descriptions,2,5,1
+wm-000499,deep,"{""derin""}",Adjective,,,false,A2,Descriptions,2,6,2
+wm-000501,empty,"{""boş""}",Adjective,,,false,A2,Descriptions,2,7,2
+wm-000502,excellent,"{""mükemmel""}",Adjective,,,false,A2,Descriptions,2,8,2
+wm-000503,fair,"{""adil""}",Adjective,,,false,A2,Descriptions,2,9,2
+wm-000505,foreign,"{""yabancı"",""dış""}",Adjective,,,false,A2,Descriptions,2,10,2
+wm-000506,handsome,"{""yakışıklı""}",Adjective,,,false,A2,Descriptions,2,11,3
+wm-000507,heavy,"{""ağır""}",Adjective,,,false,A2,Descriptions,2,12,3
+wm-000510,light,"{""hafif"",""aydınlık""}",Adjective,,,false,A2,Descriptions,2,13,3
+wm-000511,loud,"{""gürültülü""}",Adjective,,,false,A2,Descriptions,2,14,3
+wm-000512,lovely,"{""hoş"",""sevimli""}",Adjective,,,false,A2,Descriptions,2,15,3
+wm-000513,low,"{""alçak""}",Adjective,,,false,A2,Descriptions,2,16,4
+wm-000514,lucky,"{""şanslı""}",Adjective,,,false,A2,Descriptions,2,17,4
+wm-000515,narrow,"{""dar""}",Adjective,,,false,A2,Descriptions,2,18,4
+wm-000516,normal,"{""normal""}",Adjective,,,false,A2,Descriptions,2,19,4
+wm-000518,safe,"{""güvenli""}",Adjective,,,false,A2,Descriptions,2,20,4
+wm-000519,shut,"{""kapalı""}",Adjective,,,false,A2,Descriptions,2,21,5
+wm-000520,soft,"{""yumuşak""}",Adjective,,,false,A2,Descriptions,2,22,5
+wm-000521,strange,"{""garip"",""tuhaf""}",Adjective,,,false,A2,Descriptions,2,23,5
+wm-000523,successful,"{""başarılı""}",Adjective,,,false,A2,Descriptions,2,24,5
+wm-000525,thick,"{""kalın""}",Adjective,,,false,A2,Descriptions,2,25,5
+wm-000526,thin,"{""ince""}",Adjective,,,false,A2,Descriptions,2,26,6
+wm-000527,unimportant,"{""önemsiz""}",Adjective,,,false,A2,Descriptions,2,27,6
+wm-000528,unlucky,"{""şanssız""}",Adjective,,,false,A2,Descriptions,2,28,6
+wm-000529,weak,"{""zayıf""}",Adjective,,,false,A2,Descriptions,2,29,6
+wm-000531,wide,"{""geniş""}",Adjective,,,false,A2,Descriptions,2,30,6
+wm-000496,clever,"{""zeki"",""akıllı""}",Adjective,,,false,A2,EmotionsAndPersonality,3,1,1
+wm-000508,intelligent,"{""zeki""}",Adjective,,,false,A2,EmotionsAndPersonality,3,2,1
+wm-000509,lazy,"{""tembel"",""uyuşuk""}",Adjective,,,false,A2,EmotionsAndPersonality,3,3,1
+wm-000517,rude,"{""kaba"",""nezaketsiz""}",Adjective,,,false,A2,EmotionsAndPersonality,3,4,1
+wm-000522,stupid,"{""aptal""}",Adjective,,,false,A2,EmotionsAndPersonality,3,5,1
+wm-000643,worry,"{""endişelenmek""}",Verb,worried,worried,false,A2,EmotionsAndPersonality,3,6,2
+wm-000500,dry,"{""kuru""}",Adjective,,,false,A2,NatureAndWeather,4,1,1
+wm-000504,foggy,"{""sisli""}",Adjective,,,false,A2,NatureAndWeather,4,2,1
+wm-000530,wet,"{""ıslak""}",Adjective,,,false,A2,NatureAndWeather,4,3,1
+wm-000546,cloud,"{""bulut""}",Noun,,,false,A2,NatureAndWeather,4,4,1
+wm-000555,field,"{""tarla"",""alan""}",Noun,,,false,A2,NatureAndWeather,4,5,1
+wm-000560,grass,"{""çimen"",""ot""}",Noun,,,false,A2,NatureAndWeather,4,6,2
+wm-000561,ground,"{""yer"",""zemin""}",Noun,,,false,A2,NatureAndWeather,4,7,2
+wm-000569,hill,"{""tepe"",""yokuş""}",Noun,,,false,A2,NatureAndWeather,4,8,2
+wm-000589,pollution,"{""kirlilik""}",Noun,,,false,A2,NatureAndWeather,4,9,2
+wm-000605,stone,"{""taş""}",Noun,,,false,A2,NatureAndWeather,4,10,2
+wm-000608,sunshine,"{""güneş ışığı""}",Noun,,,false,A2,NatureAndWeather,4,11,3
+wm-000617,wind,"{""rüzgâr""}",Noun,,,false,A2,NatureAndWeather,4,12,3
+wm-000524,sweet,"{""tatlı"",""şirin""}",Adjective,,,false,A2,FoodAndDrink,5,1,1
+wm-000533,bean,"{""fasulye"",""çekirdek""}",Noun,,,false,A2,FoodAndDrink,5,2,1
+wm-000535,beef,"{""sığır eti""}",Noun,,,false,A2,FoodAndDrink,5,3,1
+wm-000536,biscuit,"{""bisküvi"",""kurabiye""}",Noun,,,false,A2,FoodAndDrink,5,4,1
+wm-000550,cookie,"{""kurabiye"",""çerez""}",Noun,,,false,A2,FoodAndDrink,5,5,1
+wm-000532,basketball,"{""basketbol""}",Noun,,,false,A2,SportsAndLeisure,6,1,1
+wm-000547,coach,"{""antrenör"",""otobüs""}",Noun,,,false,A2,SportsAndLeisure,6,2,1
+wm-000556,fishing,"{""balıkçılık""}",Noun,,,false,A2,SportsAndLeisure,6,3,1
+wm-000602,soccer,"{""futbol""}",Noun,,,false,A2,SportsAndLeisure,6,4,1
+wm-000534,bear,"{""ayı""}",Noun,,,false,A2,Animals,7,1,1
+wm-000557,frog,"{""kurbağa""}",Noun,,,false,A2,Animals,7,2,1
+wm-000581,monkey,"{""maymun""}",Noun,,,false,A2,Animals,7,3,1
+wm-000537,board,"{""tahta""}",Noun,,,false,A2,HomeAndObjects,8,1,1
+wm-000539,bowl,"{""kase"",""çanak""}",Noun,,,false,A2,HomeAndObjects,8,2,1
+wm-000541,bucket,"{""kova""}",Noun,,,false,A2,HomeAndObjects,8,3,1
+wm-000542,button,"{""düğme"",""tuş""}",Noun,,,false,A2,HomeAndObjects,8,4,1
+wm-000551,couch,"{""kanepe"",""koltuk""}",Noun,,,false,A2,HomeAndObjects,8,5,1
+wm-000566,hall,"{""salon"",""koridor""}",Noun,,,false,A2,HomeAndObjects,8,6,2
+wm-000573,knife,"{""bıçak""}",Noun,,,false,A2,HomeAndObjects,8,7,2
+wm-000596,seat,"{""koltuk"",""oturacak yer""}",Noun,,,false,A2,HomeAndObjects,8,8,2
+wm-000611,tool,"{""alet"",""araç""}",Noun,,,false,A2,HomeAndObjects,8,9,2
+wm-000612,towel,"{""havlu""}",Noun,,,false,A2,HomeAndObjects,8,10,2
+wm-000540,bridge,"{""köprü""}",Noun,,,false,A2,Places,9,1,1
+wm-000543,camp,"{""kamp""}",Noun,,,false,A2,Places,9,2,1
+wm-000545,church,"{""kilise""}",Noun,,,false,A2,Places,9,3,1
+wm-000585,palace,"{""saray""}",Noun,,,false,A2,Places,9,4,1
+wm-000601,site,"{""alan"",""bölge""}",Noun,,,false,A2,Places,9,5,1
+wm-000606,store,"{""dükkân"",""mağaza""}",Noun,,,false,A2,Places,9,6,2
+wm-000613,tower,"{""kule""}",Noun,,,false,A2,Places,9,7,2
+wm-000544,cartoon,"{""çizgi film"",""karikatür""}",Noun,,,false,A2,ArtsAndEntertainment,10,1,1
+wm-000552,drama,"{""drama"",""tiyatro""}",Noun,,,false,A2,ArtsAndEntertainment,10,2,1
+wm-000622,celebrate,"{""kutlamak""}",Verb,celebrated,celebrated,false,A2,ArtsAndEntertainment,10,3,1
+wm-000548,code,"{""kod"",""şifre""}",Noun,,,false,A2,TechnologyAndMedia,11,1,1
+wm-000577,mail,"{""posta""}",Noun,,,false,A2,TechnologyAndMedia,11,2,1
+wm-000580,mobile,"{""cep telefonu""}",Noun,,,false,A2,TechnologyAndMedia,11,3,1
+wm-000590,poster,"{""afiş"",""poster""}",Noun,,,false,A2,TechnologyAndMedia,11,4,1
+wm-000593,program,"{""program""}",Noun,,,false,A2,TechnologyAndMedia,11,5,1
+wm-000609,system,"{""sistem""}",Noun,,,false,A2,TechnologyAndMedia,11,6,2
+wm-000610,technology,"{""teknoloji""}",Noun,,,false,A2,TechnologyAndMedia,11,7,2
+wm-000549,community,"{""toplum"",""topluluk""}",Noun,,,false,A2,SocietyAndPolitics,12,1,1
+wm-000559,government,"{""hükümet""}",Noun,,,false,A2,SocietyAndPolitics,12,2,1
+wm-000572,king,"{""kral""}",Noun,,,false,A2,SocietyAndPolitics,12,3,1
+wm-000575,law,"{""kanun""}",Noun,,,false,A2,SocietyAndPolitics,12,4,1
+wm-000587,peace,"{""barış"",""huzur""}",Noun,,,false,A2,SocietyAndPolitics,12,5,1
+wm-000592,president,"{""başkan"",""cumhurbaşkanı""}",Noun,,,false,A2,SocietyAndPolitics,12,6,2
+wm-000604,state,"{""eyalet"",""durum""}",Noun,,,false,A2,SocietyAndPolitics,12,7,2
+wm-000615,war,"{""savaş""}",Noun,,,false,A2,SocietyAndPolitics,12,8,2
+wm-000553,education,"{""eğitim""}",Noun,,,false,A2,Education,13,1,1
+wm-000595,research,"{""araştırma""}",Noun,,,false,A2,Education,13,2,1
+wm-000554,engineer,"{""mühendis""}",Noun,,,false,A2,JobsAndWork,14,1,1
+wm-000583,officer,"{""memur"",""subay""}",Noun,,,false,A2,JobsAndWork,14,2,1
+wm-000584,owner,"{""sahip"",""malik""}",Noun,,,false,A2,JobsAndWork,14,3,1
+wm-000594,reporter,"{""muhabir""}",Noun,,,false,A2,JobsAndWork,14,4,1
+wm-000597,service,"{""hizmet""}",Noun,,,false,A2,JobsAndWork,14,5,1
+wm-000558,goal,"{""hedef"",""amaç""}",Noun,,,false,A2,General,15,1,1
+wm-000564,habit,"{""alışkanlık"",""huy""}",Noun,,,false,A2,General,15,2,1
+wm-000570,item,"{""madde"",""öğe""}",Noun,,,false,A2,General,15,3,1
+wm-000576,level,"{""seviye""}",Noun,,,false,A2,General,15,4,1
+wm-000579,memory,"{""hafıza"",""anı""}",Noun,,,false,A2,General,15,5,1
+wm-000591,power,"{""güç""}",Noun,,,false,A2,General,15,6,2
+wm-000600,side,"{""yan"",""taraf""}",Noun,,,false,A2,General,15,7,2
+wm-000603,speech,"{""konuşma"",""nutuk""}",Noun,,,false,A2,General,15,8,2
+wm-000607,suggestion,"{""öneri"",""tavsiye""}",Noun,,,false,A2,General,15,9,2
+wm-000618,others,"{""diğerleri""}",Pronoun,,,false,A2,General,15,10,2
+wm-000562,guest,"{""misafir"",""konuk""}",Noun,,,false,A2,FamilyAndPeople,16,1,1
+wm-000563,guy,"{""adam"",""herif""}",Noun,,,false,A2,FamilyAndPeople,16,2,1
+wm-000571,kid,"{""çocuk""}",Noun,,,false,A2,FamilyAndPeople,16,3,1
+wm-000574,lady,"{""hanımefendi"",""kadın""}",Noun,,,false,A2,FamilyAndPeople,16,4,1
+wm-000586,pants,"{""pantolon""}",Noun,,,false,A2,Clothing,17,1,1
+wm-000588,pocket,"{""cep""}",Noun,,,false,A2,Clothing,17,2,1
+wm-000598,ship,"{""gemi""}",Noun,,,false,A2,Transportation,18,1,1
+wm-000614,truck,"{""kamyon""}",Noun,,,false,A2,Transportation,18,2,1
+wm-000616,wheel,"{""tekerlek"",""direksiyon""}",Noun,,,false,A2,Transportation,18,3,1
+wm-000619,allow,"{""izin vermek""}",Verb,allowed,allowed,false,A2,Actions,19,1,1
+wm-000620,appear,"{""görünmek""}",Verb,appeared,appeared,false,A2,Actions,19,2,1
+wm-000623,collect,"{""toplamak"",""biriktirmek""}",Verb,collected,collected,false,A2,Actions,19,3,1
+wm-000624,consider,"{""değerlendirmek"",""düşünmek""}",Verb,considered,considered,false,A2,Actions,19,4,1
+wm-000625,continue,"{""devam etmek""}",Verb,continued,continued,false,A2,Actions,19,5,1
+wm-000626,drop,"{""düşürmek"",""bırakmak""}",Verb,dropped,dropped,false,A2,Actions,19,6,2
+wm-000627,expect,"{""beklemek""}",Verb,expected,expected,false,A2,Actions,19,7,2
+wm-000628,focus,"{""odaklanmak""}",Verb,focused,focused,false,A2,Actions,19,8,2
+wm-000629,greet,"{""selamlamak"",""karşılamak""}",Verb,greeted,greeted,false,A2,Actions,19,9,2
+wm-000630,jump,"{""zıplamak"",""atlamak""}",Verb,jumped,jumped,false,A2,Actions,19,10,2
+wm-000631,kill,"{""öldürmek"",""yok etmek""}",Verb,killed,killed,false,A2,Actions,19,11,3
+wm-000632,offer,"{""teklif etmek""}",Verb,offered,offered,false,A2,Actions,19,12,3
+wm-000633,provide,"{""sağlamak""}",Verb,provided,provided,false,A2,Actions,19,13,3
+wm-000634,push,"{""itmek"",""zorlamak""}",Verb,pushed,pushed,false,A2,Actions,19,14,3
+wm-000635,reach,"{""ulaşmak""}",Verb,reached,reached,false,A2,Actions,19,15,3
+wm-000636,save,"{""kurtarmak"",""kaydetmek""}",Verb,saved,saved,false,A2,Actions,19,16,4
+wm-000637,seem,"{""görünmek""}",Verb,seemed,seemed,false,A2,Actions,19,17,4
+wm-000638,serve,"{""hizmet etmek""}",Verb,served,served,false,A2,Actions,19,18,4
+wm-000639,solve,"{""çözmek"",""halletmek""}",Verb,solved,solved,false,A2,Actions,19,19,4
+wm-000640,succeed,"{""başarmak""}",Verb,succeeded,succeeded,false,A2,Actions,19,20,4
+wm-000641,turn off,"{""kapatmak""}",Verb,turned off,turned off,false,A2,Actions,19,21,5
+wm-000642,turn on,"{""açmak"",""çalıştırmak""}",Verb,turned on,turned on,false,A2,Actions,19,22,5
+wm-000644,beat,"{""vurmak"",""yenmek""}",Verb,beat,beaten,true,A2,Actions,19,23,5
+wm-000645,catch,"{""yakalamak""}",Verb,caught,caught,true,A2,Actions,19,24,5
+wm-000646,dream,"{""rüya görmek""}",Verb,dreamt,dreamt,true,A2,Actions,19,25,5
+wm-000647,feed,"{""beslemek""}",Verb,fed,fed,true,A2,Actions,19,26,6
+wm-000648,fight,"{""dövüşmek""}",Verb,fought,fought,true,A2,Actions,19,27,6
+wm-000649,hide,"{""saklanmak""}",Verb,hid,hidden,true,A2,Actions,19,28,6
+wm-000650,hold,"{""tutmak"",""beklemek""}",Verb,held,held,true,A2,Actions,19,29,6
+wm-000651,lead,"{""yön vermek""}",Verb,led,led,true,A2,Actions,19,30,6
+wm-000653,rise,"{""yükselmek""}",Verb,rose,risen,true,A2,Actions,19,31,7
+wm-000654,shake,"{""sallamak""}",Verb,shook,shaken,true,A2,Actions,19,32,7
+wm-000655,steal,"{""çalmak""}",Verb,stole,stolen,true,A2,Actions,19,33,7
+wm-000656,throw,"{""atmak"",""fırlatmak""}",Verb,threw,thrown,true,A2,Actions,19,34,7
+wm-000621,borrow,"{""ödünç almak"",""borç almak""}",Verb,borrowed,borrowed,false,A2,ShoppingAndMoney,20,1,1
+wm-000652,lend,"{""ödünç vermek""}",Verb,lent,lent,true,A2,ShoppingAndMoney,20,2,1
+wm-000657,far,"{""uzak""}",Adjective,,,false,B1,Descriptions,1,1,1
+wm-000661,pleasant,"{""keyifli""}",Adjective,,,false,B1,Descriptions,1,2,1
+wm-000664,tight,"{""sıkı""}",Adjective,,,false,B1,Descriptions,1,3,1
+wm-000665,ugly,"{""çirkin""}",Adjective,,,false,B1,Descriptions,1,4,1
+wm-000666,unfair,"{""adil olmayan""}",Adjective,,,false,B1,Descriptions,1,5,1
+wm-000658,generous,"{""cömert""}",Adjective,,,false,B1,EmotionsAndPersonality,2,1,1
+wm-000659,glad,"{""memnun"",""hoşnut""}",Adjective,,,false,B1,EmotionsAndPersonality,2,2,1
+wm-000660,lonely,"{""yalnız"",""kimsesiz""}",Adjective,,,false,B1,EmotionsAndPersonality,2,3,1
+wm-000662,shy,"{""utangaç"",""çekingen""}",Adjective,,,false,B1,EmotionsAndPersonality,2,4,1
+wm-000663,smart,"{""akıllı"",""zeki""}",Adjective,,,false,B1,EmotionsAndPersonality,2,5,1
+wm-000667,album,"{""albüm""}",Noun,,,false,B1,ArtsAndEntertainment,3,1,1
+wm-000671,celebration,"{""kutlama"",""şenlik""}",Noun,,,false,B1,ArtsAndEntertainment,3,2,1
+wm-000675,drum,"{""davul"",""bateri""}",Noun,,,false,B1,ArtsAndEntertainment,3,3,1
+wm-000678,poem,"{""şiir""}",Noun,,,false,B1,ArtsAndEntertainment,3,4,1
+wm-000668,bee,"{""arı""}",Noun,,,false,B1,Animals,4,1,1
+wm-000669,bell,"{""zil"",""çan""}",Noun,,,false,B1,HomeAndObjects,5,1,1
+wm-000680,shelf,"{""raf""}",Noun,,,false,B1,HomeAndObjects,5,2,1
+wm-000670,cap,"{""şapka"",""kep""}",Noun,,,false,B1,Clothing,6,1,1
+wm-000672,cloth,"{""bez"",""kumaş""}",Noun,,,false,B1,Clothing,6,2,1
+wm-000673,collection,"{""koleksiyon"",""toplama""}",Noun,,,false,B1,General,7,1,1
+wm-000674,corn,"{""mısır""}",Noun,,,false,B1,FoodAndDrink,8,1,1
+wm-000676,file,"{""dosya""}",Noun,,,false,B1,TechnologyAndMedia,9,1,1
+wm-000677,leaf,"{""yaprak""}",Noun,,,false,B1,NatureAndWeather,10,1,1
+wm-000679,princess,"{""prenses""}",Noun,,,false,B1,SocietyAndPolitics,11,1,1
+wm-000681,vote,"{""oy""}",Noun,,,false,B1,SocietyAndPolitics,11,2,1
+wm-000682,breathe,"{""nefes almak"",""solumak""}",Verb,breathed,breathed,false,B1,BodyAndHealth,12,1,1
+wm-000683,pray,"{""dua etmek""}",Verb,prayed,prayed,false,B1,Actions,13,1,1
+wm-000685,freeze,"{""donmak""}",Verb,froze,frozen,true,B1,Actions,13,2,1
+wm-000686,hang,"{""asmak""}",Verb,hung,hung,true,B1,Actions,13,3,1
+wm-000687,quit,"{""çıkmak"",""bırakmak""}",Verb,quit,quit,true,B1,Actions,13,4,1
+wm-000688,set,"{""belirlemek""}",Verb,set,set,true,B1,Actions,13,5,1
+wm-000689,shine,"{""parlamak""}",Verb,shone,shone,true,B1,Actions,13,6,2
+wm-000690,shoot,"{""ateş etmek""}",Verb,shot,shot,true,B1,Actions,13,7,2
+wm-000691,sink,"{""batmak""}",Verb,sank,sunk,true,B1,Actions,13,8,2
+wm-000684,translate,"{""çevirmek""}",Verb,translated,translated,false,B1,Education,14,1,1
+wm-000692,cute,"{""sevimli"",""tatlı""}",Adjective,,,false,B2,Descriptions,1,1,1
+wm-000693,elementary,"{""temel"",""başlangıç""}",Adjective,,,false,B2,Descriptions,1,2,1
+wm-000694,loose,"{""bol""}",Adjective,,,false,B2,Descriptions,1,3,1
+wm-000695,shallow,"{""sığ""}",Adjective,,,false,B2,Descriptions,1,4,1
+wm-000696,strict,"{""katı"",""otoriter""}",Adjective,,,false,B2,Descriptions,1,5,1
+wm-000697,fever,"{""ateş""}",Noun,,,false,B2,BodyAndHealth,2,1,1
+wm-000698,rat,"{""sıçan""}",Noun,,,false,B2,Animals,3,1,1
+wm-000699,rose,"{""gül""}",Noun,,,false,B2,NatureAndWeather,4,1,1
+wm-000700,bet,"{""bahse girmek""}",Verb,bet,bet,true,B2,ShoppingAndMoney,5,1,1

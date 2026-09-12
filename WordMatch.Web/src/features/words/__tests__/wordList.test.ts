@@ -16,7 +16,6 @@ const words: WordResponse[] = [
     isIrregular: false,
     level: "A1",
     topic: "FoodAndDrink",
-    currentOutcome: null,
   },
   {
     id: 2,
@@ -28,7 +27,6 @@ const words: WordResponse[] = [
     isIrregular: true,
     level: "A1",
     topic: "Actions",
-    currentOutcome: null,
   },
   {
     id: 3,
@@ -40,7 +38,6 @@ const words: WordResponse[] = [
     isIrregular: false,
     level: "A2",
     topic: "Descriptions",
-    currentOutcome: null,
   },
 ];
 
@@ -49,7 +46,6 @@ const defaultFilters: WordListFilters = {
   level: "all",
   topic: "all",
   partOfSpeech: "all",
-  progress: "all",
   verbType: "none",
 };
 
@@ -96,7 +92,6 @@ describe("getVisibleWords", () => {
       isIrregular: false,
       level: "A1",
       topic: "JobsAndWork",
-      currentOutcome: null,
     };
 
     const result = getVisibleWords(
@@ -120,7 +115,6 @@ describe("getVisibleWords", () => {
       isIrregular: false,
       level: "A1",
       topic: "Actions",
-      currentOutcome: null,
     };
     const allWords = [...words, regularVerb];
 
@@ -139,39 +133,6 @@ describe("getVisibleWords", () => {
 
     expect(regular.map((word) => word.english)).toEqual(["walk"]);
     expect(irregular.map((word) => word.english)).toEqual(["go"]);
-  });
-
-  it("filters every practice progress state", () => {
-    const progressWords: WordResponse[] = [
-      { ...words[0], currentOutcome: "Correct" },
-      { ...words[1], currentOutcome: "Review" },
-      { ...words[2], currentOutcome: "Wrong" },
-      {
-        ...words[0],
-        id: 4,
-        english: "book",
-        currentOutcome: "Correct",
-      },
-      {
-        ...words[0],
-        id: 5,
-        english: "water",
-        currentOutcome: null,
-      },
-    ];
-
-    const filterByProgress = (progress: WordListFilters["progress"]) =>
-      getVisibleWords(
-        progressWords,
-        { ...defaultFilters, progress },
-        "id",
-        "asc",
-      ).map((word) => word.english);
-
-    expect(filterByProgress("correct")).toEqual(["apple", "book"]);
-    expect(filterByProgress("review")).toEqual(["go"]);
-    expect(filterByProgress("wrong")).toEqual(["beautiful"]);
-    expect(filterByProgress("notPracticed")).toEqual(["water"]);
   });
 
   it("sorts in both directions with a stable ID fallback", () => {

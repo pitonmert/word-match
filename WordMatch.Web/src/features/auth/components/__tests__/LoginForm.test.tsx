@@ -10,19 +10,26 @@ afterEach(() => {
   cleanup();
 });
 
+type LoginFormProps = Parameters<typeof LoginForm>[0];
+
+function renderLoginForm(overrides: Partial<LoginFormProps> = {}) {
+  return render(
+    <LoginForm
+      error={null}
+      isSubmitting={false}
+      onShowSignup={vi.fn()}
+      onSubmit={vi.fn()}
+      {...overrides}
+    />,
+  );
+}
+
 describe("LoginForm", () => {
   it("submits the entered identifier and password", async () => {
     const onSubmit = vi.fn().mockResolvedValue(undefined);
     const user = userEvent.setup();
 
-    render(
-      <LoginForm
-        error={null}
-        isSubmitting={false}
-        onShowSignup={vi.fn()}
-        onSubmit={onSubmit}
-      />,
-    );
+    renderLoginForm({ onSubmit });
 
     await user.type(
       screen.getByLabelText("E-posta veya kullanıcı adı"),
@@ -35,14 +42,7 @@ describe("LoginForm", () => {
   });
 
   it("disables the inputs and submit button while submitting", () => {
-    render(
-      <LoginForm
-        error={null}
-        isSubmitting
-        onShowSignup={vi.fn()}
-        onSubmit={vi.fn()}
-      />,
-    );
+    renderLoginForm({ isSubmitting: true });
 
     expect(screen.getByLabelText("E-posta veya kullanıcı adı")).toBeDisabled();
     expect(screen.getByLabelText("Parola")).toBeDisabled();
@@ -52,14 +52,7 @@ describe("LoginForm", () => {
   });
 
   it("shows the error message and marks the inputs invalid", () => {
-    render(
-      <LoginForm
-        error="E-posta, kullanıcı adı veya parola hatalı."
-        isSubmitting={false}
-        onShowSignup={vi.fn()}
-        onSubmit={vi.fn()}
-      />,
-    );
+    renderLoginForm({ error: "E-posta, kullanıcı adı veya parola hatalı." });
 
     const alert = screen.getByRole("alert");
     expect(alert).toHaveTextContent(
@@ -81,14 +74,7 @@ describe("LoginForm", () => {
   });
 
   it("does not render an alert or mark inputs invalid without an error", () => {
-    render(
-      <LoginForm
-        error={null}
-        isSubmitting={false}
-        onShowSignup={vi.fn()}
-        onSubmit={vi.fn()}
-      />,
-    );
+    renderLoginForm();
 
     expect(screen.queryByRole("alert")).not.toBeInTheDocument();
     expect(screen.getByLabelText("E-posta veya kullanıcı adı")).toHaveAttribute(
@@ -101,14 +87,7 @@ describe("LoginForm", () => {
     const onShowSignup = vi.fn();
     const user = userEvent.setup();
 
-    render(
-      <LoginForm
-        error={null}
-        isSubmitting={false}
-        onShowSignup={onShowSignup}
-        onSubmit={vi.fn()}
-      />,
-    );
+    renderLoginForm({ onShowSignup });
 
     await user.click(screen.getByRole("button", { name: "Hesap oluştur" }));
 

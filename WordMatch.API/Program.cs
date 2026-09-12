@@ -4,24 +4,15 @@ using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using WordMatch.API.Bootstrap;
 using WordMatch.API.Data;
 using WordMatch.API.Features.Auth;
-using WordMatch.API.Features.Practice;
-using WordMatch.API.Features.Practice.Categories;
+using WordMatch.API.Features.Study;
 using WordMatch.API.Features.Words;
-using WordMatch.API.Features.Words.Catalog;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// The API requires a configured PostgreSQL connection before it can start.
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-if (string.IsNullOrWhiteSpace(connectionString))
-    throw new InvalidOperationException(
-        "Connection string 'DefaultConnection' is missing or empty."
-    );
-
-// Register application services in the dependency injection container.
-builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(connectionString));
+builder.AddDataAccess();
 builder.Services.ConfigureHttpJsonOptions(options =>
     options.SerializerOptions.Converters.Add(new JsonStringEnumConverter())
 );
@@ -105,6 +96,7 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
     options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
     options.ForwardLimit = 1;
     options.KnownIPNetworks.Add(System.Net.IPNetwork.Parse("172.16.0.0/12"));
+    options.KnownIPNetworks.Add(System.Net.IPNetwork.Parse("192.168.0.0/16"));
 });
 
 if (!builder.Environment.IsDevelopment())
@@ -121,15 +113,37 @@ if (!builder.Environment.IsDevelopment())
         .PersistKeysToFileSystem(new DirectoryInfo(keyPath));
 }
 
-builder.Services.AddScoped<ICategoryService, CategoryService>();
-builder.Services.AddSingleton<PracticeQuestionFactory>();
-builder.Services.AddScoped<IPracticeSessionService, PracticeSessionService>();
-builder.Services.AddScoped<IWordCatalogService, WordCatalogService>();
+builder.Services.AddSingleton<QuestionFactory>();
+builder.Services.AddScoped<WordCatalogService>();
+builder.Services.AddScoped<ContentBootstrapService>();
+builder.Services.AddSingleton(TimeProvider.System);
+builder.Services.AddSingleton<StudyPlanner>();
+builder.Services.AddSingleton<StudyQuestionFactory>();
+builder.Services.AddSingleton<StudyDeviceIdentity>();
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<StudyService>();
 
-// Swagger is used to inspect and test the API during development.
 builder.Services.AddEndpointsApiExplorer();
 
 var app = builder.Build();
+
+if (args is ["bootstrap", "words"])
+{
+    using var scope = app.Services.CreateScope();
+    var bootstrap = scope.ServiceProvider.GetRequiredService<ContentBootstrapService>();
+    var sourcePath = Path.Combine(AppContext.BaseDirectory, "Content", "Words.csv");
+    var result = await bootstrap.ImportAsync(sourcePath);
+
+    Console.WriteLine(
+        $"Content bootstrap completed. Words — created: {result.WordsCreated}, "
+            + $"adopted: {result.WordsAdopted}, updated: {result.WordsUpdated}, "
+            + $"unchanged: {result.WordsUnchanged}. Topics — created: {result.TopicsCreated}, "
+            + $"updated: {result.TopicsUpdated}, retired: {result.TopicsRetired}. "
+            + $"Word links — created: {result.WordLinksCreated}, "
+            + $"updated: {result.WordLinksUpdated}."
+    );
+    return;
+}
 
 app.UseForwardedHeaders();
 
@@ -150,8 +164,7 @@ app.UseRateLimiter();
 app.UseAuthorization();
 
 app.MapAuthEndpoints();
-app.MapCategoryEndpoints();
-app.MapPracticeSessionEndpoints();
+app.MapStudyEndpoints();
 app.MapWordCatalogEndpoints();
 
 app.MapGet(

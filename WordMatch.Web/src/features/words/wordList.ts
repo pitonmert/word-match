@@ -1,8 +1,6 @@
 import type { WordResponse } from "@/features/words/api/words";
 
 export type VerbTypeFilter = "none" | "regular" | "irregular";
-export type ProgressFilter =
-  "all" | "correct" | "review" | "wrong" | "notPracticed";
 export type SortDirection = "asc" | "desc";
 export type WordSortField = keyof WordResponse;
 
@@ -11,7 +9,6 @@ export type WordListFilters = {
   level: string;
   topic: string;
   partOfSpeech: string;
-  progress: ProgressFilter;
   verbType: VerbTypeFilter;
 };
 
@@ -46,14 +43,6 @@ function matchesSearch(word: WordResponse, search: string) {
     word.pastParticiple?.toLocaleLowerCase("en-US").includes(englishSearch) ||
     false
   );
-}
-
-function matchesProgress(word: WordResponse, progress: ProgressFilter) {
-  if (progress === "all") return true;
-  if (progress === "correct") return word.currentOutcome === "Correct";
-  if (progress === "review") return word.currentOutcome === "Review";
-  if (progress === "wrong") return word.currentOutcome === "Wrong";
-  return word.currentOutcome === null;
 }
 
 function compareValues(
@@ -107,7 +96,6 @@ export function getVisibleWords(
         matchesSearch(word, filters.search) &&
         (filters.level === "all" || word.level === filters.level) &&
         (filters.topic === "all" || word.topic === filters.topic) &&
-        matchesProgress(word, filters.progress) &&
         (filters.partOfSpeech === "all" ||
           word.partOfSpeech === filters.partOfSpeech) &&
         (filters.verbType === "none" ||

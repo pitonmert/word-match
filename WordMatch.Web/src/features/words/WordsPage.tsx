@@ -62,12 +62,10 @@ const initialFilters: WordListFilters = {
   level: "all",
   topic: "all",
   partOfSpeech: "all",
-  progress: "all",
   verbType: "none",
 };
 
 const initialFilterSectionVisibility: WordFilterSectionVisibility = {
-  progress: true,
   partOfSpeech: true,
   verbType: true,
   level: true,
@@ -132,17 +130,6 @@ export default function WordsPage() {
   const filterDefinitions = useMemo<WordFilterDefinition[]>(
     () => [
       {
-        field: "progress",
-        label: "Son çalışma sonucu",
-        options: [
-          { value: "all", label: "Tümü" },
-          { value: "correct", label: "Doğru" },
-          { value: "review", label: "Tekrar" },
-          { value: "wrong", label: "Yanlış" },
-          { value: "notPracticed", label: "Çalışılmadı" },
-        ],
-      },
-      {
         field: "partOfSpeech",
         label: "Sözcük Türü",
         options: createFilterOptions(
@@ -173,7 +160,6 @@ export default function WordsPage() {
     [levels, partsOfSpeech, topics],
   );
   const filterValues: WordFilterValues = {
-    progress: filters.progress,
     partOfSpeech: filters.partOfSpeech,
     verbType: filters.verbType,
     level: filters.level,
@@ -268,7 +254,6 @@ export default function WordsPage() {
       level: "all",
       topic: "all",
       partOfSpeech: "all",
-      progress: "all",
       verbType: "none",
     }));
     updateVerbColumnVisibility("none");
@@ -378,7 +363,6 @@ export default function WordsPage() {
     const isOpen = !areAllFilterSectionsOpen;
 
     setFilterSectionVisibility({
-      progress: isOpen,
       partOfSpeech: isOpen,
       verbType: isOpen,
       level: isOpen,

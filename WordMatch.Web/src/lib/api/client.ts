@@ -3,16 +3,20 @@ import { z } from "zod";
 export class ApiError extends Error {
   status: number;
   errors: Record<string, string[]>;
+  /** A stable, machine-readable identifier for this error, when the API sends one. */
+  code: string | null;
 
   constructor(
     message: string,
     status: number,
     errors: Record<string, string[]> = {},
+    code: string | null = null,
   ) {
     super(message);
     this.name = "ApiError";
     this.status = status;
     this.errors = errors;
+    this.code = code;
   }
 }
 
@@ -96,18 +100,21 @@ async function requestAntiforgeryToken() {
 async function createApiError(response: Response) {
   let message = `İstek ${response.status} durum koduyla başarısız oldu.`;
   let errors: Record<string, string[]> = {};
+  let code: string | null = null;
 
   try {
     const body = (await response.json()) as {
       message?: string;
       title?: string;
       errors?: Record<string, string[]>;
+      code?: string | null;
     };
     message = body.message ?? body.title ?? message;
     errors = body.errors ?? {};
+    code = body.code ?? null;
   } catch {
     // Some framework responses intentionally have no JSON body.
   }
 
-  return new ApiError(message, response.status, errors);
+  return new ApiError(message, response.status, errors, code);
 }

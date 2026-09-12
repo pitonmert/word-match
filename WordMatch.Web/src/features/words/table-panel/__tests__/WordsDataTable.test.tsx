@@ -14,7 +14,6 @@ afterEach(() => {
 
 const words: WordResponse[] = [
   {
-    currentOutcome: null,
     english: "apple",
     id: 1,
     isIrregular: false,
@@ -26,7 +25,6 @@ const words: WordResponse[] = [
     turkishTranslations: ["elma"],
   },
   {
-    currentOutcome: null,
     english: "go",
     id: 2,
     isIrregular: true,

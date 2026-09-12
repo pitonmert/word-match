@@ -1,9 +1,3 @@
-import type {
-  PracticeMode,
-  PracticeOutcome,
-  QuestionFormat,
-} from "@/features/practice/api/practice";
-
 const topicLabels: Record<string, string> = {
   Actions: "Eylemler",
   Animals: "Hayvanlar",
@@ -46,48 +40,16 @@ const partOfSpeechLabels: Record<string, string> = {
   Verb: "Fiil",
 };
 
+export const topicValues = Object.keys(topicLabels);
+
+export const wordLevels = ["A1", "A2", "B1", "B2"];
+
 export function getTopicLabel(value: string) {
   return topicLabels[value] ?? splitEnumValue(value);
 }
 
 export function getPartOfSpeechLabel(value: string) {
   return partOfSpeechLabels[value] ?? splitEnumValue(value);
-}
-
-const practiceModeLabels: Record<PracticeMode, string> = {
-  TurkishToEnglish: "Türkçe → İngilizce",
-  EnglishToTurkish: "İngilizce → Türkçe",
-  Mixed: "Her iki yönde",
-};
-
-const practiceModeShortLabels: Record<PracticeMode, string> = {
-  TurkishToEnglish: "TR → EN",
-  EnglishToTurkish: "EN → TR",
-  Mixed: "Her iki yönde",
-};
-
-const practiceOutcomeLabels: Record<PracticeOutcome, string> = {
-  Correct: "Doğru",
-  Review: "Tekrar",
-  Wrong: "Yanlış",
-};
-
-export function getPracticeModeLabel(mode: PracticeMode | null | undefined) {
-  return mode ? practiceModeLabels[mode] : "Çalışma";
-}
-
-export function getPracticeModeShortLabel(
-  mode: PracticeMode | null | undefined,
-) {
-  return mode ? practiceModeShortLabels[mode] : "";
-}
-
-export function getPracticeOutcomeLabel(outcome: PracticeOutcome) {
-  return practiceOutcomeLabels[outcome];
-}
-
-export function getQuestionFormatLabel(format: QuestionFormat) {
-  return format === "Written" ? "Yazılı" : "Çoktan Seçmeli";
 }
 
 function splitEnumValue(value: string) {

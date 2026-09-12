@@ -32,29 +32,26 @@ DAHİL:
 
 DAHİL DEĞİL:
 - Kullanıcıya dönük hızlı kurulum/kullanım anlatımı → README.md
-- Gelecekte yapılması planlanan yüksek seviyeli işler → ROADMAP.md
-- Aktif özelliğin geçici uygulama adımları → PLAN.md
+- Gelecekte yapılması planlanan işler ve geliştirme öncelikleri → ROADMAP.md
 - Sürüm bazlı değişiklik geçmişi → CHANGELOG.md
 - Lisans hükümleri → LICENSE
 
 KURAL:
 Bu belge kaynak kodun satır satır açıklaması veya TODO listesi değildir.
 Koddan kolayca görülebilen ayrıntılar yerine ilişkileri, sınırları, kuralları,
-nedenleri ve kolayca kaybolabilecek teknik bağlamı belgeleyin. Mevcut sistem
-gerçeği ile gelecek planlarını birbirine karıştırmayın.
+nedenleri ve kolayca kaybolabilecek teknik bağlamı belgeleyin. Gelecek planları
+bu belgenin dışında, yalnızca ROADMAP.md'de tutulur.
 -->
 
 # Word Match Mimarisi
 
-Bu belge çalışan sistemi, hedef öğrenme mimarisini ve aralarındaki sınırları tek
-kanonik kaynakta açıklar. Hedefteki bir özellik kaynak kodda uygulanmadıkça
-**planlanmış** olarak etiketlenir; mevcut davranış olarak yorumlanmamalıdır.
+Bu belge çalışan sistemin teknik yapısını tek kanonik kaynakta açıklar. Kaynak
+kodda olmayan özellik, karar veya iyileştirme burada yer almaz.
 
 ## İlgili Belgeler
 
 - [README.md](README.md) — hızlı başlangıç, kurulum ve günlük geliştirme
-- [ROADMAP.md](ROADMAP.md) — çekirdek çalışmadan sonraki ürün yönü
-- [PLAN.md](PLAN.md) — aktif öğrenme mimarisi çalışmasının fazları
+- [ROADMAP.md](ROADMAP.md) — uygulanmamış ürün ve teknik işler
 - [CHANGELOG.md](CHANGELOG.md) — doğrulanmış sürüm değişiklikleri
 - [LICENSE](LICENSE) — kullanım ve dağıtım lisansı
 
@@ -63,70 +60,82 @@ kanonik kaynakta açıklar. Hedefteki bir özellik kaynak kodda uygulanmadıkça
 ## 1.1 Projenin Amacı
 
 Word Match, Türkçe konuşan kullanıcıların İngilizce kelime haznesini düzenli
-çalışmayla geliştirmesi için hazırlanmış bir web uygulamasıdır. Kullanıcı
-kaydından sonra kelimeleri seviye ve kategoriye göre çalışır; sistem cevapları
-ve soru bağlamını kalıcı olarak saklar.
+çalışmayla geliştirmesi için hazırlanmış bir web uygulamasıdır. Sistem
+cevapları, soru bağlamını, mastery durumunu ve konu ilerlemesini kalıcı olarak
+saklar.
 
-Çalışan ürünün odağı kategori temelli Practice'tir. Hedef ürün bunun üzerine
-aynı kelime verisini kullanan üç ayrı akış kurar:
+Çalışan ürünün tek öğrenme akışı Study'dir ve başlangıçta hiçbir çalışma türü,
+beceri veya yol seçimi yoktur. Sistem varsayılan olarak kullanıcının curriculum
+sırasındaki güncel konusunu açar; kullanıcı isterse konuyu değiştirebilir. Yeni
+içerik, tekrar ve soru türü dengesi Study domain'i içinde kalır.
 
 ```text
-Learn    Sistem yeni içeriği ve sıradaki çalışmayı seçer.
-Review   Sistem tekrar zamanı gelen veya zayıf alanları seçer.
-Practice Kullanıcı çalışmak istediği alanı seçer.
+Ana ekran (/)
+ └─ Devam et → varsa etkin oturumu sürdür, yoksa sıradaki uygun konuyu başlat
+     │                                                └─ sıradaki öğrenme grubu: seçmeli tur, sonra yazılı tur
+     ├─ Konu değiştir → Level/Topic seçim yüzeyi → etkin çalışma varsa açık onay
+     └─ Pekiştir → isteğe bağlı, en fazla 10 soruluk konular arası oturum
+
+Soru ekranında: "Şimdi yazamam" → oturum sonuçlanır; yeni oturum planı o beceriyi geçici olarak içermez
+
+Navbar → Kelimeler (/words) → Salt okunur katalog
 ```
 
 ## 1.2 Temel Kullanım Senaryoları
 
-Bugün kullanıcı:
+Kullanıcı:
 
 - Hesap oluşturur, giriş yapar ve kalıcı cookie ile oturumunu sürdürür.
-- Bir seviye ve kategori seçip `EnglishToTurkish`, `TurkishToEnglish` veya
-  `Mixed` Practice oturumu başlatır.
-- Çoktan seçmeli veya yazılı soruyu cevaplar ya da cevabı görmek için `Review`
-  sonucunu seçer; yarım kalan oturuma devam edebilir veya tamamladığını replay
-  olarak yeniden çalışabilir.
-- Kelime kataloğunu ve son çalışma sonucunu salt okunur görüntüler; kategori
-  ilerlemesini sıfırlar.
+- Ana sayfada tek bir `Devam et` eylemini görür; sunucu varsa etkin oturumu
+  sürdürür, yoksa çalışılabilir sıradaki konuyu başlatır. Kullanıcı çalışma
+  türü veya beceri seçmez.
+- `Konu değiştir` ile ayrı bir seçim yüzeyinden başka bir level/topic seçebilir.
+  Bu ayrı bir mod yaratmaz; ancak başka bir çalışma etkinse önce açıkça onaylar.
+- Çoktan seçmeli veya yazılı soruyu cevaplar ya da “bilmiyorum” sonucunu seçer.
+  Her soruda kelimenin yeni mi tekrar mı olduğunu görür.
+- Uygun olmayan yazma sorularını 10 dakika erteler; bu bir cevap değildir ve
+  mastery'yi etkilemez.
+- Konunun tüm kelimelerinde iki yazılı yönü de yanıtlandığında konu tamamlandı bilgisini görür ve
+  isterse ayrı bir tekrar oturumu başlatır.
+- Kelime kataloğunu salt okunur görüntüler. Üst çubuktaki Word Match markası
+  kullanıcıyı ana sayfaya döndürür.
 
-Planlanan Learn ve Review akışlarında sonraki kelimeyi veya tekrarı kullanıcı
-değil sistem seçer.
-
-## 1.3 Hedefler
+## 1.3 Mevcut Kapsam
 
 - Kelime, soru ve kullanıcı ilerlemesi için kalıcı ve doğrulanabilir bir domain
   modeli sağlamak.
 - Kullanıcıya gösterilen soru içeriğinin anlamını snapshot ile korumak.
 - Türkçeyi İngilizce kelimenin anlamını açıklayan yardımcı dil olarak
   kullanmak; genel dil yeterliliği iddiasında bulunmamak.
-- Hedef mimaride kelime bilgisini dört bağımsız biçimde izlemek ve Learn,
-  Review, Practice seçim kurallarını ayırmak.
+- Kelime bilgisini dört mastery boyutunda izlemek; curriculum, review schedule
+  ve dengeli soru türlerini tek Study planında birleştirmek.
 
-## 1.4 Hedef Olmayanlar
+## 1.4 Kapsam Sınırları
 
 - Uygulamanın curriculum'unu tamamlamak, kullanıcının genel CEFR İngilizce
   seviyesini kanıtlamaz.
 - `WrittenRecognition`, `AuralRecognition`, `WrittenRecall` ve
   `SpokenRecall` genel Reading, Listening, Writing ve Speaking yeterlilikleri
   değildir.
-- İlk `SpokenRecall` kapsamı pronunciation puanı, phoneme analizi, aksan veya
-  stress değerlendirmesi değildir.
-- Learn path, mikrofon ya da speech desteği olmayan kullanıcıyı dört boyutun
-  tamamını zorunlu tutarak bloke etmez.
 
 ## 1.5 Temel Kavramlar
 
-| Kavram                       | Anlamı                                                                                   |
-| ---------------------------- | ---------------------------------------------------------------------------------------- |
-| `Word`                       | İngilizce kelime, Türkçe çevirileri ve kelime metadata'sı.                               |
-| `Level`                      | Kelimenin vocabulary curriculum içindeki seviyesi; bugün kaynak kodda `A1`–`B2` vardır.  |
-| `Topic`                      | Kelimenin anlamsal kategorisi; mevcut Practice seçimi için kullanılır.                   |
-| `PracticeSession`            | Bir kullanıcının `Level` + `Topic` + `Mode` çalışması ve durumudur.                      |
-| `PracticeSessionWord`        | Bir oturumdaki tek soru plan öğesi ve cevap snapshot'ı.                                  |
-| `UserWordProgress`           | Mevcut modelde `UserId + WordId + Direction + Format` için sayaçlar ve son sonuç.        |
-| `Review`                     | Mevcut Practice'te cevabı görme sonucu; hedef Review ürün akışıyla aynı kavram değildir. |
-| `VocabularyMasteryDimension` | Planlanan modelde kelime bilgisinin dört bilinçli egzersiz biçimi.                       |
-| Curriculum                   | Planlanan Learn path'in açık `Level → Unit → Word` sırası.                               |
+| Kavram                       | Anlamı                                                                                  |
+| ---------------------------- | --------------------------------------------------------------------------------------- |
+| `Word`                       | İngilizce kelime, Türkçe çevirileri ve kelime metadata'sı.                              |
+| `Level`                      | Kelimenin vocabulary curriculum içindeki seviyesi; bugün kaynak kodda `A1`–`B2` vardır. |
+| `Topic`                      | Kelimenin anlamsal kategorisi ve curriculum'un görünür öğrenme birimi.                  |
+| `CurriculumTopic`            | Bir `(Level, Topic)` çifti, level içindeki açık sırası ve `Active`/`Retired` durumu.    |
+| `Review`                     | Cevabı bilmeme/gösterme sonucu; ayrı bir Review ürün akışı değildir.                    |
+| `VocabularyMasteryDimension` | Kelime bilgisinin dört bilinçli egzersiz biçimi; başlangıç ekranında seçilmez.          |
+| `StudySessionMode`           | `Topic` konu oturumu veya `Review` tekrar oturumu.                                      |
+| Beceri ertelemesi            | Bir soru türünün 10 dakika boyunca planlanmaması; cevap veya sonuç değildir.            |
+| `LearningGroupSortOrder`     | Konu içindeki açık, pedagojik öğrenme grubunun sırası.                                  |
+| `StudySession`               | Bir konu grubunu veya en fazla 10 soruluk pekiştirmeyi taşıyan sonlu oturum.            |
+| `StudySessionQuestion`       | Bir oturumdaki tek soru plan öğesi ve cevap snapshot'ı.                                 |
+| `UserWordMastery`            | `UserId + WordId + VocabularyMasteryDimension` için aşama, sayaçlar ve sonraki tekrar.  |
+| `UserWordIntroduction`       | `UserId + WordId` için ilk karşılaşma zamanı; akıştan bağımsız ve tek kayıttır.         |
+| Curriculum                   | Study için açık `Level → sıralı Topic → öğrenme grubu → sıralı Word` sırası.            |
 
 # 2. Teknoloji Yığını
 
@@ -144,7 +153,7 @@ değil sistem seçer.
 | Production           | Docker Compose, Nginx, Cloudflare Tunnel                             | Build, proxy ve dış HTTPS erişimi              |
 
 Mevcut feedback sesleri tarayıcıda `public/sounds/` altındaki WAV dosyalarından
-çalınır. Bunlar planlanan kelime seslendirmesi veya speech-to-text değildir.
+çalınır.
 
 # 3. Sistem Bağlamı
 
@@ -169,16 +178,12 @@ proxy eder. API'nin bugün zorunlu bir harici TTS veya STT bağımlılığı yok
 ## 3.2 Aktörler
 
 - **Kullanıcı:** Hesap oluşturur, kelime çalışır, ilerlemesini görür ve
-  gerektiğinde bir kategoriye ait ilerlemeyi sıfırlar.
+  isterse çalışmasını konu veya seviyeye göre daraltır.
 - **Tarayıcı istemcisi:** Oturum cookie'sini taşır, durum değiştiren
   isteklerde antiforgery token gönderir ve 409 yarış durumunda oturumu yeniden
   yükler.
 - **Uygulama operatörü:** Connection string, deployment ortamı, migration ve
   Docker/Cloudflare yapılandırmasını açıkça yönetir.
-
-Planlanan içerik yönetiminde ayrı bir **yönetici** aktörü olacaktır. Bu aktör
-frontend'de gizlenen bir arayüzle değil, server-side `Admin` authorization
-policy ile yetkilendirilir.
 
 ## 3.3 Harici Sistemler
 
@@ -187,21 +192,20 @@ policy ile yetkilendirilir.
 | PostgreSQL              | Kalıcı veri deposu                                         | API connection string olmadan başlamaz; `/health` bağlantıyı denetler. |
 | Cloudflare Tunnel       | Production HTTPS hostname'ini Nginx origin'ine yönlendirir | Tunnel/yönlendirme yoksa dış erişim olmaz.                             |
 | Tarayıcı audio API'leri | Feedback WAV sesleri                                       | Oynatma hatası sessizce yutulur; öğrenme sonucu değişmez.              |
-| TTS/STT sağlayıcısı     | Henüz yok                                                  | Tasarım kararı verilmeden uygulanmaz.                                  |
 
 # 4. Repository Yapısı
 
 ```text
 .
 ├── .github/workflows/ci.yml           # GitHub Actions doğrulama hattı
-├── Data/WordMatch.csv                 # Version-controlled vocabulary kaynağı
 ├── WordMatch.API/                     # ASP.NET Core API
+│   ├── Content/                        # Words.csv
 │   ├── Data/                          # DbContext, EF configuration ve migrations
-│   └── Features/                      # Auth, Practice ve Words feature slice'ları
+│   └── Features/                      # Auth, Study ve Words feature slice'ları
 ├── WordMatch.API.Tests/               # API/integration testleri
 ├── WordMatch.Web/                     # React istemcisi
 │   ├── public/sounds/                 # Mevcut feedback sesleri
-│   └── src/features/                  # auth, practice ve words feature'ları
+│   └── src/features/                  # auth, study, question-session ve words
 ├── docker-compose.yml                 # Production topology
 └── .env.example                       # Secret içermeyen environment şablonu
 ```
@@ -211,8 +215,8 @@ policy ile yetkilendirilir.
 | Dizin                                | Sorumluluk                                              |
 | ------------------------------------ | ------------------------------------------------------- |
 | `WordMatch.API/Features/Auth`        | Kayıt, giriş, çıkış, session ve antiforgery             |
-| `WordMatch.API/Features/Practice`    | Kategori, soru üretimi, oturum ve progress              |
-| `WordMatch.API/Features/Words`       | `Word` domain'i ve salt okunur katalog                  |
+| `WordMatch.API/Features/Study`       | Curriculum bootstrap, planner, mastery, session ve API  |
+| `WordMatch.API/Features/Words`       | `Word` domain'i, soru üretimi, bootstrap ve katalog     |
 | `WordMatch.API/Data`                 | `ApplicationDbContext`, mapping ve EF migration zinciri |
 | `WordMatch.Web/src/features`         | İstemci feature'ları ve feature'a yakın testler         |
 | `WordMatch.API.Tests/Infrastructure` | PostgreSQL Testcontainer kullanan API factory           |
@@ -223,8 +227,10 @@ policy ile yetkilendirilir.
 | ---------------------------- | ------------------------------------------------------------------------ |
 | `WordMatch.API/Program.cs`   | DI, middleware, config kontrolleri, endpoint eşleme ve health endpoint'i |
 | `ApplicationDbContext.cs`    | EF Core modelinin giriş noktası                                          |
-| `PracticeSessionService.cs`  | Oturum oluşturma/devam, cevaplama ve yarış durumları                     |
-| `PracticeQuestionFactory.cs` | Soru planı, snapshot ve dört seçenekli seçenek üretimi                   |
+| `StudyService.cs`            | Study oturumu, cevap transaction'ı, mastery ve konu ilerlemesi           |
+| `StudyPlanner.cs`            | Due, yeni ve zayıf öğelerden 10 benzersiz soru seçimi                    |
+| `QuestionFactory.cs`         | Snapshot, normalize cevap karşılaştırması ve seçenek üretimi             |
+| `StudyQuestionFactory.cs`    | Mastery boyutundan Study sorusuna dönüşüm                                |
 | `WordMatch.Web/src/main.tsx` | İstemci provider'ları, auth gate ve route'lar                            |
 | `docker-compose.yml`         | API ve Nginx web container topolojisi                                    |
 
@@ -237,7 +243,7 @@ service ve domain tiplerini kendi altında tutar; persistence için doğrudan
 `ApplicationDbContext` kullanır. Ayrı repository veya Unit of Work katmanı
 yoktur.
 
-İstemci de `auth`, `practice` ve `words` feature'larına ayrılır. Ortak UI, API
+İstemci `auth`, `study`, `question-session` ve `words` feature'larına ayrılır. Ortak UI, API
 istemcisi ve görüntü etiketleri `src/components` ile `src/lib` altında kalır.
 
 ## 5.2 Mimari İlkeler
@@ -248,11 +254,11 @@ istemcisi ve görüntü etiketleri `src/components` ile `src/lib` altında kalı
   snapshot tutar.
 - Enum değerleri PostgreSQL'de string saklanır ve check constraint'lerle
   korunur.
-- Kullanıcının başka kullanıcının session, kategori ilerlemesi veya progress'ine
+- Kullanıcının başka kullanıcının oturumuna, mastery veya konu ilerlemesine
   erişmesi endpoint ve sorgu seviyesinde `UserId` ile engellenir.
 - Migration production startup'ında varsayılan olarak çalışmaz.
-- Planlanan bootstrap, database-generated ilişkisel kimlik yerine
-  version-controlled değişmez content identity kullanır.
+- Bootstrap, database-generated ilişkisel kimlik yerine version-controlled
+  değişmez content identity (`ImportKey`, `(Level, Topic)`) kullanır.
 
 ## 5.3 Katmanlar
 
@@ -270,8 +276,8 @@ istemcisi ve görüntü etiketleri `src/components` ile `src/lib` altında kalı
 ```text
 React istemcisi
   ├── AuthProvider ───────────────► /api/auth
-  ├── CategorySelectionPage ──────► /api/categories
-  ├── QuestionPracticePage ───────► /api/practice-sessions
+  ├── StudyHomePage ──────────────► /api/study
+  ├── StudySessionPage ───────────► /api/study-sessions
   └── WordsPage ──────────────────► /api/words
                                       │
                                       ▼
@@ -284,65 +290,71 @@ React istemcisi
 ## 6.2 API
 
 `Program.cs` yalnızca gerekli connection string mevcutsa başlar. DI ile
-`CategoryService`, `PracticeQuestionFactory`, `PracticeSessionService` ve
-`WordCatalogService` kaydedilir; feature extension method'ları endpoint
-gruplarını eşler. `GET /health` veritabanı bağlantısını kontrol eder.
+Study planner/factory/service ile Word katalog ve bootstrap servisleri
+kaydedilir; feature extension method'ları endpoint gruplarını eşler.
+`GET /health` veritabanı bağlantısını kontrol eder.
 
 ## 6.3 Web İstemcisi
 
 `main.tsx`, `ThemeProvider`, `QueryClientProvider`, `AuthProvider` ve
 `BrowserRouter` kurar. Kimliği doğrulanmamış kullanıcı yalnızca `AuthPage`e
-gider. Kimliği doğrulanan kullanıcı için kök kategori seçimi, Practice
-route'ları ve `/words` yüklenir; route seviyesinde lazy loading kullanılır.
+gider. Kimliği doğrulanan kullanıcı için `/` Study ana ekranı,
+`/session/:sessionId` ve `/words` yüklenir; route seviyesinde lazy loading
+kullanılır. Navbar yalnız Word Match ana sayfa
+bağlantısını ve hesap menüsünü taşır.
 
 ## 6.4 PostgreSQL ve Production Web Katmanı
 
 PostgreSQL Identity tablolarını, kelime içeriğini, session snapshot'larını ve
 progress satırlarını tutar. Nginx Vite artifact'lerini sunar; `/assets/` için
 uzun ömürlü immutable cache, `index.html` ve SPA fallback için `no-cache`
-kullanır. Varsa Cloudflare `CF-Connecting-IP` header'ını API'ye istemci IP'si
-olarak iletir.
+kullanır. Yalnız güvenilir Docker Tunnel peer'ından gelen Cloudflare
+`CF-Connecting-IP` header'ını istemci IP'si olarak kabul eder; auth uçları için
+ayrıca Nginx seviyesinde IP tabanlı limit uygular.
 
 # 7. Modüller
 
 ## 7.1 Modül Haritası
 
-| Modül               | Sorumluluk                                    | Bağımlı olduğu modüller           |
-| ------------------- | --------------------------------------------- | --------------------------------- |
-| Auth                | Identity, cookie oturumu ve XSRF              | `ApplicationDbContext`            |
-| Words               | Kelime domain'i ve katalog                    | DbContext, Practice progress      |
-| Practice/Categories | Level/topic görünümü ve progress reset        | Words, Practice                   |
-| Practice/Questions  | Plan, snapshot, cevap doğrulama ve seçenekler | Words, Practice domain            |
-| Practice/Sessions   | Oturum yaşam döngüsü ve progress upsert       | Questions, Words, Auth, DbContext |
-| Data                | EF mapping/migrations                         | Auth, Practice, Words domain      |
-| Web/auth            | Session yükleme ve login/register             | `/api/auth`                       |
-| Web/practice        | Kategori, soru, sonuç, feedback sesi          | category/practice API             |
-| Web/words           | Filtrelenebilir salt okunur katalog           | `/api/words`                      |
+| Modül                | Sorumluluk                                    | Bağımlı olduğu modüller           |
+| -------------------- | --------------------------------------------- | --------------------------------- |
+| Auth                 | Identity, cookie oturumu ve XSRF              | `ApplicationDbContext`            |
+| Words                | Kelime domain'i, soru üretimi ve katalog      | DbContext                         |
+| Study/Bootstrap      | Açık curriculum kaynağını doğrular ve yükler  | Words, Study domain, DbContext    |
+| Study/Sessions       | Planner, oturum, mastery ve konu ilerlemesi   | Questions, Words, Auth, DbContext |
+| Data                 | EF mapping/migrations                         | Auth, Study, Words domain         |
+| Web/auth             | Session yükleme ve login/register             | `/api/auth`                       |
+| Web/study            | Konu ana ekranı, soru ve oturum özeti         | study API                         |
+| Web/question-session | Saf kart, soru, feedback, sonuç ve ses sunumu | Study sunumu                      |
+| Web/words            | Filtrelenebilir salt okunur katalog           | `/api/words`                      |
 
-## 7.2 Auth, Practice ve Words
+## 7.2 Auth, Study ve Words
 
 `AuthEndpoints`; antiforgery token, session, kayıt, giriş ve çıkış sağlar.
 E-posta/kullanıcı adı doğrulanır; Identity parolası en az sekiz karakter,
 büyük harf, küçük harf ve rakam ister. Kayıt ve giriş IP tabanlı rate limit'e,
 durum değiştiren auth uçları antiforgery filter'a tabidir.
 
-`PracticeSessionService` tek aktif session, replay, cevap transaction'ı ve
-`UserWordProgress` upsert'ini sahiplenir. `PracticeQuestionFactory` soru
-snapshot'ını server'da üretir ve çoktan seçmeli seçenekleri persist eder.
+`StudyService` kullanıcı başına tek aktif Study oturumunu, server-authoritative
+cevap değerlendirmesini, `UserWordMastery` güncellemesini ve curriculum
+ilerlemesini sahiplenir. `StudyPlanner` konu oturumunda ilk eksik öğrenme
+grubunun iki yazılı turunu, pekiştirmede ise yalnız due mastery kayıtlarını
+planlar. `StudyQuestionFactory` soru üretimini
+`Features/Words/Questions` altındaki ortak `QuestionFactory` üzerinden yapar;
+normalizasyon, kabul edilen cevaplar ve seçenek üretimi orada tanımlıdır.
 
-`WordCatalogService` tüm kelimeleri ID sırasıyla ve kullanıcı için kelime
-başına en son `LastOutcome` ile döndürür. Bu görünüm mevcut
-`Direction + Format` progress'ini tek sonuca indirger; hedef dört mastery
-boyutunu tam temsil etmez.
+`WordCatalogService` tüm kelimeleri ID sırasıyla döndürür. Katalog kullanıcıdan
+bağımsızdır ve ilerleme taşımaz; mastery görünürlüğü ayrı bir iştir.
 
 # 8. Bağımlılıklar
 
 ## 8.1 İç Bağımlılıklar
 
-Practice `Word` verisini soru için, `ApplicationUser` kimliğini sahiplik için
-kullanır. `PracticeSessionWord` hem `PracticeSession`a hem `Word`e,
-`UserWordProgress` kullanıcı ve kelimeye bağlıdır. Silme davranışları
-session/kullanıcı için cascade, `Word` için restrict'tir.
+Study `Word` verisini soru için, `ApplicationUser` kimliğini sahiplik için
+kullanır. `StudySessionQuestion` hem `StudySession`a hem `Word`e;
+`UserWordMastery` ve `UserWordIntroduction` kullanıcıya bağlıdır. Silme
+davranışları session/kullanıcı için cascade, `Word` ve `CurriculumTopic` için
+restrict'tir.
 
 ## 8.2 Dış Bağımlılıklar
 
@@ -350,124 +362,151 @@ session/kullanıcı için cascade, `Word` için restrict'tir.
   zorunludur.
 - Docker Compose ve Cloudflare Tunnel yalnızca belirtilen production topology
   için gereklidir.
-- TTS/STT sağlayıcısı planlanmıştır; güncel sistemin bağımlılığı değildir.
+- Güncel sistemin TTS/STT sağlayıcı bağımlılığı yoktur.
 
 ## 8.3 Bağımlılık Kuralları
 
 - API progress veya doğru cevap kararını frontend'den kabul etmez; server
   snapshot ve domain kuralını kullanır.
-- `ImportKey`/`CurriculumUnit.Key` hedef bootstrap identity'sidir; runtime
-  foreign key yerine database-generated `Word.Id`/`CurriculumUnit.Id` kullanır.
+- `ImportKey` ve `(Level, Topic)` bootstrap identity'sidir; runtime foreign
+  key yerine database-generated `Word.Id`/`CurriculumTopic.Id` kullanır.
 - Yeni ses sağlayıcısı mastery domain'ini sağlayıcı tipine bağlamaz.
 
 # 9. Veri Modeli
 
-## 9.1 Mevcut Temel Varlıklar
+## 9.1 Temel Varlıklar
 
-| Varlık                | Sahip olduğu bilgi                                                                   |
-| --------------------- | ------------------------------------------------------------------------------------ |
-| `ApplicationUser`     | ASP.NET Core Identity kullanıcısı                                                    |
-| `Word`                | `English`, `TurkishTranslations`, part of speech, fiil metadata'sı, `Level`, `Topic` |
-| `PracticeSession`     | Kullanıcı, level, topic, mode, replay/durum ve zamanlar                              |
-| `PracticeSessionWord` | Position, yön, format, soru/cevap snapshot'ı, seçenekler ve sonuç                    |
-| `UserWordProgress`    | Doğru/review/yanlış sayaçları, son sonuç ve cevap zamanı                             |
+| Varlık                 | Sahip olduğu bilgi                                                                   |
+| ---------------------- | ------------------------------------------------------------------------------------ |
+| `ApplicationUser`      | ASP.NET Core Identity kullanıcısı                                                    |
+| `Word`                 | `English`, `TurkishTranslations`, part of speech, fiil metadata'sı, `Level`, `Topic` |
+| `CurriculumTopic`      | `(Level, Topic)`, level içindeki sıra ve `Active`/`Retired` durumu                   |
+| `CurriculumTopicWord`  | Konudaki kelime üyeliği ve açık sıra                                                 |
+| `UserWordIntroduction` | Kullanıcı/kelime için ilk karşılaşma zamanı                                          |
+| `UserWordMastery`      | Kullanıcı/kelime/boyut için aşama, sonuç sayaçları ve sonraki tekrar                 |
+| `StudySession`         | Kullanıcı, mod, isteğe bağlı konu, durum ve zamanlar                                 |
+| `UserStudySkillPause`  | Kullanıcı/boyut için geçici ertelemenin bitiş zamanı                                 |
+| `StudySessionQuestion` | Soru/cevap snapshot'ı, boyut, tanıtım işareti ve sonuç                               |
 
 `Word` için `English + PartOfSpeech` benzersizdir. Türkçe çeviriler PostgreSQL
 `text[]` olarak tutulur; boş/null çeviri kabul edilmez. Fiil geçmiş zaman
-alanları part of speech ile tutarlı olmalıdır. Level, topic, mode, status,
-direction, format ve outcome değerleri check constraint'lerle sınırlandırılır.
+alanları part of speech ile tutarlı olmalıdır. Level, topic, mod, durum ve
+outcome değerleri check constraint'lerle sınırlandırılır.
+
+`CurriculumTopic` içinde `(Level, Topic)` ve `(Level, SortOrder)` benzersizdir;
+bir kelime `CurriculumTopicWords.WordId` unique index'i sayesinde yalnız bir
+level ve topic altında bulunur. `StudySession` bir `StudySessionMode` taşır:
+`Topic` oturumunda `CurriculumTopicId` doludur, `Review` oturumunda NULL'dır ve
+bu check constraint ile korunur. `UserStudySkillPause`, kullanıcı ve boyut
+anahtarıyla geçici ertelemenin bitiş zamanını tutar.
 
 ## 9.2 Varlık İlişkileri
 
 ```text
-ApplicationUser 1 ── * PracticeSession 1 ── * PracticeSessionWord * ── 1 Word
-       │                                                              │
-       └────────────────────── * UserWordProgress * ─────────────────┘
+ApplicationUser 1 ── * StudySession 1 ── * StudySessionQuestion * ── 1 Word
+       │                                      │
+       ├── * UserWordMastery * ───────────────┘
+       └── * UserWordIntroduction * ──────────┘
+
+CurriculumTopic 1 ── * CurriculumTopicWord * ── 1 Word
+       │
+       └── 0..1 StudySession (yalnız Topic modunda)
 ```
 
-Bir session soru satırının primary key'i `PracticeSessionId + Position`dır.
-Aynı session'da `WordId + Direction + Format` yalnızca bir kez bulunabilir.
-Progress benzersiz kimliği `UserId + WordId + Direction + Format`tır.
-
-Bir kullanıcının aynı `Level + Topic` için yalnızca bir `Active` session'ı
-olabilir. Unique partial index bu kuralı eşzamanlı başlatmada da korur.
+Bir soru satırının primary key'i `StudySessionId + Position`dır.
+Kullanıcı başına yalnız bir `Active` oturum vardır; unique partial index bu
+kuralı eşzamanlı başlatmada da korur. Study sorusunda
+aynı `WordId` bir oturumda yalnız bir kez bulunur. Mastery kimliği
+`UserId + WordId + VocabularyMasteryDimension`dır.
 
 ## 9.3 Veri Sahipliği ve Snapshot
 
-`PracticeSessionWord`; `EnglishSnapshot`, `PromptSnapshot`,
-`CorrectAnswerSnapshot` ve yazılı cevap için kabul edilen cevapları saklar.
-Çoktan seçmeli `Options`/`CorrectIndex` ilk dört cevaplanmamış soru için
-lazım olduğunda oluşturulur ve kalıcılaştırılır.
+`StudySessionQuestion`; `EnglishSnapshot`, `PromptSnapshot`,
+`CorrectAnswerSnapshot`, yazılı cevap için kabul edilen cevapları ve çoktan
+seçmeli `Options`/`CorrectIndex` değerlerini oturum kurulurken saklar.
 
 Bu nedenle kelime sonradan düzeltilse de geçmiş oturumun hangi soruyu
-gösterdiği ve doğru cevabı değişmez. İçerik raporu gibi gelecek özellik
-kelimeye değil, bu snapshot'a bağlanmalıdır.
+gösterdiği ve doğru cevabı değişmez.
 
 ## 9.4 Mevcut Veri Yaşam Döngüsü
 
-1. Migration şemayı oluşturur veya günceller.
-2. `Word` kayıtları veritabanında bulunur; Practice onları `Level`/`Topic`a
-   göre seçer.
-3. Session oluşturulurken soru planı ve içerik snapshot'ı kaydedilir.
-4. Cevap transaction ile bir kez işlenir, ardından progress upsert edilir.
-5. Kategori reset'i o kullanıcıya ait ilgili session ve progress'i siler.
+1. Migration şemayı oluşturur.
+2. Kelime ve curriculum bootstrap komutları içeriği yükler.
+3. Study planner oturumu kurar; soru planı ve içerik snapshot'ı kaydedilir.
+4. Cevap transaction ile bir kez işlenir; mastery upsert edilir ve ilk
+   karşılaşmada global `UserWordIntroduction` yazılır. Konu ilerlemesi bu
+   kaydın curriculum üyeliğiyle eşleştirilmesinden türetilir.
 
-`Data/WordMatch.csv` version-controlled vocabulary kaynağıdır; ancak güncel
-kaynak kodda bunu veritabanına yükleyen bootstrap komutu veya runtime seeder
-yoktur. Boş veritabanında migration tek başına Practice'i kullanılabilir yapmaz.
+`WordMatch.API/Content/Words.csv` version-controlled içerik kaynağıdır. Boş
+veritabanında migration tek başına uygulamayı kullanılabilir yapmaz; ardından
+bootstrap komutu çalıştırılır.
 
-## 9.5 Migration ve Hedef Bootstrap Modeli
+## 9.5 Migration ve Bootstrap Modeli
 
-Mevcut sistemde `WordMatch.API/Migrations` altında artımlı EF Core migration
-zinciri vardır. Uygulanmış migration geriye dönük değiştirilmez; paylaşılmış
-veya production ortamı değişikliği yeni migration ile yapılır. Test factory,
-tarihsel migration'ların veri koruma davranışını ayrıca denetler.
+Migration zinciri iki kez bilinçli olarak tek bir `InitialCreate`e indirildi:
+önce Practice → Study geçişinde, sonra paket curriculum'u `Level → sıralı Topic`
+omurgasıyla değiştirirken. İkincisinde `CurriculumUnits`/`CurriculumUnitWords`
+tabloları, `StudySessions.Path`/`Focus` kolonları ve
+`UserWordIntroductions.Path` tamamen kalktığı için artımlı geçmiş yerine hedef
+şema doğrudan üretildi. Her iki resette de korunacak gerçek kullanıcı verisi
+yoktu.
 
-Planlanan hedef mimari büyük domain değişikliği için bilinçli bir clean reset
-öngörür. Bu **henüz uygulanmış değildir**:
+- Aynı temiz test veritabanı bir kez düşürülüp yeniden kuruldu; eski kullanıcı,
+  oturum geçmişi ve progress taşınmadı. Kullanıcı yeniden kaydolur.
+- Reset uygulandığı anda gerçek kullanıcı verisi yoktu; sistem yalnızca
+  Cloudflare Access arkasındaki test hesaplarına açıktı.
+- Bundan sonraki şema değişiklikleri `InitialCreate` üstüne normal migration
+  olarak eklenir. Uygulanmış migration geriye dönük değiştirilmez.
 
-- Eski veritabanı `word_match_legacy` adıyla, kaynak kodu ve migration tarihi
-  Git tag/release geçmişiyle korunur.
-- Yeni boş `word_match` veritabanı, legacy tabloları oluşturup kaldıran geçici
-  adımlar olmadan tek `InitialCreate` migration'ıyla başlar.
-- Eski kullanıcı, session geçmişi ve progress ilk aşamada taşınmaz; kullanıcı
-  yeniden kaydolur. Gerçek kullanıcı verisi korunacaksa ayrı, açık ve testli
-  data migration tasarlanır.
-- Zincir kaldırılmadan önce custom SQL, manuel dönüşüm ve EF'nin yeniden
-  üretmeyeceği custom migration davranışları incelenir; gereken davranış yeni
-  migration, bootstrap veya deployment işlemine taşınır.
-- Hedef migration'lar `word_match_legacy` üzerinde çalıştırılmaz. Sonraki
-  değişiklikler yeni `InitialCreate` üstüne normal migration olarak eklenir.
-
-Planlanan bootstrap, `Words`, `CurriculumUnits` ve `CurriculumUnitWords`
-oluşturmadan ortamı kullanıma açmaz. `WordMatch.csv` her kelime için değişmez
-bir `ImportKey` taşıyan canonical Word kaynağı olur. `ImportKey`
-database-generated `Word.Id`, düzenlenebilir English/çeviri/metadata'dan
-türetilmez; unique index ile korunur ve foreign key değildir.
-
-Curriculum kaynağı en az şunları taşır:
+Bootstrap, `Words`, `CurriculumTopics` ve `CurriculumTopicWords` oluşturmadan
+ortamı kullanıma açmaz. `Words.csv`'nin her satırı bir kelimeyi **ve** onun
+curriculum yerleşimini aynı anda taşır — kelime içeriği ile curriculum üyeliği
+ayrı dosyalarda değildir, çünkü bir kelime konusuz var olamaz:
 
 ```text
-CurriculumUnit:     Key, Level, Title, SortOrder
-CurriculumUnitWord: CurriculumUnitKey, WordImportKey, SortOrder
+ImportKey, English, TurkishTranslations, PartOfSpeech, PastSimple,
+PastParticiple, IsIrregular, Level, Topic,
+TopicSortOrder, WordSortOrder, LearningGroupSortOrder
 ```
 
-`CurriculumUnit.Key` başlık veya sıra değişse de aynı kavramsal unit için
-değişmez ve unique index ile korunur. Import, key'leri database ID'lerine çözer
-ve gerçek ilişkiye `CurriculumUnitId + WordId` yazar; curriculum sırası
-runtime'da `Topic`tan üretilmez.
+`ImportKey` her kelime için değişmez, database-generated `Word.Id`,
+düzenlenebilir English/çeviri/metadata'dan türetilmez; unique index ile
+korunur ve foreign key değildir. Bir konunun doğal anahtarı `(Level, Topic)`
+olduğu için ayrı bir key kolonu yoktur ve görünür bir başlık saklanmaz;
+arayüz başlığı `A1 · Hayvanlar` biçiminde level ve topic'ten üretilir.
 
-Bootstrap idempotenttir: aynı input duplicate kayıt/ilişki/ID değişimi üretmez.
+`TopicSortOrder` konunun **kendi level'ı içindeki** sırasıdır ve aynı
+`(Level, Topic)` grubunun tüm satırlarında aynı olmalıdır; her level için
+boşluksuz `1..N` olur. `WordSortOrder` kelimenin konu içindeki sırasıdır ve
+boşluksuz `1..M` olur. `LearningGroupSortOrder` konu içindeki pedagojik
+grubun açık sırasıdır; kullanılan grup numaraları boşluksuz `1..G` olmalıdır.
+Bir grubun büyüklüğü sabit değildir: örneğin Günler tek 7 kelimelik gruptur.
+**Curriculum sırası açık veridir**: ne `WordTopic`
+enum'ının deklarasyon sırasından, ne konu adından, ne de rastgele bir
+sıralamadan runtime'da üretilir.
+
+Kaynak mevcut 700 kelimeyi 66 `(Level, Topic)` konusuna bağlar: A1'de 27, A2'de
+20, B1'de 14, B2'de 5 konu. Konu boyutu sınırlı değildir; içerik dengesi ayrı
+bir küratörlük işidir. Bootstrap idempotenttir: aynı input duplicate
+kayıt/ilişki/ID değişimi üretmez. Kelime içeriği, konu sırası ve kelimenin
+konu üyeliği/sırası **her zaman** serbestçe düzeltilebilir — bunların hiçbiri
+kullanıcı ilerlemesi başladıktan sonra kilitlenmez, çünkü ilerleme
+(`UserWordMastery`, `UserWordIntroduction`) tamamen `WordId` bazlıdır ve
+curriculum üyeliğine referans taşımaz; "sıradaki konu" ve konu ilerlemesi her
+istekte güncel üyelikten canlı hesaplanır (bkz. ADR-006). Bir kelimeyi bir
+konudan diğerine taşımak, o kelimenin sicilini etkilemez.
+
+Kaynaktan düşen bir konu silinmez, `Retired` işaretlenir ve kendi level'ının
+aktif konularından sonraya park edilir. Retired konu ne "sıradaki konu" olur ne
+de konu seçim listesinde görünür; kelime bağları, kullanıcı ilerlemesi ve eski
+oturum snapshot'ları korunur.
 Varsayılan işlem, kaynakta artık bulunmayan kaydı otomatik silmez; destructive
 reconciliation ayrı, açık işlemdir. Hedef ortam sırası:
 
 ```text
-1. Boş word_match veritabanını oluştur.
-2. InitialCreate migration'ını uygula.
-3. Word bootstrap importunu çalıştır.
-4. Curriculum bootstrap importunu çalıştır.
-5. Referential integrity ve duplicate kontrollerini doğrula.
-6. Uygulamayı kullanıma aç.
+1. Veritabanına güncel migration'ı uygula.
+2. İçerik bootstrap importunu çalıştır.
+3. API ve web yayınını kullanıma aç.
 ```
 
 Bootstrap normal application startup'ında kontrolsüz çalışmaz; ayrı CLI veya
@@ -484,110 +523,187 @@ deployment adımı olur.
 4. `GET /api/auth/session` cookie'den kullanıcıyı okuyup istemciyi hydrate eder.
 5. Çıkış, antiforgery doğrulamasından sonra cookie oturumunu kapatır.
 
-## 10.2 Mevcut Practice Akışı
+## 10.2 Çok Cihazlı Kullanım
 
-1. Kullanıcı `Level`, `Topic`, `PracticeMode` ve gerekirse `Replay` gönderir.
-2. Service mode'u denetler. Aynı kullanıcı/level/topic için aktif session varsa
-   normal istek aynı mode'da oturumu devam ettirir; aksi durumda mevcut session
-   `Abandoned` olur ve yeni session oluşturulur.
-3. Uygun kelimeler seçilir. Normal oturum daha önce tamamlanan
-   `Word + Direction + Format` kombinasyonlarını çıkarır; replay dahil eder.
-4. `EnglishToTurkish` ve `TurkishToEnglish` tek yönü, `Mixed` iki yönü seçer.
-   Her kelime için iki `QuestionFormat` (`MultipleChoice`, `Written`) planlanır;
-   Mixed modunda bu dört soru eder.
-5. Plan, aynı kelimeyi ardışık vermemeye çalışır; her öğenin snapshot'ı yazılır.
-6. İlk dört pending çoktan seçmeli soru için server dört farklı seçenek üretir.
-7. Kullanıcı `Position` ve `WordId` ile cevaplar. Server yalnızca etkin pending
-   soruyu kabul eder.
-8. Transaction'daki koşullu update cevabı bir kez işler, progress'i upsert eder
-   ve session'ı tamamlar veya aktif bırakır.
-9. İstemci 409 alırsa session'ı yeniden getirir.
+Aynı kullanıcı birden fazla cihazdan eşzamanlı giriş yapabilir; telefon–bilgisayar
+geçişi dil öğrenmede olağan bir davranıştır ve engellenmez. Çıkış yalnızca o
+cihazın cookie'sini siler.
 
-Çoktan seçmeli soruda `SelectedIndex = null`, yazılı soruda cevap
-gönderilmemesi `Review` sonucudur. Yazılı cevap server'da normalize edilir;
-Türkçe karşılaştırma `tr-TR` kültür duyarlı, İngilizce karşılaştırma
-case-insensitive'dir.
+Teklik cihazda değil çalışma oturumundadır: bir kullanıcının aynı anda tek bir
+`Active` Study oturumu olabilir ve bu, `StudySessions.UserId` üzerindeki filtreli
+unique index ile veritabanı düzeyinde zorunludur. Oturumu başlatan tarayıcıya
+ait rastgele cihaz kimliği `StudySessions.OwnerDeviceId` üzerinde saklanır.
+Başka bir cihaz `GET /api/study` çağrısında çalışmanın kullanılamadığını görür;
+aynı oturuma katılamaz, yeni oturum başlatamaz veya soru/cevap uçlarını çağıramaz.
 
-Distractor seçimi önce session kelimeleri, sonra aynı level, sonra tüm katalog
-üzerinden yapılır. Dört farklı cevap üretilemezse istek geçersizdir.
+Bir oturum sonuçlandığında, sonuç ekranındaki `Devam et` eylemi de aynı cihaz
+kimliği için geçici olarak saklanır. Bu hak açıkken başka cihaz yeni çalışma
+başlatamaz; sonuç sahibinin `Devam et` eylemi sıradaki çalışmayı açar. Sonuç
+ekranındaki `Ana Sayfa` ile navbar'daki Word Match bağlantısı bu hakkı serbest
+bırakır. Başka cihazdaki kullanıcı isterse açıkça `Bu cihazdan devam et`
+eylemiyle sahipliği anında devralır; önceki cihaz sonraki isteğinde oturuma
+erişemez.
 
-## 10.3 Kategori, Katalog ve Sonuç
+Oturum oluşturan üç kod yolu da "aktif oturum var mı" okumasının ardından ekleme
+yapar; iki cihaz bu okumayı aynı anda geçebilir. Kaybeden ekleme unique index'e
+takılır, yakalanır ve kullanıcıya kazanan oturum `Resume` olarak döndürülür.
 
-- Kategori endpoint'i level/topic için toplam/tamamlanan soru, aktif session ve
-  replay durumunu döndürür.
-- Kategori reset'i transaction içinde o kullanıcının seçili level/topic
-  session'larını ve ilgili `UserWordProgress` satırlarını siler.
-- Sonuç endpoint'i her `Word + Direction + Format` için en son snapshot'ı
-  Correct, Review, Wrong listelerine ayırır.
-- Katalog kelime başına kullanıcının en son progress outcome'unu gösterir.
+Cevaplama sunucu otoritesindedir: sunucu sıradaki soruyu kendisi belirler,
+istemcinin gönderdiği `Position`/`WordId` ile eşleşmesini şart koşar ve yazmayı
+transaction içinde `Outcome IS NULL` koşullu bir UPDATE ile yapar. İki cihaz aynı
+soruyu cevaplarsa yalnızca biri yazar, diğeri 409 alır; istemci sessizce yeniden
+yükleyip doğru soruya döner.
 
-## 10.4 Planlanan Learn, Review ve Practice
+Cihazlar arası canlı senkronizasyon (polling, SSE, WebSocket) yoktur. İkinci
+cihaz, diğerinin ilerlemesini kendi bir sonraki isteğinde fark eder.
 
-Planlanan model aynı kelime ve mastery kayıtlarını üç ayrı selection kuralıyla
-kullanır. Bir session amacı `Learn`, `Review` veya `Practice` olarak ayrılır;
-aynı `PracticeSession` aggregate'ı kullanılabilir fakat seçim kuralı purpose'a
-göre değişir.
+## 10.3 Tek Study Akışı
 
-### Learn
+Ürünün tek öğrenme akışı Study'dir ve başlangıç ekranı hiçbir çalışma türü,
+beceri veya yol seçimi içermez. Sistem varsayılan olarak kullanıcının
+curriculum sırasındaki güncel konusunu önerir; kullanıcı `Konu değiştir` ile
+başka bir level/topic seçebilir. Bu seçim ayrı bir akış veya mod yaratmaz,
+yalnız açılacak oturumun konusudur.
 
-Learn, kullanıcıyı `A1 → A2 → B1 → B2 → C1 → C2` vocabulary path'i boyunca
-götürür. Kullanıcı `Devam Et` dediğinde sistem sonraki çalışmayı oluşturur;
-her seferinde level/category/mode/format seçmez. `Level` curriculum ana
-seviyesidir; `Topic` anlamlı grup ve Practice filtresidir, ana Learn seçimi
-değildir.
+Oturum iki moddan biridir:
 
-Learn sonsuz feed değildir; görünür `CurriculumUnit` kilometre taşları gerekir:
+| Mod      | İçeriği                                                     | Sınır                    |
+| -------- | ----------------------------------------------------------- | ------------------------ |
+| `Topic`  | Seçilen konunun ilk tamamlanmamış öğrenme grubu             | Grubun doğal soru sayısı |
+| `Review` | Vadesi gelmiş, daha önce yanıtlanmış kelime–beceri çiftleri | En fazla 10 soru         |
+
+**Konu oturumuna başka topic'lerin tekrarları karışmaz.** Bir öğrenme grubu,
+kelimelerinin tümünde önce `WrittenRecognition`, ardından aynı kelimelerde
+karıştırılmış `WrittenRecall` turunu içerir. Bir kelime, iki yönü de en az bir
+kez yanıtlanınca tamamlanır. Konunun tüm kelimeleri tamamlanınca konu tamamlanır;
+kullanıcı ayrı bir pekiştirme oturumu başlatabilir. Pekiştirme yeni kelime veya
+daha önce hiç yanıtlanmamış beceri yönü tanıtmaz.
+
+`UserWordIntroduction`, ilk karşılaşma için tarihsel kayıt olmaya devam eder;
+curriculum ilerlemesi ise iki yazılı `UserWordMastery` kaydından türetilir.
+Kullanıcı bir konuyu erken tamamladığında ilerleme ortak kelime kaydına yazılır;
+curriculum sırası o konuya ulaştığında aynı kelimeler yeniden yeni içerik olmaz.
+
+`POST /api/study-sessions/continue` önce etkin oturumu döndürür; aktif oturum
+yoksa sunucu geçici beceri kısıtlarını dikkate alarak çalışılabilir ilk konuyu
+planlar. Konu değişimi ancak açık onayla önceki oturumu `Abandoned` yapabilir.
+Distractor havuzu seçimden etkilenmez; seçenekler her zaman tüm katalog
+üzerinden üretilir.
+
+### Sıralı Konular
+
+Study sonsuz feed değildir; görünür `CurriculumTopic` kilometre taşları kullanır:
 
 ```text
-CurriculumUnit
-- Id, Key, Level, Title, SortOrder
+CurriculumTopic
+- Id, Level, Topic, SortOrder, Status
 
-CurriculumUnitWord
-- Id, CurriculumUnitId, WordId, SortOrder
+CurriculumTopicWord
+- CurriculumTopicId, WordId, SortOrder, LearningGroupSortOrder
 
-UserCurriculumProgress
-- UserId, CurriculumUnitId, Status, StartedAtUtc, CompletedAtUtc
+UserWordIntroduction
+- UserId, WordId, IntroducedAtUtc
 ```
 
-`Status` en az `NotStarted`, `InProgress`, `Completed` destekleyebilir. Veri
-modeli kullanıcının unit içinde hangi kelimeden devam edeceğini
-`NextWordSortOrder`, `CurrentCurriculumUnitWordId` veya açık history kaydıyla
-kalıcı ve deterministik cevaplamalıdır. Unit sırası, unit içi sıra, kelime
-sayısı, level completion ve yeni kelime hızı topic listesinden otomatik
-çıkarılmaz; bilinçli curriculum kararıdır.
+Curriculum omurgası `Level → sıralı Topic → öğrenme grubu → sıralı Word`tur ve her sıra da
+`Words.csv`'den gelen açık veridir (bkz. §9.5). "Sıradaki konu" saklanmaz;
+`(Level, SortOrder)` sırasında hâlâ eksik yazılı yönü olan ilk `Active`
+konudur. Tamamlanmış konular atlanır, kısmen tamamlanmış konu ilk eksik
+öğrenme grubundan devam eder.
 
-Seçim aktif level/unit/position, tanıtılmamış/tanıtılmış kelimeler, mastery,
-yakın tekrar, yeni–review dengesi ve cihaz yeteneğini kullanır. Aynı kelimenin
-dört mastery sorusu art arda gelmez; kesin spacing sonradan kalibre edilir.
+Bir konunun tamamlanma sayısı, o konuya bağlı kelimelerin iki yazılı mastery
+boyutunu da taşımasından türetilir. Ayrı bir `Title` alanı yoktur; arayüz başlığı
+`A1 · Hayvanlar` biçiminde level ve topic'ten üretilir.
 
-### Review
+Ana sayfadaki konu çubuğu iki katmanlıdır: iki yazılı yönü tamamlanan kelimeler
+ana renk ile gösterilir; yalnız `WrittenRecognition` yönü yanıtlanan kelimeler
+ana dolgunun arkasında daha soluk bir katman oluşturur. Bu ikinci katman konu
+tamamlanması veya mastery gücü değildir; kullanıcının anlamını seçerek gördüğü
+kelimeleri görünür kılar.
 
-Review kelimeyi bütün olarak değil `Word + MasteryDimension` olarak seçer.
-Due kayıtlar ve zayıf boyutlar önceliklidir; kullanıcı level/category seçmez.
-İlk spaced repetition hedefi kusursuz algoritma değil doğru sözleşmedir:
-son cevabı işler, mastery durumunu günceller, `NextReviewAt` veya eşdeğer
-zamanı belirler; Wrong/Review daha erken, güçlü kayıtları daha uzun aralıkta
-getirebilir.
+### Geçici Beceri Ertelemesi
 
-### Practice
+Kullanıcı, o an uygun olmayan yazma sorularını 10 dakika erteler
+(`Şimdi yazamam`). Erteleme
+`POST /api/study-sessions/{id}/deferrals` ile kaydedilir ve şunları **yapmaz**:
 
-Planlanan Practice filtreleri `Level`, `Category` ve `Mastery`dir; her biri
-tek başına veya birlikte seçilebilir. Eşleşme yoksa açık empty state gösterilir.
-Practice mastery sonucunu güncelleyebilir ama Learn tarafından henüz tanıtılmamış
-kelimeyi otomatik introduced saymaz ve unit completion'ı ilerletmez.
+- Yanlış, bilmiyorum veya review sonucu yazmaz
+- `UserWordMastery` aşamasını, sayaçlarını veya `NextReviewAtUtc` değerini
+  değiştirmez
+- `UserWordIntroduction` oluşturmaz
 
-### Mastery Görünürlüğü
+Sunucu, cevaplanmamış soruları siler ve mevcut oturumu sonuçlandırır;
+cevaplanmış snapshot'lara dokunulmaz. En az bir beceri açık kalmalıdır, aksi
+hâlde istek 409 döner. Erteleme kullanıcıya bağlıdır; süre dolana kadar yalnız
+**yeni** oturum planları bu boyutu içermez. Süre dolduğunda etkin bir oturum
+yarıda kesilmez; sonraki oturum planlama anında curriculum'daki ilk eksik konu
+yeniden seçilebilir.
 
-Planlanan ana ekran, kullanıcının vocabulary path'te nerede olduğunu, aktif
-unit'i ve ayrı olarak kaç Review kaydının hazır olduğunu gösterebilmelidir.
-Bir kelime gerektiğinde dört boyutta `Strong`, `Learning`, `Weak` veya
-denenmemiş gibi anlamlı durumlarla görülebilir. İlk sürümde `92%` gibi yapay
-kesinlik veren yüzdeler zorunlu değildir.
+### Ana Ekran ve Soru Kartı
 
-`/words` normal kullanıcı için salt okunur kalır. Hedef model tamamlandığında
-tek bir toplu durum, dört ayrı gösterge veya mastery boyutuna göre filtreleme
-bilinçli bir UI kararıyla seçilmelidir; mevcut tek `currentOutcome` bunun
-yerine geçirilmiş sayılmaz.
+Başlangıç ekranı sabit soru kartının içinde **değildir**; normal sayfa
+düzeninde mevcut eylemi, konu ilerlemesini, `Devam et` ve `Konu değiştir`
+eylemlerini gösterir. Uzun level/topic listesi ayrı bir dialog yüzeyinde açılır.
+
+Soru çözme ekranı sabit soru kartı tasarımını kullanmaya devam eder: soru,
+cevap alanı/seçenekler, geri bildirim ve ilerleme için odaklanmış tek yüzey.
+Başlıkta konu ve yeni/tekrar rozeti, footer'da cevaplanan/toplam sayısı ile
+doğru/bilmiyorum/yanlış sayaçları bulunur. Sayaçlar o ana kadarki sonuç
+listelerini açar. Tamamlanma ekranı konu tamamlandıysa bunu başlıkta belirtir,
+tekrar oturumu için bir eylem sunar ve üç sonuç sekmesini gösterir.
+
+`ReviewQuestionCount`, pekiştirme oturumunun **şu anda** kaç soru içereceğidir:
+yalnız vadesi gelmiş ve daha önce yanıtlanmış mastery kayıtları sayılır.
+
+### Web Soru Oturumu Sunumu
+
+Sunum parçaları `features/question-session` altında toplanır: saf kart kabuğu,
+başlık, seçenek, yazılı cevap, ilerleme, sonuç tarayıcısı, erişilebilir duyuru
+ve feedback sesi. `StudyQuestionCard` bu parçaları açıkça birleştirir; bütün
+ürün davranışlarını boolean prop'larla yöneten tek bir dev bileşen yoktur.
+
+Study'de seçmeli cevaplar `1–4` ile verilebilir. Doğru cevap, son soru değilse
+yaklaşık 800 ms sonra otomatik ilerler; yanlış ve bilmiyorum cevaplarında
+`Devam et` veya Enter gerekir. Son soru her durumda `Sonuçları gör` eylemini
+bekler. Doğruluk ve doğru cevap yalnızca Study answer response'undan gelir.
+Ses tercihi tarayıcıda saklanır; doğru, yanlış ve cevabı göster sesleri
+paylaşılır. Kayıt hatası aynı gönderimi yeniden deneyebilir.
+
+### Study Planner
+
+Başlangıç ekranında beceri seçimi yoktur; sistem dengeli soru türleri planlar.
+Beceri boyutları backend'de ve mastery modelinde korunur:
+
+| Boyut                | Soru biçimi                         | Durum                       |
+| -------------------- | ----------------------------------- | --------------------------- |
+| `WrittenRecognition` | İngilizceyi gör → Türkçe anlamı seç | Planlanır                   |
+| `WrittenRecall`      | Türkçe anlamı gör → İngilizceyi yaz | Planlanır                   |
+| `AuralRecognition`   | Kullanılamaz                        | Soru biçimi yok; planlanmaz |
+| `SpokenRecall`       | Kullanılamaz                        | Soru biçimi yok; planlanmaz |
+
+`StudyPlanner.SupportedDimensions` bugün planlanabilir iki yazılı boyutu tutar;
+ertelenen boyutlar bundan çıkarılır. Konu planı seçilen konunun ilk eksik
+öğrenme grubunu alır, kelimeleri `SortOrder` sırasında seçmeli turda planlar,
+ardından aynı kümenin yazılı turunu karıştırır. Bir oturumda aynı kelime iki
+farklı boyutla bulunabilir; aynı kelime–boyut çifti yalnız bir kez bulunur.
+Tekrar planı yalnız `NextReviewAtUtc <= now` olan mastery kayıtlarını
+`NextReviewAtUtc`, `Stage`, `WordId`, `Dimension` sırasıyla alır; eksik boyut
+dolgu sorusu üretmez.
+
+Doğru cevap mastery aşamasını `0–5` arasında artırır ve 1, 3, 7, 14, 30 gün
+aralıklarından birini planlar. Yanlış veya bilmiyorum aşamayı sıfırlar ve 10
+dakika sonrasını planlar. Zaman `TimeProvider` üzerinden alınır.
+
+Çoktan seçmeli soruda yanlış seçenekler önce sorulan kelimenin `Topic`inden,
+sonra aynı levelden, son olarak genel katalogdan seçilir. Yeterli seçenek
+bulamamak bir yetenek geçişi değil, bootstrap ve içerik doğrulamasında
+yakalanması gereken veri bütünlüğü hatasıdır.
+
+### Kelime Kataloğu
+
+`/words`, kullanıcıdan bağımsız salt okunur kelime kataloğudur. API yalnız
+kelime metadata'sını döndürür; kullanıcıya ait mastery veya progress alanları
+bu sözleşmede bulunmaz.
 
 # 11. Runtime Davranışı
 
@@ -606,8 +722,8 @@ yerine geçirilmiş sayılmaz.
 
 Özel shutdown/drain mekanizması tanımlı değildir. Docker container'ları
 `restart: unless-stopped` ile çalışır. Mevcut kaynakta background worker,
-queue consumer veya zamanlanmış Review işi yoktur. Planlanan Review due
-kayıtlarını session başlatılırken seçer; ayrı scheduler belgelenmemiştir.
+queue consumer veya zamanlanmış iş yoktur. Due kayıtları Study session
+başlatılırken planner tarafından seçilir.
 
 ## 11.3 Eşzamanlılık
 
@@ -623,21 +739,21 @@ kayıtlarını session başlatılırken seçer; ayrı scheduler belgelenmemişti
 
 ## 12.1 HTTP / API
 
-| Uç                                                | Kimlik                    | Amaç                           |
-| ------------------------------------------------- | ------------------------- | ------------------------------ |
-| `GET /api/auth/antiforgery`                       | Hayır                     | Antiforgery request token'ı    |
-| `GET /api/auth/session`                           | Evet                      | Geçerli kullanıcı              |
-| `POST /api/auth/register`                         | Hayır + rate limit + XSRF | Hesap oluşturur ve giriş yapar |
-| `POST /api/auth/login`                            | Hayır + rate limit + XSRF | Giriş yapar                    |
-| `POST /api/auth/logout`                           | Evet + XSRF               | Oturumu kapatır                |
-| `GET /api/categories/`                            | Evet                      | Kategori ve ilerleme           |
-| `DELETE /api/categories/{level}/{topic}/progress` | Evet + XSRF               | Kategori progress reset        |
-| `POST /api/practice-sessions/`                    | Evet + XSRF               | Session başlatır/devam ettirir |
-| `GET /api/practice-sessions/{sessionId}`          | Evet                      | Session okur                   |
-| `GET /api/practice-sessions/results`              | Evet                      | Sonuç görünümü                 |
-| `POST /api/practice-sessions/{sessionId}/answers` | Evet + XSRF               | Mevcut soruyu cevaplar         |
-| `GET /api/words/`                                 | Evet                      | Salt okunur kelime kataloğu    |
-| `GET /health`                                     | Hayır                     | PostgreSQL health check        |
+| Uç                                               | Kimlik                    | Amaç                                                                  |
+| ------------------------------------------------ | ------------------------- | --------------------------------------------------------------------- |
+| `GET /api/auth/antiforgery`                      | Hayır                     | Antiforgery request token'ı                                           |
+| `GET /api/auth/session`                          | Evet                      | Geçerli kullanıcı                                                     |
+| `POST /api/auth/register`                        | Hayır + rate limit + XSRF | Hesap oluşturur ve giriş yapar                                        |
+| `POST /api/auth/login`                           | Hayır + rate limit + XSRF | Giriş yapar                                                           |
+| `POST /api/auth/logout`                          | Evet + XSRF               | Oturumu kapatır                                                       |
+| `GET /api/study`                                 | Evet                      | Curriculum konumu, tek sonraki eylem, tekrar sayısı ve topic kataloğu |
+| `POST /api/study-sessions/continue`              | Evet + XSRF               | Etkin oturumu sürdürür veya uygun sıradaki konuyu başlatır            |
+| `POST /api/study-sessions`                       | Evet + XSRF               | Açıkça seçilen `Topic` veya `Review` oturumu başlatır                 |
+| `GET /api/study-sessions/{sessionId}`            | Evet                      | Study sorusu/ilerleme/özeti                                           |
+| `POST /api/study-sessions/{sessionId}/answers`   | Evet + XSRF               | Etkin Study sorusunu cevaplar                                         |
+| `POST /api/study-sessions/{sessionId}/deferrals` | Evet + XSRF               | Bir beceriyi 10 dakika erteler; sonuç/mastery yazmaz                  |
+| `GET /api/words/`                                | Evet                      | Kullanıcıdan bağımsız kelime kataloğu                                 |
+| `GET /health`                                    | Hayır                     | PostgreSQL health check                                               |
 
 Enum'lar JSON'da string serileştirilir. `Program.cs` yalnızca
 `AddEndpointsApiExplorer()` içerir; Swagger middleware'i veya yayınlanmış
@@ -645,16 +761,21 @@ Enum'lar JSON'da string serileştirilir. `Program.cs` yalnızca
 
 ## 12.2 CLI, Dosya ve Tarayıcı Arayüzleri
 
-Mevcut uygulamanın özel CLI'ı yoktur; EF migration için `dotnet ef` kullanılır.
-Planlanan idempotent bootstrap normal startup yerine ayrı CLI/deployment adımı
-olur; komut sözleşmesi henüz belirlenmemiştir.
+EF migration için `dotnet ef` kullanılır. İdempotent kelime bootstrap'ı normal
+startup yerine ayrı CLI/deployment adımıdır:
 
-`Data/WordMatch.csv` source dosyası güncel kod tarafından import edilmez.
+```bash
+dotnet run --project WordMatch.API -- bootstrap words
+```
+
+`WordMatch.API/Content/Words.csv` uygulama yayınıyla birlikte taşınır. Her
+satır bir kelimeyi ve konu yerleşimini birlikte taşır. Komut `ImportKey`
+üzerinden içeri alır ve önceki sistemden gelen satırları `legacy-{Id}`
+anahtarıyla eşleyerek aynı veritabanı kimliği üzerinde devralır; kaynaktan
+kaldırılmış satırları otomatik silmez. Kelime içeriği ve konu üyeliği/sırası
+her zaman serbestçe düzeltilebilir; başlık düzeltmesi de dahildir.
 Feedback sesleri `/sounds/correct.wav`, `/sounds/wrong.wav`,
-`/sounds/show-answer.wav` olarak statik sunulur. Planlanan
-`AuralRecognition` için browser `SpeechSynthesis` ilk yaklaşım olabilir;
-voice listesi geç yüklenebilir, uygun English voice bulunmayabilir ve autoplay
-kısıtları vardır.
+`/sounds/show-answer.wav` olarak statik sunulur.
 
 # 13. Yapılandırma
 
@@ -730,17 +851,14 @@ adı `WordMatch.Auth.Development`, non-development adı
 production'da `Secure=Always` ayarlarıyla çıkar.
 
 `__Host-` öneki `Secure=true`, `Path=/` ve Domain belirtilmemesi koşuluna
-bağlıdır. Planlanan schema/authentication reset'inde legacy cookie'nin hedef
-sistemce kullanılmaması için production'da
-`__Host-WordMatch.Auth.Production`/`__Host-WordMatch.XSRF.Production`,
-development'ta `WordMatch.Auth.Development`/`WordMatch.XSRF.Development`
-öngörülür. Bu isimler **hedef mimaridir**; mevcut non-development kodu
-`.Production` suffix'i içermez.
+bağlıdır.
 
-Kategori, Practice ve Words grupları `RequireAuthorization()` kullanır; service
+Aynı hesaba birden fazla cihazdan eşzamanlı giriş serbesttir; ayrıntı için
+bkz. 10.2.
+
+Study ve Words grupları `RequireAuthorization()` kullanır; service
 sorguları kullanıcı ID'siyle scope edilir. `GET /health` ile kayıt/giriş/
-antiforgery anonimdir; session/çıkış kimlik gerektirir. Gelecek admin ekranı
-frontend'de gizlenemez, server-side `Admin` policy ile korunur.
+antiforgery anonimdir; session/çıkış kimlik gerektirir.
 
 ## 14.3 Antiforgery, Rate Limit ve Hassas Veri
 
@@ -750,22 +868,9 @@ non-development'ta `__Host-WordMatch.XSRF`dir. İstemci state-changing
 
 Kayıt/giriş, IP başına dakikada 10 istek izinli fixed-window `auth` policy'sine
 tabidir; aşımda 429 döner, queue yoktur. Kayıt isteği e-posta/kullanıcı adı/
-parola, Practice mode/cevap türü/indeks/pending soru/yazılı cevap kurallarıyla
+parola, Study path/focus/topic/level/cevap türü/indeks/pending soru/yazılı cevap kurallarıyla
 doğrulanır. Parametreli EF Core/SQL interpolation kullanılır; parola veya
 connection string response'ta dönmez.
-
-Planlanan `SpokenRecall`de mikrofon yalnızca soru başlatıldığında açılır,
-arkaplanda sürekli dinleme yoktur:
-
-```text
-record → transcribe → discard
-```
-
-Ham kayıt Word Match veritabanında kalıcı tutulmaz. Sadece gerekli recognized
-text, outcome ve minimum teknik metadata saklanabilir. Harici STT seçilirse
-kullanıcıya veri gönderimi açıklanır, sağlayıcı anahtarı frontend'e verilmez,
-çağrı API üzerinden yapılır ve provider retention politikası implementation
-öncesi belgelenir.
 
 # 15. Hata Yönetimi
 
@@ -774,8 +879,9 @@ kullanıcıya veri gönderimi açıklanır, sağlayıcı anahtarı frontend'e ve
 - Config eksikleri startup exception ile uygulamayı durdurur.
 - Auth doğrulaması `ValidationProblem`, geçersiz giriş 401, yasak erişim 403
   döndürür.
-- Practice validation 400, bulunamayan kaynak 404, eski/çakışan session veya
-  cevap 409 döndürür. Practice hataları `{ "message": "…" }` şeklindedir.
+- Study validation 400, bulunamayan veya başka kullanıcıya ait
+  session 404, eski/çakışan session veya cevap 409 döndürür. Feature hataları
+  `{ "message": "…" }` şeklindedir.
 - `/health` database ulaşılamazsa 503 ve `unhealthy` durumunu döndürür; hata
   warning olarak loglanır.
 
@@ -787,11 +893,6 @@ server hataları framework varsayılanına kalır.
 İstemci cevap kaydında 409 alırsa session'ı yeniden yükler. UI, yükleme ve
 kayıt hatalarını ayrı durumlarla gösterir. Uygulamada otomatik database retry
 policy yapılandırılmamıştır.
-
-Planlanan cihaz hatası öğrenme outcome'u değildir: desteklenmeyen boyut
-planlanmaz; session sırasında izin/audio/network/speech desteği kaybolursa soru
-`SkippedUnsupported` veya eşdeğeri lifecycle ile kapanır. Correct/Wrong/Review,
-mastery strength veya review scheduling değişmez; session bloke olmaz.
 
 # 16. Logging ve Gözlemlenebilirlik
 
@@ -807,21 +908,13 @@ değildir.
 # 17. Cache, Performans ve Ölçeklenebilirlik
 
 Mevcut sistemde distributed cache yoktur. Kritik yollarda session oluşturma ve
-seçenek üretimi katalogyu belleğe alır; katalog endpoint'i tüm kelimeleri ve o
-kullanıcıya ait progress satırlarını ayrı sorgular. Distractor üretimi session,
-aynı level ve tüm katalogyu tarayabilir.
-
-Bu davranış küçük vocabulary kataloğu için tasarlanmıştır; ölçek hedefi
-belgelenmemiştir. Katalog büyürse pagination, daha dar sorgu ve sorgu
-profillemesi ölçümle değerlendirilir; uygulanmış çözüm değildir.
+seçenek üretimi katalogyu belleğe alır; katalog endpoint'i tüm kelimeleri
+döndürür. Distractor üretimi session, aynı level ve tüm katalogyu tarayabilir.
 
 Teknik sınırlar:
 
 - Dört seçenek için içerik yeterli ayrık cevap taşımalıdır.
 - Curriculum sırası `Topic`tan çıkarılamaz; explicit source gerekir.
-- Browser TTS voice kalitesi/erişimi cihazlar arasında tutarsız olabilir.
-- STT'nin browser/device'ta mı, `API → external provider` yolunda mı
-  çalışacağı belirlenmemiştir.
 
 # 18. Build ve Çalıştırma
 
@@ -866,7 +959,7 @@ Compose `Database__AutoMigrate=false` gönderir. Hedef clean-bootstrap
 mimarisinde migration'dan sonra ayrıca bootstrap importu ve referential
 integrity/duplicate doğrulaması gerekir.
 
-## 19.3 Rollback ve Data Protection
+## 19.4 Rollback ve Data Protection
 
 Otomatik rollback prosedürü yoktur. Şema migration'ı içeren release geri
 alınmadan önce migration veri uyumluluğu ve geri dönüş adımları değerlendirilir.
@@ -879,12 +972,11 @@ oturumlarını geçersiz kılar, rollback aracı değildir.
 
 ## 20.1 Test Türleri
 
-| Tür                  | Konum                            | Kapsam                                                     |
-| -------------------- | -------------------------------- | ---------------------------------------------------------- |
-| API/entegrasyon      | `WordMatch.API.Tests`            | Auth, kategori, question factory, session endpoint/service |
-| Migration            | `WordMatchApiFactory`            | Tarihsel migration sözleşmesi ve veri koruma               |
-| Web unit/bileşen     | `WordMatch.Web/src/**/__tests__` | Auth, practice, words, API client, UI                      |
-| Format/statik analiz | API ve web komutları             | Format, lint, TypeScript                                   |
+| Tür                  | Konum                            | Kapsam                                                       |
+| -------------------- | -------------------------------- | ------------------------------------------------------------ |
+| API/entegrasyon      | `WordMatch.API.Tests`            | Auth, curriculum, planner/mastery, soru üretimi ve Study API |
+| Web unit/bileşen     | `WordMatch.Web/src/**/__tests__` | Auth, Study, ortak soru sunumu, words ve API client          |
+| Format/statik analiz | API ve web komutları             | Format, lint, TypeScript                                     |
 
 ## 20.2 Test Sınırları ve Kritik Senaryolar
 
@@ -893,10 +985,15 @@ veritabanına bağlanmaz. Fixture başlangıçta küçük kontrollü kelime seti
 Cloudflare, gerçek production hostname, gerçek TTS/STT veya fiziksel cihaz
 acceptance testi kaynakta yoktur.
 
-Kritik test alanları auth/XSRF; kategori doğrulaması/reset; dört farklı
-seçenek, Türkçe/İngilizce normalizasyonu ve aynı kelimeyi ardışık planlamama;
-tek aktif session, replay, double submit/409; migration veri koruma; webde
-session resume, sonuç, error state, klavye erişimi ve feedback ses tercihidir.
+Kritik test alanları auth/XSRF; 700 kelime/66 konu curriculum doğrulaması;
+idempotent import; due ve 10 benzersiz soruluk plan; fixed mastery aralıkları;
+path veya focus değişiminde abandon; double submit/409; fresh migration; webde beş
+kart, Yakında erişilebilirliği, doğrudan soru, resume, server-authoritative
+feedback, 800 ms otomatik ilerleme, klavye/ses davranışı, ara sonuç inceleme,
+tamamlanma listeleri ve hata/retry durumlarıdır. Elle seçilen konudaki
+tanıtımın global olduğu, ilgili konuya kredi yazdığı ve sıra oraya geldiğinde
+yeniden yeni kelime
+olarak planlanmadığı ayrıca doğrulanır.
 
 ## 20.3 Sürekli Entegrasyon
 
@@ -911,8 +1008,9 @@ eder ve üç bağımsız job yürütür:
   `npm run check` çalıştırır; lint, typecheck, biçim kontrolü, Vitest ve
   production Vite build'ini kapsar.
 - **Docker images:** Production benzeri gerekli Compose değişkenleriyle
-  `docker compose build` çalıştırır. Container'ları başlatmaz ve canlı
-  PostgreSQL/Cloudflare Tunnel doğrulaması yapmaz.
+  `docker compose build` çalıştırır. API Dockerfile'ı publish çıktısında
+  `Content/Words.csv` bulunduğunu build sırasında doğrular. Container'ları
+  başlatmaz ve canlı PostgreSQL/Cloudflare Tunnel doğrulaması yapmaz.
 
 # 21. Kod ve Tasarım Kuralları
 
@@ -920,7 +1018,7 @@ eder ve üç bağımsız job yürütür:
 
 - API/web dosyaları feature altında tutulur; merkezi katman adına göre
   dağılmaz.
-- C#, class/property/endpoint/paket isimleri İngilizce kalır; kullanıcı Türkçe
+- C#, class/property/endpoint/paket adı gibi kod isimleri İngilizce kalır; kullanıcı Türkçe
   etiketleri `displayLabels` ve UI'da yönetilir.
 - `QuestionDirection` ile `QuestionFormat` mevcut modelde ayrı kavramlardır.
 
@@ -936,18 +1034,17 @@ eder ve üç bağımsız job yürütür:
 - Session snapshot geçmiş sonucu korur.
 - Mastery strength ile bir sonraki review zamanı aynı state/sayı değildir.
 - Curriculum progression ve mastery birbirinin yerine kullanılmaz.
-- Planlanan `SkippedUnsupported` öğrenme sonucu değildir.
 
 ## 21.3 Kaçınılması Gerekenler
 
-- `English + PartOfSpeech`i hedef bootstrap import identity'si yapmak.
+- `English + PartOfSpeech`i bootstrap import identity'si yapmak.
 - `Direction × Presentation × AnswerMethod`ın tüm kombinasyonlarını üretip
   progress kimliği yapmak.
-- Uygulanmış migration'ı değiştirmek veya migration klasörünü kontrol listesi
-  olmadan silmek.
+- Yayımlanmış bir migration'ı geriye dönük değiştirmek. Zincirin tamamını
+  sıfırlamak yalnızca ADR-004'teki gibi açık, gerekçeli ve veri kaybının kabul
+  edildiği bir karardır.
 - Topic/level metadata'sından runtime curriculum sırası uydurmak.
-- Teknik audio/STT hatasını `Wrong` saymak ya da desteklenmeyen Practice
-  seçimini sessizce başka mastery boyutuna düşürmek.
+- Ertelenen veya desteklenmeyen bir beceriyi sessizce başka boyuta düşürmek.
 
 # 22. Mimari Kararlar
 
@@ -960,172 +1057,82 @@ için repository/Unit of Work soyutlaması eklenmez.
 ## ADR-002 — Session Soru Snapshot'ları Kalıcıdır
 
 Kelime içeriği değişse bile geçmiş kullanıcı sonucu korunur. Bu nedenle
-`PracticeSessionWord` prompt, correct answer, accepted answers ve gerekirse
+`StudySessionQuestion` prompt, correct answer, accepted answers ve gerekirse
 seçenekleri saklar.
 
-## ADR-003 — Mevcut Progress Dört Soru Kombinasyonuna Göredir
+## ADR-003 — Mastery Dört Bilinçli Boyuttur
 
-Bugünkü kimlik `UserId + WordId + Direction + Format`tır. Çalışan Practice'i
-temsil eder fakat hedef öğrenme semantiğinin nihai modeli değildir.
+| Boyut                | Egzersiz                             | Ölçülen bilgi       |
+| -------------------- | ------------------------------------ | ------------------- |
+| `WrittenRecognition` | İngilizceyi gör → Türkçe anlamı seç  | Yazılı formu tanıma |
+| `AuralRecognition`   | Tanımlı, ancak oturumda kullanılamaz | —                   |
+| `WrittenRecall`      | Türkçe anlamı gör → İngilizceyi yaz  | Yazılı formu üretme |
+| `SpokenRecall`       | Tanımlı, ancak oturumda kullanılamaz | —                   |
 
-## ADR-004 — Hedef Mastery Dört Bilinçli Boyuttur
-
-| Boyut                | Egzersiz                              | Ölçülen bilgi       |
-| -------------------- | ------------------------------------- | ------------------- |
-| `WrittenRecognition` | İngilizceyi gör → Türkçe anlamı seç   | Yazılı formu tanıma |
-| `AuralRecognition`   | İngilizceyi duy → Türkçe anlamı seç   | Sesli formu tanıma  |
-| `WrittenRecall`      | Türkçe anlamı gör → İngilizceyi yaz   | Yazılı formu üretme |
-| `SpokenRecall`       | Türkçe anlamı gör → İngilizceyi söyle | Sesli formu üretme  |
-
-Türkçe hedef öğrenme dili değil, anlam yardımcısıdır. Hedef ilerleme en az
+Türkçe hedef öğrenme dili değil, anlam yardımcısıdır. İlerleme
 `UserId + WordId + MasteryDimension` benzersizliğinde `UserWordMastery` ile
-tutulur. Kayıt son outcome, doğru/yanlış geçmişi, mastery strength, son
-çalışma/başarı zamanı, review zamanı ve Learn içinde boyutun denenmesini
-destekler; kesin property/enum isimleri implementation'da seçilir.
+tutulur. Kayıt son sonucu, doğru/review/yanlış sayaçlarını, `0–5` aşamasını,
+son çalışma zamanını ve sonraki tekrar zamanını taşır.
 
-`QuestionPresentation` (`Text`, `Audio`) ve `AnswerMethod`
-(`MultipleChoice`, `Written`, `Spoken`) soru üretiminde yararlı kavramlar
-olabilir; progress kimliği değildir. Sistem bunların tüm çarpımını üretmek
-yerine yalnızca bu dört bilinçli mastery egzersizini destekler.
+`UserWordMastery` kimliği presentation veya answer method'a göre ayrışmaz;
+ilerleme enum'daki mastery boyutlarında tutulur. Güncel planner yalnız
+`WrittenRecognition` ve `WrittenRecall` boyutlarını planlar.
 
-## ADR-005 — Clean Migration Reset Hedef Karardır
+## ADR-004 — Clean Migration Reset Uygulandı
 
-Hedef reset varsayılan migration stratejisi değildir. Büyük domain değişikliği
-için legacy database/authentication'ı bilinçli ayırır ve reset öncesi custom
-migration davranışının taşınmasını zorunlu kılar. Ayrıntılar
-[Bölüm 9.5](#95-migration-ve-hedef-bootstrap-modeli) içindedir.
+Migration zinciri iki kez tek `InitialCreate`e indirildi: önce tek-Study ve
+ortak kelime-tanıtım modeline geçerken, sonra paket curriculum'u
+`Level → sıralı Topic` omurgasıyla değiştirirken. İkincisinde iki tablo
+tamamen kalktı ve üç kolon anlamını yitirdiği için artımlı geçmiş taşımak
+hedef şemadan daha karmaşık olurdu. Reset varsayılan strateji değildir; büyük
+domain değişikliğine ve gerçek kullanıcı verisinin bulunmadığı bir ana özgüdür.
+Ayrıntılar [Bölüm 9.5](#95-migration-ve-bootstrap-modeli) içindedir.
 
-# 23. Teknik Kısıtlamalar ve Planlanan Uzantı Sınırları
+## ADR-005 — Konu Seçimi Ayrı Bir Akış Değil, Tek Study Akışının Parametresidir
 
-Bu bölümdeki uzantılar mevcut sürüm davranışı veya yayın taahhüdü değildir.
-Roadmap'teki anlamlı teknik sınırları, çekirdekle çelişmemesi için korur.
+Ayrı bir "Konu Keşfi" modu ve `StudyPath` kavramı kaldırıldı. Kullanıcı ana
+ekranda çalışma türü seçmez; sistem sıradaki konuyu açar ve kullanıcı isterse
+konuyu değiştirir. Bu seçim ayrı bir oturum türü, ayrı bir ilerleme modeli veya
+ayrı bir Practice progress'i oluşturmaz — yalnız açılacak oturumun konusudur.
 
-## 23.1 Device Capability, Aural ve Spoken Recall
+`UserWordIntroduction` bütün Study oturumlarının ortak ilk karşılaşma kaydıdır
+ve hangi yoldan gelindiğini artık taşımaz, çünkü tek bir yol vardır. Erken
+tamamlanan bir konudaki kelime, curriculum sırası oraya ulaştığında yeniden
+yeni içerik olarak gösterilmez; pekiştirme yalnız daha önce yanıtlanmış ve due
+olan mastery yönlerinden gelir.
 
-Session oluşturulmadan önce istemci desteklediği mastery boyutlarını bildirir.
-Server bunu yalnızca plan için kullanır; soru/cevap kuralları yine server
-domain'indedir. Desteklenmeyen boyut planlanmaz, mastery sonucu yazmaz,
-Correct/Wrong/Review üretmez; session toplamı yalnızca planlanan sorulardır.
+## ADR-006 — Konu Üyeliği İlerlemeden Bağımsız, Kelime Merkezli Bir Sınıflandırmadır
 
-Kullanıcı desteklenmeyen boyutu özellikle seçerse sessiz fallback yapılmaz,
-açık desteklenmiyor durumu gösterilir. Session sırasında destek kaybı için
-lifecycle örneği:
+İlerleme (`UserWordMastery`, `UserWordIntroduction`) yalnızca `WordId`
+bazlıdır; `CurriculumTopicId` taşımaz. "Sıradaki konu" ve konu ilerlemesi
+saklı bir sayaç değil, güncel `CurriculumTopicWord` üyeliğinden her istekte
+canlı türetilen bir görünümdür. Bu nedenle bir kelimeyi bir konudan diğerine
+taşımak — kullanıcı ilerlemesi başlamış olsa bile — hiçbir kullanıcı sicilini
+bozmaz; yalnızca konuların görünen tamamlanma durumunu yeniden hesaplatır.
+İçerik (kelime metadata'sı ve konu yapısı) her zaman serbestçe düzeltilebilir.
 
-```text
-Pending
-Answered
-SkippedUnsupported
-```
+Aynı gerekçeyle kaynaktan düşen konu silinmez, `Retired` işaretlenir: satırın
+kendisi kullanıcı ilerlemesinin ve eski oturum snapshot'larının bağlı olduğu
+kimliktir, planlamada görünmemesi ise ayrı bir durum sorusudur.
 
-Kesin enum implementation'da seçilir. Başlangıçtaki `PlannedQuestions` sabittir;
-`Answered + SkippedUnsupported` tamamlanan plan öğeleridir. Örneğin 20 soruda
-18 cevap + 2 teknik atlama session'ı tamamlar. Teknik atlama doğru/yanlış/
-review/mastery sayılarında yer almaz, sonuç ekranında ayrı bilgi olabilir.
+## ADR-007 — Curriculum Sırası Kod Değil, Veridir
 
-`AuralRecognition`de İngilizce kelime yazılı görünmez, ses tekrar oynatılabilir
-ve English voice kullanılır. Browser `SpeechSynthesis` ilk yaklaşım olabilir;
-ileride hazırlanmış audio/harici TTS kullanılabilir. Domain sağlayıcıya bağımlı
-değildir.
+Konu sırası daha önce `WordTopic` enum'ının deklarasyon sırasından türetiliyor
+ve her istekte tüm kelimeler taranarak yeniden hesaplanıyordu; bu, alfabetik
+İngilizce adlara bağlı, gözden geçirilemeyen ve pedagojik olarak anlamsız bir
+sıra üretiyordu. Sıra artık `Words.csv`'deki `TopicSortOrder` ve
+`WordSortOrder` kolonlarından gelir, bootstrap'te doğrulanır ve
+`CurriculumTopics` tablosunda saklanır.
 
-`SpokenRecall` izin ister, kısa recording alır, İngilizce STT çalıştırır, metni
-normalize eder, beklenen cevapla karşılaştırır ve normal answer pipeline'ına
-verir. Mikrofon reddi, browser desteği, network/speech service hatası Learn'i
-kilitlemez. STT'nin browser/device'ta mı API üzerinden harici sağlayıcıda mı
-çalışacağı, buna bağlı gizlilik metni/retention ile implementation öncesi
-karar gerektirir.
+Bunun sonucu: içerik sırası kod değişikliği olmadan düzenlenebilir ve bir
+pull request'te okunabilir. Enum yerine tablo kullanmak, `WordTopic`'i tip
+güvenliği ve check constraint'ler için korurken sıralamayı içerik katmanına
+taşır.
 
-## 23.2 Yönetici ve İçerik Kalitesi
-
-İçerik bildirimi `ContentReport` veya `QuestionIssue` gibi ayrı domain olur.
-En az `WordId`, ilgili `PracticeSessionWord`/snapshot, bildiren kullanıcı,
-neden, açıklama, durum, oluşturulma/çözülme zamanı ve çözüm notunu taşır.
-
-Gelecek admin word management için korumalı create/update endpoint, server-side
-validation, sabit `Word.Id`, optimistic concurrency (örneğin `RowVersion`) ve
-audit geçmişi gerekir. Yönetilebilir alanlar English, Turkish translations,
-part of speech, verb metadata, CEFR level, topic, curriculum placement ve
-ileride audio referansıdır. Admin authorization/audit edit UI'dan önce gelir.
-
-## 23.3 Placement Assessment
-
-Vocabulary placement assessment normal Learn/Practice'ten rastgele soru
-seçmek değildir; ayrı seçim/puanlama, level dağılımı ve kontrollü soru örneklemi
-ister. `SessionPurpose.Assessment` veya ayrı aggregate değerlendirilebilir.
-Mastery modelinin kararlı, curriculum sırasının ve level içeriğinin yeterince
-düzenli olması bağımlılıktır. Sonuç genel CEFR değil tahmini vocabulary
-başlangıç seviyesidir.
-
-## 23.4 Puan ve Motivasyon
-
-Learn/Review/mastery/spaced repetition kararlı olmadan puan eklenmez. Tek
-mutable `User.Score += 10` yerine append-only, kural sürümünü taşıyan
-`ScoreEvent(UserId, Reason, Amount, RuleVersion, CreatedAt)` tercih edilir.
-Doğru recall, düzenli Review, Learn session tamamlaması ve tutarlı günlük
-çalışma ödüllendirilebilir. Aşırı hız bonusu, sert yanlış cezası, kolay soruya
-yöneltme ve `SkippedUnsupported` için puan üretilmez.
-
-## 23.5 Sosyal Çalışma ve Rekabet
-
-Arkadaşlık/canlı rekabet küçük Practice uzantısı değildir. Ayrı domain;
-arkadaşlık/davet, gizlilik, engelleme, match/room, katılımcı,
-server-authoritative zaman, SignalR benzeri realtime, idempotent cevap,
-disconnect/reconnect ve moderasyon gerekir. Normal `PracticeSession` doğrudan
-multiplayer match'e dönüştürülmez. Tek kullanıcılı çekirdeğin değeri
-kanıtlanmadan bu yatırım yapılmaz.
-
-## 23.6 Daha Zengin İçerik ve Pronunciation
-
-Hazırlanmış ses, örnek cümle, görsel, kullanım bağlamı, pronunciation ve yeni
-topic/curriculum düzenleri değerlendirilebilir; dört mastery boyutu gereksizce
-çoğaltılmaz. Context comprehension ölçen boşluk doldurma yalnızca
-`WrittenRecall` UI varyasyonu sayılmaz; ürün amacı ayrı değerlendirilir.
-
-Görseller animal/food/object/place gibi somut kelimelerde yararlıdır ama
-`although`, `perhaps`, `improve`, `depend` gibi soyut kelimelerde zorunlu
-temsil olmaz. İlk SpokenRecall'in “anlaşılır doğru kelime” sınırı pronunciation
-score, phoneme/stress/feedback ile geriye dönük değişmez. Ham ses arşivi ancak
-açık kullanıcı bilgisi, yeni ürün kararı ve retention politikasıyla oluşabilir.
-
-## 23.7 Yeni Özellik Kontrol Listesi
-
-Yeni özellik planlanırken şu sorular cevaplanır:
-
-1. Hangi kullanıcı problemini çözer?
-2. Hangi `VocabularyMasteryDimension` ile ilişkilidir; yeni boyut gerekli mi?
-3. Mevcut boyutun yalnızca farklı sunumu mu?
-4. Learn, Review, Practice'ten hangisine aittir; kullanıcı mı sistem mi seçer?
-5. Curriculum progression, mastery strength veya review schedule etkilenir mi?
-6. Question lifecycle ile learning outcome karışıyor mu?
-7. Category/CEFR metadata'sı veya session snapshot anlamı değişiyor mu?
-8. Başka cihazda kalıcılık, authorization, hassas izin veya üçüncü taraf veri
-   aktarımı gerekir mi?
-9. Retention tanımlı mı, mevcut domain kavramını yineliyor mu?
-10. Öğrenme değeri doğrulanmadan dekoratif karmaşıklık ekliyor mu?
-
-Doğru sistem eşleştirmesi: yanlış çalışmak Review selection + mastery outcome;
-cevabı gösterilen içeriği tekrar çalışmak `AnswerAction`/`ReviewReason` +
-Review; bilineni isteğe bağlı tekrar Practice veya normal Review scheduling;
-kategori/mastery seçimi Practice filtresi; dinleme `AuralRecognition`,
-`QuestionFormat.Listening` değil; konuşma basit microphone butonu değil,
-capability + STT içeren `SpokenRecall`; teknik hata `SkippedUnsupported`;
-pronunciation ayrı değerlendirme; puan sürümlenmiş `ScoreEvent`; admin
-düzenleme API authorization + audit + concurrency ile çözülür.
-
-# 24. Bilinen Sorunlar ve Teknik Borç
-
-- `Data/WordMatch.csv` için mevcut import/bootstrap uygulaması yoktur.
-- Kaynak belgelerdeki Swagger URL'si güncel `Program.cs` Swagger middleware'i
-  eşlemediğinden çalışır durum olarak belgelenemez.
-- Mevcut `UserWordProgress` ve `/api/words/` tek outcome görünümü hedef dört
-  mastery boyutunu temsil etmez.
-- Curriculum, `UserWordMastery`, due Review, device capability,
-  `SkippedUnsupported`, Aural ve Spoken Recall kaynak kodda henüz yoktur.
-- Metrics, tracing, ayrı cache ve otomatik rollback prosedürü tanımlı değildir.
-
-# 25. Değişiklik Rehberi
+# 23. Değişiklik Rehberi
 
 - Kelime metadata'sını değiştirmeden önce `WordConfiguration` constraint'leri,
-  `Word.Id` ilişkileri, `PracticeQuestionFactory` ve snapshot etkisini inceleyin.
+  `Word.Id` ilişkileri, `QuestionFactory` ve snapshot etkisini inceleyin.
 - Direction/format eklemek API enum/constraint, plan/factory, request-response,
   frontend Zod/UI, progress key ve testleri birlikte değiştirir.
 - Session davranışı active unique index, conditional answer update, progress
@@ -1134,74 +1141,76 @@ düzenleme API authorization + audit + concurrency ile çözülür.
   ve gerekli bootstrap sırasını açıkça planlayın.
 - Mastery değişiminde curriculum, mastery strength, review zamanı ve teknik
   question lifecycle ayrı tutulur.
+- Curriculum sırası koda değil `Words.csv`'ye yazılır; bootstrap doğrulaması,
+  `CurriculumTopic` constraint'leri ve `Retired` davranışı birlikte gözden
+  geçirilir.
+- Oturumun soru planına dokunan her değişiklik, beceri ertelemesinin hiçbir
+  sonuç/mastery yazmadığını doğrulayan testlerle birlikte değerlendirilir.
 
-# 26. Kritik Senaryolar
+# 24. Kritik Senaryolar
 
-## 26.1 Aynı Oturumu İki Yerden Cevaplama
+## 24.1 Aynı Oturumu İki Yerden Cevaplama
 
 İki istek aynı pending soruyu cevaplarsa koşullu update yalnızca birini
 başarılı yapar. Diğeri 409 alır ve istemci server session'ını yeniden yükler;
 progress çift artmaz.
 
-## 26.2 Kelime İçeriği Sonradan Düzeltilir
+## 24.2 Kelime İçeriği Sonradan Düzeltilir
 
 Yeni session güncel kelimeyi kullanır. Eski session/sonuç
-`PracticeSessionWord` snapshot'ını kullandığı için geçmiş sonuç değişmez.
+`StudySessionQuestion` snapshot'ını kullandığı için geçmiş sonuç değişmez.
 
-## 26.3 Dört Farklı Seçenek Bulunamaz
+## 24.3 Oturum Ortasında Beceri Ertelenir
+
+Sunucu cevaplanmamış soruları siler ve oturumu sonuçlandırır. Cevaplanmış
+snapshot'lar, mastery sayaçları ve `NextReviewAtUtc` değişmez; erteleme hiçbir
+sonuç yazmaz. Erteleme 10 dakika boyunca yalnız kullanıcının sonraki oturum
+planlarına uygulanır; son açık beceri ertelenmek istenirse istek 409 döner.
+
+## 24.4 Sıradan Bir Konu Erken Çalışılır
+
+Kullanıcının seçtiği konudaki kelimelerin iki yazılı mastery yönü tamamlanınca
+aynı ilerleme diğer ekranlarda da görünür. Curriculum pointer'ı hareket etmez
+— sıradaki konu hâlâ ilk tamamlanmamış konudur. Sıra o konuya ulaştığında
+tamamlanmış konu atlanır, kısmen tamamlanmış konu ilk eksik öğrenme grubundan
+devam eder; hiçbir kelime ikinci kez yeni içerik olarak gösterilmez.
+
+## 24.5 Dört Farklı Seçenek Bulunamaz
 
 Factory yakın kapsamları dener, yine üç valid distractor bulamazsa validation
 hatası üretir. İçerik verisi düzeltilir; tekrar eden/yanlış seçenekle soru
 üretilmez.
 
-## 26.4 Planlanan Cihaz Desteği Session Ortasında Kaybolur
+# 25. Operasyon ve Sorun Giderme
 
-Mikrofon izni geri çekilir veya STT/TTS erişilemezse soru öğrenme hatası
-sayılmaz. `SkippedUnsupported` olur; session ilerler ama mastery/review değişmez.
+| Belirti                      | Kontrol                                                                        |
+| ---------------------------- | ------------------------------------------------------------------------------ |
+| API başlamıyor               | `ConnectionStrings:DefaultConnection`; production'da `DataProtection__KeyPath` |
+| Study'de konu yok            | Migration uygulandıktan sonra `bootstrap words` çalıştırıldığını doğrulayın.   |
+| Şema yeni ama uygulama eski  | Migration testten sonra açıkça uygulanmış mı; Compose auto-migrate kapalı mı?  |
+| Dış hostname açılmıyor       | Önce `/health`, sonra Nginx host portu, son olarak Tunnel/DNS routing.         |
+| Production login düşüyor     | `wordmatch-data-protection` volume ve key path korunuyor mu?                   |
+| Tunnel loopback'e erişemiyor | Gerekirse web bind `0.0.0.0`; port ağ seviyesinde korunuyor mu?                |
 
-# 27. Operasyon ve Sorun Giderme
-
-| Belirti                      | Kontrol                                                                           |
-| ---------------------------- | --------------------------------------------------------------------------------- |
-| API başlamıyor               | `ConnectionStrings:DefaultConnection`; production'da `DataProtection__KeyPath`    |
-| Practice'te kelime yok       | Migration yanında `Words` verisini doğrulayın; CSV için otomatik importer yoktur. |
-| Şema yeni ama uygulama eski  | Migration testten sonra açıkça uygulanmış mı; Compose auto-migrate kapalı mı?     |
-| Dış hostname açılmıyor       | Önce `/health`, sonra Nginx host portu, son olarak Tunnel/DNS routing.            |
-| Production login düşüyor     | `wordmatch-data-protection` volume ve key path korunuyor mu?                      |
-| Tunnel loopback'e erişemiyor | Gerekirse web bind `0.0.0.0`; port ağ seviyesinde korunuyor mu?                   |
-
-# 28. Varsayımlar ve Açık Kararlar
-
-- Hedef clean reset'in zamanı, gerçek kullanıcı verisi migration gereksinimi ve
-  `InitialCreate`in kesin içeriği uygulanmış karar değildir.
-- Curriculum source formatı CSV, JSON veya başka version-controlled biçim
-  olabilir; kesin format seçilmemiştir.
-- Learn completion eşiği, mastery strength enum/puanı, unit cursor modeli ve
-  spaced-repetition aralıkları implementation'da kesinleşir.
-- STT çalışma yeri, sağlayıcı, gizlilik metni ve retention davranışı
-  implementation öncesi zorunlu karardır.
-
-# 29. Projeyi Anlamak İçin Okuma Sırası
+# 26. Projeyi Anlamak İçin Okuma Sırası
 
 1. [README.md](README.md)
 2. Bu belgenin Genel Bakış, Veri Modeli ve Veri Akışı bölümleri
-3. `Program.cs`, `PracticeSessionService.cs`, `PracticeQuestionFactory.cs`
-4. Webde `src/main.tsx`, `src/features/practice`, `src/features/auth`
-5. Aktif çalışma için [PLAN.md](PLAN.md), uzun vadeli yön için [ROADMAP.md](ROADMAP.md)
+3. `Program.cs`, `StudyService.cs`, `StudyPlanner.cs`, `StudyQuestionFactory.cs`
+4. Webde `src/main.tsx`, `src/features/study`, `src/features/auth`
+5. Uygulanmamış işler için [ROADMAP.md](ROADMAP.md)
 
-# 30. AI İçin Bağlam
+# 27. AI İçin Bağlam
 
-Değişiklik önerirken çalışan Practice modelini hedef mastery mimarisinden ayırın.
+Study tek öğrenme akışıdır; ikinci bir paralel akış önermeyin.
 Küçük, ürün tarafından gerekçelendirilmiş tasarımlar tercih edin: ihtiyaç yoksa
 yeni repository, genel retry, write endpoint, DTO veya seed altyapısı eklemeyin.
-Session snapshot, user scope, database constraint, XSRF ve migration geçmişini
+Session snapshot, Study path, database constraint, XSRF ve migration geçmişini
 etkileyen değişiklikte ilgili test/deployment etkisini inceleyin.
 
-# 31. Güncelleme Kuralı
+# 28. Güncelleme Kuralı
 
 Davranış, domain, veri modeli, endpoint, config, deployment veya güvenlik
-değiştiğinde bu belge aynı değişiklikte güncellenir. Planlanan özellik
-uygulandığında buradaki “planlanan” açıklama çalışan sistem gerçeğine taşınır;
-sıradaki işler [PLAN.md](PLAN.md) veya [ROADMAP.md](ROADMAP.md) içinde
-güncellenir. Sürüm geçmişi yalnızca doğrulanmış release olduğunda
-[CHANGELOG.md](CHANGELOG.md) dosyasına eklenir.
+değiştiğinde bu belge aynı değişiklikte güncellenir. Uygulanmamış işler yalnız
+[ROADMAP.md](ROADMAP.md)'de tutulur. Sürüm geçmişi yalnızca doğrulanmış release
+olduğunda [CHANGELOG.md](CHANGELOG.md) dosyasına eklenir.

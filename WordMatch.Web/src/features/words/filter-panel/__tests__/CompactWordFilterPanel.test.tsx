@@ -16,11 +16,11 @@ afterEach(() => {
 
 const definitions: WordFilterDefinition[] = [
   {
-    field: "progress",
-    label: "İlerleme",
+    field: "partOfSpeech",
+    label: "Sözcük Türü",
     options: [
-      { label: "Tüm ilerleme durumları", value: "all" },
-      { label: "Doğru", value: "correct" },
+      { label: "Tüm sözcük türleri", value: "all" },
+      { label: "İsim", value: "Noun" },
     ],
   },
   {
@@ -36,7 +36,6 @@ const definitions: WordFilterDefinition[] = [
 const allValuesUnset: WordFilterValues = {
   level: "all",
   partOfSpeech: "all",
-  progress: "all",
   topic: "all",
   verbType: "none",
 };
@@ -95,13 +94,13 @@ describe("CompactWordFilterPanel", () => {
 
     render(<CompactWordFilterPanel {...baseProps()} isOpen />);
 
-    expect(screen.getByText("Doğru")).toBeInTheDocument();
+    expect(screen.getByText("İsim")).toBeInTheDocument();
     expect(screen.queryByText("A1")).not.toBeInTheDocument();
 
     await user.click(screen.getByRole("button", { name: "Seviye" }));
 
     expect(screen.getByText("A1")).toBeInTheDocument();
-    expect(screen.queryByText("Doğru")).not.toBeInTheDocument();
+    expect(screen.queryByText("İsim")).not.toBeInTheDocument();
   });
 
   it("calls onValueChange when an option is selected", async () => {
@@ -116,9 +115,9 @@ describe("CompactWordFilterPanel", () => {
       />,
     );
 
-    await user.click(screen.getByText("Doğru"));
+    await user.click(screen.getByText("İsim"));
 
-    expect(onValueChange).toHaveBeenCalledWith("progress", "correct");
+    expect(onValueChange).toHaveBeenCalledWith("partOfSpeech", "Noun");
   });
 
   it("only shows the clear-filters action when filters are active", () => {

@@ -11,6 +11,9 @@ export default [
         babelOptions: {
           babelrc: false,
           configFile: false,
+          parserOpts: {
+            plugins: ["typescript", "jsx"],
+          },
           presets: ["@babel/preset-react", "@babel/preset-typescript"],
         },
       },

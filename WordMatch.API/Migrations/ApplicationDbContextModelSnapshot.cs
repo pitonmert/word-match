@@ -17,7 +17,7 @@ namespace WordMatch.API.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "10.0.10")
+                .HasAnnotation("ProductVersion", "10.0.11")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -222,31 +222,20 @@ namespace WordMatch.API.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("WordMatch.API.Features.Practice.PracticeSession", b =>
+            modelBuilder.Entity("WordMatch.API.Features.Study.CurriculumTopic", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("integer");
 
-                    b.Property<DateTimeOffset?>("CompletedAtUtc")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<bool>("IsReplay")
-                        .HasColumnType("boolean");
-
-                    b.Property<DateTimeOffset>("LastActivityAtUtc")
-                        .HasColumnType("timestamp with time zone");
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Level")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("Mode")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<DateTimeOffset>("StartedAtUtc")
-                        .HasColumnType("timestamp with time zone");
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("integer");
 
                     b.Property<string>("Status")
                         .IsRequired()
@@ -256,27 +245,126 @@ namespace WordMatch.API.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.HasKey("Id");
+
+                    b.HasIndex("Level", "SortOrder")
+                        .IsUnique();
+
+                    b.HasIndex("Level", "Topic")
+                        .IsUnique();
+
+                    b.ToTable("CurriculumTopics", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_CurriculumTopics_Level", "\"Level\" IN ('A1', 'A2', 'B1', 'B2')");
+
+                            t.HasCheckConstraint("CK_CurriculumTopics_SortOrder", "\"SortOrder\" > 0");
+
+                            t.HasCheckConstraint("CK_CurriculumTopics_Status", "\"Status\" IN ('Active', 'Retired')");
+
+                            t.HasCheckConstraint("CK_CurriculumTopics_Topic", "\"Topic\" IN ('Actions', 'Animals', 'ArtsAndEntertainment', 'BodyAndHealth', 'CalendarAndTime', 'Clothing', 'Colors', 'Countries', 'Days', 'Descriptions', 'Education', 'EmotionsAndPersonality', 'FamilyAndPeople', 'FoodAndDrink', 'General', 'HomeAndObjects', 'JobsAndWork', 'Months', 'NatureAndWeather', 'Numbers', 'Places', 'ShoppingAndMoney', 'SocietyAndPolitics', 'SportsAndLeisure', 'TechnologyAndMedia', 'Transportation', 'TravelAndHolidays')");
+                        });
+                });
+
+            modelBuilder.Entity("WordMatch.API.Features.Study.CurriculumTopicWord", b =>
+                {
+                    b.Property<int>("CurriculumTopicId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("WordId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("LearningGroupSortOrder")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(1);
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("integer");
+
+                    b.HasKey("CurriculumTopicId", "WordId");
+
+                    b.HasIndex("WordId")
+                        .IsUnique();
+
+                    b.HasIndex("CurriculumTopicId", "LearningGroupSortOrder");
+
+                    b.HasIndex("CurriculumTopicId", "SortOrder")
+                        .IsUnique();
+
+                    b.ToTable("CurriculumTopicWords", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_CurriculumTopicWords_LearningGroupSortOrder", "\"LearningGroupSortOrder\" > 0");
+
+                            t.HasCheckConstraint("CK_CurriculumTopicWords_SortOrder", "\"SortOrder\" > 0");
+                        });
+                });
+
+            modelBuilder.Entity("WordMatch.API.Features.Study.StudySession", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset?>("CompletedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset?>("ContinuationReservedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int?>("CurriculumTopicId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTimeOffset>("LastActivityAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Mode")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("OwnerDeviceId")
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)");
+
+                    b.Property<int?>("ReturnToCurriculumTopicId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTimeOffset>("StartedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<string>("UserId")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId", "Level", "Topic")
+                    b.HasIndex("CurriculumTopicId");
+
+                    b.HasIndex("ReturnToCurriculumTopicId");
+
+                    b.HasIndex("UserId")
                         .IsUnique()
                         .HasFilter("\"Status\" = 'Active'");
 
-                    b.ToTable("PracticeSessions", null, t =>
-                        {
-                            t.HasCheckConstraint("CK_PracticeSessions_Mode", "\"Mode\" IN ('EnglishToTurkish', 'TurkishToEnglish', 'Mixed')");
+                    b.HasIndex("UserId", "ContinuationReservedAtUtc")
+                        .HasFilter("\"ContinuationReservedAtUtc\" IS NOT NULL");
 
-                            t.HasCheckConstraint("CK_PracticeSessions_Status", "\"Status\" IN ('Active', 'Completed', 'Abandoned')");
+                    b.ToTable("StudySessions", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_StudySessions_Mode", "\"Mode\" IN ('Topic', 'Review')");
+
+                            t.HasCheckConstraint("CK_StudySessions_ModeSelection", "(\"Mode\" = 'Topic' AND \"CurriculumTopicId\" IS NOT NULL) OR (\"Mode\" = 'Review' AND \"CurriculumTopicId\" IS NULL)");
+
+                            t.HasCheckConstraint("CK_StudySessions_Status", "\"Status\" IN ('Active', 'Completed', 'Abandoned')");
                         });
                 });
 
-            modelBuilder.Entity("WordMatch.API.Features.Practice.PracticeSessionWord", b =>
+            modelBuilder.Entity("WordMatch.API.Features.Study.StudySessionQuestion", b =>
                 {
-                    b.Property<Guid>("PracticeSessionId")
+                    b.Property<Guid>("StudySessionId")
                         .HasColumnType("uuid");
 
                     b.Property<int>("Position")
@@ -295,7 +383,7 @@ namespace WordMatch.API.Migrations
                     b.Property<int?>("CorrectIndex")
                         .HasColumnType("integer");
 
-                    b.Property<string>("Direction")
+                    b.Property<string>("Dimension")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -303,7 +391,10 @@ namespace WordMatch.API.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("Format")
+                    b.Property<bool>("IsIntroduction")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Kind")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -326,28 +417,49 @@ namespace WordMatch.API.Migrations
                     b.Property<int>("WordId")
                         .HasColumnType("integer");
 
-                    b.HasKey("PracticeSessionId", "Position");
+                    b.HasKey("StudySessionId", "Position");
 
                     b.HasIndex("WordId");
 
-                    b.HasIndex("PracticeSessionId", "WordId", "Direction", "Format")
+                    b.HasIndex("StudySessionId", "WordId", "Dimension")
                         .IsUnique();
 
-                    b.ToTable("PracticeSessionWords", null, t =>
+                    b.ToTable("StudySessionQuestions", null, t =>
                         {
-                            t.HasCheckConstraint("CK_PracticeSessionWords_Answer", "(\"Outcome\" IS NULL AND \"SelectedIndex\" IS NULL AND \"SelectedText\" IS NULL AND \"AnsweredAtUtc\" IS NULL) OR (\"Outcome\" = 'Review' AND \"SelectedIndex\" IS NULL AND \"SelectedText\" IS NULL AND \"AnsweredAtUtc\" IS NOT NULL) OR (\"Format\" = 'MultipleChoice' AND \"Outcome\" IN ('Correct', 'Wrong') AND \"SelectedIndex\" IS NOT NULL AND \"SelectedText\" IS NULL AND \"AnsweredAtUtc\" IS NOT NULL) OR (\"Format\" = 'Written' AND \"Outcome\" IN ('Correct', 'Wrong') AND \"SelectedIndex\" IS NULL AND \"SelectedText\" IS NOT NULL AND length(trim(\"SelectedText\")) > 0 AND \"AnsweredAtUtc\" IS NOT NULL)");
+                            t.HasCheckConstraint("CK_StudySessionQuestions_Answer", "(\"Outcome\" IS NULL AND \"SelectedIndex\" IS NULL AND \"SelectedText\" IS NULL AND \"AnsweredAtUtc\" IS NULL) OR (\"Outcome\" = 'Review' AND \"SelectedIndex\" IS NULL AND \"SelectedText\" IS NULL AND \"AnsweredAtUtc\" IS NOT NULL) OR (\"Kind\" = 'MultipleChoice' AND \"Outcome\" IN ('Correct', 'Wrong') AND \"SelectedIndex\" IS NOT NULL AND \"SelectedText\" IS NULL AND \"AnsweredAtUtc\" IS NOT NULL) OR (\"Kind\" = 'Written' AND \"Outcome\" IN ('Correct', 'Wrong') AND \"SelectedIndex\" IS NULL AND \"SelectedText\" IS NOT NULL AND length(trim(\"SelectedText\")) > 0 AND \"AnsweredAtUtc\" IS NOT NULL)");
 
-                            t.HasCheckConstraint("CK_PracticeSessionWords_Direction", "\"Direction\" IN ('EnglishToTurkish', 'TurkishToEnglish')");
+                            t.HasCheckConstraint("CK_StudySessionQuestions_Dimension", "\"Dimension\" IN ('WrittenRecognition', 'WrittenRecall', 'AuralRecognition', 'SpokenRecall')");
 
-                            t.HasCheckConstraint("CK_PracticeSessionWords_Format", "\"Format\" IN ('MultipleChoice', 'Written')");
+                            t.HasCheckConstraint("CK_StudySessionQuestions_Kind", "\"Kind\" IN ('MultipleChoice', 'Written')");
 
-                            t.HasCheckConstraint("CK_PracticeSessionWords_Prompt", "length(trim(\"PromptSnapshot\")) > 0");
+                            t.HasCheckConstraint("CK_StudySessionQuestions_Position", "\"Position\" >= 0");
 
-                            t.HasCheckConstraint("CK_PracticeSessionWords_QuestionData", "(\"Format\" = 'MultipleChoice' AND \"AcceptedAnswersSnapshot\" IS NULL AND ((\"Options\" IS NULL AND \"CorrectIndex\" IS NULL) OR (\"Options\" IS NOT NULL AND \"CorrectIndex\" IS NOT NULL AND cardinality(\"Options\") = 4 AND \"CorrectIndex\" >= 0 AND \"CorrectIndex\" < cardinality(\"Options\")))) OR (\"Format\" = 'Written' AND \"Options\" IS NULL AND \"CorrectIndex\" IS NULL AND \"AcceptedAnswersSnapshot\" IS NOT NULL AND cardinality(\"AcceptedAnswersSnapshot\") > 0)");
+                            t.HasCheckConstraint("CK_StudySessionQuestions_QuestionData", "(\"Kind\" = 'MultipleChoice' AND \"Options\" IS NOT NULL AND cardinality(\"Options\") = 4 AND \"CorrectIndex\" IS NOT NULL AND \"CorrectIndex\" >= 0 AND \"CorrectIndex\" < 4 AND \"AcceptedAnswersSnapshot\" IS NULL) OR (\"Kind\" = 'Written' AND \"Options\" IS NULL AND \"CorrectIndex\" IS NULL AND \"AcceptedAnswersSnapshot\" IS NOT NULL AND cardinality(\"AcceptedAnswersSnapshot\") > 0)");
                         });
                 });
 
-            modelBuilder.Entity("WordMatch.API.Features.Practice.UserWordProgress", b =>
+            modelBuilder.Entity("WordMatch.API.Features.Study.UserStudySkillPause", b =>
+                {
+                    b.Property<string>("UserId")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Dimension")
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("DeferredUntilUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("UserId", "Dimension");
+
+                    b.HasIndex("DeferredUntilUtc");
+
+                    b.ToTable("UserStudySkillPauses", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_UserStudySkillPauses_Dimension", "\"Dimension\" IN ('WrittenRecognition', 'WrittenRecall', 'AuralRecognition', 'SpokenRecall')");
+                        });
+                });
+
+            modelBuilder.Entity("WordMatch.API.Features.Study.UserWordIntroduction", b =>
                 {
                     b.Property<string>("UserId")
                         .HasColumnType("text");
@@ -355,41 +467,69 @@ namespace WordMatch.API.Migrations
                     b.Property<int>("WordId")
                         .HasColumnType("integer");
 
-                    b.Property<string>("Direction")
+                    b.Property<DateTimeOffset>("IntroducedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("UserId", "WordId");
+
+                    b.HasIndex("WordId");
+
+                    b.HasIndex("UserId", "IntroducedAtUtc");
+
+                    b.ToTable("UserWordIntroductions", (string)null);
+                });
+
+            modelBuilder.Entity("WordMatch.API.Features.Study.UserWordMastery", b =>
+                {
+                    b.Property<string>("UserId")
                         .HasColumnType("text");
 
-                    b.Property<string>("Format")
+                    b.Property<int>("WordId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Dimension")
                         .HasColumnType("text");
+
+                    b.Property<int>("ConsecutiveCorrectCount")
+                        .HasColumnType("integer");
 
                     b.Property<int>("CorrectCount")
                         .HasColumnType("integer");
-
-                    b.Property<DateTimeOffset>("LastAnsweredAtUtc")
-                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("LastOutcome")
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<DateTimeOffset>("LastStudiedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset>("NextReviewAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<int>("ReviewCount")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Stage")
                         .HasColumnType("integer");
 
                     b.Property<int>("WrongCount")
                         .HasColumnType("integer");
 
-                    b.HasKey("UserId", "WordId", "Direction", "Format");
+                    b.HasKey("UserId", "WordId", "Dimension");
 
                     b.HasIndex("WordId");
 
-                    b.ToTable("UserWordProgress", null, t =>
+                    b.HasIndex("UserId", "NextReviewAtUtc");
+
+                    b.ToTable("UserWordMastery", null, t =>
                         {
-                            t.HasCheckConstraint("CK_UserWordProgress_Counts", "\"CorrectCount\" >= 0 AND \"ReviewCount\" >= 0 AND \"WrongCount\" >= 0");
+                            t.HasCheckConstraint("CK_UserWordMastery_Counts", "\"CorrectCount\" >= 0 AND \"ReviewCount\" >= 0 AND \"WrongCount\" >= 0 AND \"ConsecutiveCorrectCount\" >= 0");
 
-                            t.HasCheckConstraint("CK_UserWordProgress_Direction", "\"Direction\" IN ('EnglishToTurkish', 'TurkishToEnglish')");
+                            t.HasCheckConstraint("CK_UserWordMastery_Dimension", "\"Dimension\" IN ('WrittenRecognition', 'WrittenRecall', 'AuralRecognition', 'SpokenRecall')");
 
-                            t.HasCheckConstraint("CK_UserWordProgress_Format", "\"Format\" IN ('MultipleChoice', 'Written')");
+                            t.HasCheckConstraint("CK_UserWordMastery_Outcome", "\"LastOutcome\" IN ('Correct', 'Review', 'Wrong')");
 
-                            t.HasCheckConstraint("CK_UserWordProgress_LastOutcome", "\"LastOutcome\" IN ('Correct', 'Review', 'Wrong')");
+                            t.HasCheckConstraint("CK_UserWordMastery_Stage", "\"Stage\" >= 0 AND \"Stage\" <= 5");
                         });
                 });
 
@@ -404,6 +544,11 @@ namespace WordMatch.API.Migrations
                     b.Property<string>("English")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<string>("ImportKey")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
 
                     b.Property<bool>("IsIrregular")
                         .HasColumnType("boolean");
@@ -432,11 +577,16 @@ namespace WordMatch.API.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("ImportKey")
+                        .IsUnique();
+
                     b.HasIndex("English", "PartOfSpeech")
                         .IsUnique();
 
                     b.ToTable("Words", null, t =>
                         {
+                            t.HasCheckConstraint("CK_Words_ImportKey", "length(trim(\"ImportKey\")) > 0");
+
                             t.HasCheckConstraint("CK_Words_Level", "\"Level\" IN ('A1', 'A2', 'B1', 'B2')");
 
                             t.HasCheckConstraint("CK_Words_PartOfSpeech", "\"PartOfSpeech\" IN ('Verb', 'Noun', 'Adjective', 'ProperNoun', 'Number', 'Pronoun')");
@@ -500,22 +650,11 @@ namespace WordMatch.API.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("WordMatch.API.Features.Practice.PracticeSession", b =>
+            modelBuilder.Entity("WordMatch.API.Features.Study.CurriculumTopicWord", b =>
                 {
-                    b.HasOne("WordMatch.API.Features.Auth.ApplicationUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("WordMatch.API.Features.Practice.PracticeSessionWord", b =>
-                {
-                    b.HasOne("WordMatch.API.Features.Practice.PracticeSession", "PracticeSession")
+                    b.HasOne("WordMatch.API.Features.Study.CurriculumTopic", "CurriculumTopic")
                         .WithMany("Words")
-                        .HasForeignKey("PracticeSessionId")
+                        .HasForeignKey("CurriculumTopicId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -525,12 +664,67 @@ namespace WordMatch.API.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.Navigation("PracticeSession");
+                    b.Navigation("CurriculumTopic");
 
                     b.Navigation("Word");
                 });
 
-            modelBuilder.Entity("WordMatch.API.Features.Practice.UserWordProgress", b =>
+            modelBuilder.Entity("WordMatch.API.Features.Study.StudySession", b =>
+                {
+                    b.HasOne("WordMatch.API.Features.Study.CurriculumTopic", "CurriculumTopic")
+                        .WithMany()
+                        .HasForeignKey("CurriculumTopicId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("WordMatch.API.Features.Study.CurriculumTopic", "ReturnToCurriculumTopic")
+                        .WithMany()
+                        .HasForeignKey("ReturnToCurriculumTopicId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("WordMatch.API.Features.Auth.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("CurriculumTopic");
+
+                    b.Navigation("ReturnToCurriculumTopic");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("WordMatch.API.Features.Study.StudySessionQuestion", b =>
+                {
+                    b.HasOne("WordMatch.API.Features.Study.StudySession", "StudySession")
+                        .WithMany("Questions")
+                        .HasForeignKey("StudySessionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("WordMatch.API.Features.Words.Word", "Word")
+                        .WithMany()
+                        .HasForeignKey("WordId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("StudySession");
+
+                    b.Navigation("Word");
+                });
+
+            modelBuilder.Entity("WordMatch.API.Features.Study.UserStudySkillPause", b =>
+                {
+                    b.HasOne("WordMatch.API.Features.Auth.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("WordMatch.API.Features.Study.UserWordIntroduction", b =>
                 {
                     b.HasOne("WordMatch.API.Features.Auth.ApplicationUser", "User")
                         .WithMany()
@@ -549,9 +743,33 @@ namespace WordMatch.API.Migrations
                     b.Navigation("Word");
                 });
 
-            modelBuilder.Entity("WordMatch.API.Features.Practice.PracticeSession", b =>
+            modelBuilder.Entity("WordMatch.API.Features.Study.UserWordMastery", b =>
+                {
+                    b.HasOne("WordMatch.API.Features.Auth.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("WordMatch.API.Features.Words.Word", "Word")
+                        .WithMany()
+                        .HasForeignKey("WordId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("User");
+
+                    b.Navigation("Word");
+                });
+
+            modelBuilder.Entity("WordMatch.API.Features.Study.CurriculumTopic", b =>
                 {
                     b.Navigation("Words");
+                });
+
+            modelBuilder.Entity("WordMatch.API.Features.Study.StudySession", b =>
+                {
+                    b.Navigation("Questions");
                 });
 #pragma warning restore 612, 618
         }

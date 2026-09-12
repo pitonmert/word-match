@@ -17,7 +17,6 @@ DAHİL:
 DAHİL DEĞİL:
 - Ayrıntılı sistem ve yazılım mimarisi → ARCHITECTURE.md
 - Uzun vadeli gelecek hedefleri → ROADMAP.md
-- Aktif işin fazları ve teknik uygulama adımları → PLAN.md
 - Sürüm geçmişi ve önemli değişiklikler → CHANGELOG.md
 - Lisans metni → LICENSE
 
@@ -28,22 +27,37 @@ etmek yerine ilgili kanonik belgeye bağlantı verin.
 
 # Word Match
 
-Word Match, Türkçe konuşan kullanıcıların İngilizce kelime haznesini çalışması
-için geliştirilmiş bir web uygulamasıdır. Kullanıcılar kelimeleri seviye ve
-kategoriye göre çalışır; oturumlar, cevaplar ve ilerleme kalıcı olarak saklanır.
+Word Match, Türkçe konuşan kullanıcıların İngilizce kelime haznesini düzenli
+çalışmayla geliştirmesi için hazırlanmış bir web uygulamasıdır. Oturumlar,
+cevaplar ve ilerleme kalıcı olarak saklanır.
 
-Mevcut ürün kategori temelli Practice akışına odaklanır. Planlanan Learn ve
-Review akışları ile dört boyutlu mastery modeli için [Mimari](ARCHITECTURE.md)
-ve [Uygulama Planı](PLAN.md) belgelerine bakın.
+Uygulamanın tek öğrenme akışı Study'dir ve başlangıçta çalışma türü, beceri
+veya yol seçimi yoktur. Sistem curriculum sırasındaki güncel konuyu açar;
+kullanıcı isterse konuyu değiştirir. Curriculum `Level → sıralı Topic → açık
+öğrenme grubu → sıralı kelime` şeklindedir ve sıra `Words.csv`'den gelen açık
+veridir. Ayrıntılar için
+[Mimari](ARCHITECTURE.md) belgesine bakın.
 
 ## Özellikler
 
 - ASP.NET Core Identity ile kayıt, giriş, kalıcı oturum ve XSRF koruması
-- Seviye/kategori bazlı İngilizce ↔ Türkçe ve mixed kelime çalışması
-- Çoktan seçmeli ve yazılı soru biçimleri; doğru, tekrar ve yanlış sonuçları
-- Devam eden oturumu sürdürme, tamamlanmış içeriği replay etme ve kategori
-  ilerlemesini sıfırlama
-- Salt okunur kelime kataloğu, filtreler ve isteğe bağlı feedback sesleri
+- `/` altında tek bir başlangıç yüzeyi: sunucunun belirlediği tek `Devam et`
+  eylemi, konu ilerlemesi ve `Konu değiştir`
+- `Level → sıralı Topic → açık öğrenme grubu → sıralı kelime` curriculum omurgası
+- Konu oturumu bir grubu bütünüyle çalışır: önce anlamını seçme, ardından aynı
+  kelimeleri karıştırılmış sırayla yazarak hatırlama; yalnız pekiştirme
+  oturumları en fazla 10 sorudur
+- Soru türlerini sistem dengeler; kullanıcı uygun olmayan yazma sorularını
+  10 dakika erteleyebilir. Açık oturum sonuçlanır, sonraki çalışma uygun
+  konudan başlar ve süre dolduğunda eski konu yalnız yeni oturum sınırında
+  yeniden seçilir; bu bir cevap değildir ve mastery'yi etkilemez
+- Elle seçilen konudaki kelime iki yazılı yönü de yanıtlandığında tamamlanır ve
+  sıra o konuya geldiğinde yeniden yeni kelime olarak görünmez
+- Çoktan seçmeli ve yazılı soru biçimleri; doğru, bilmiyorum ve yanlış sonuçları
+- Sabit soru kartı, ses tercihi, klavye kısayolları ve cevaplanan sonuçları
+  oturum içinde inceleme
+- Devam eden Study oturumunu sürdürme ve ayrıntılı sonuç listeleri
+- Salt okunur kelime kataloğu ve filtreler
 
 ## Gereksinimler
 
@@ -63,20 +77,26 @@ dotnet ef database update --project WordMatch.API --startup-project WordMatch.AP
 npm ci --prefix WordMatch.Web
 ```
 
-Ardından kelime verisini yükleyin. `Data/WordMatch.csv` kelime kaynağını içerir,
-ancak güncel kaynak kodda bu dosyayı otomatik yükleyen bir bootstrap komutu
-yoktur. Bu adım atlanırsa kategori listesi boş gelir ve Practice başlatılamaz.
-Komutu repository kökünden, boş bir `Words` tablosuna karşı bir kez çalıştırın:
+Ardından içerik verisini yükleyin. `WordMatch.API/Content/Words.csv`
+içindeki `ImportKey`, veritabanının ürettiği `Id` değerinden ayrı ve sabit
+kaynak kimliğidir. Bu sayede aynı kaynak tekrar yüklendiğinde ilişkisel
+kimlikler ve kullanıcı ilerlemesi korunur. Komut normal API başlangıcından
+ayrıdır:
 
 ```bash
-psql "<PostgreSQL bağlantı dizisi>" -c "\copy \"Words\" (\"English\",\"TurkishTranslations\",\"PartOfSpeech\",\"PastSimple\",\"PastParticiple\",\"IsIrregular\",\"Level\",\"Topic\") FROM 'Data/WordMatch.csv' WITH (FORMAT csv, HEADER true)"
+dotnet run --project WordMatch.API -- bootstrap words
 ```
 
-> Not: Bu komut idempotent değildir. `Words` tablosu doluyken yeniden
-> çalıştırılırsa `IX_Words_English_PartOfSpeech` unique index'i nedeniyle hata
-> verir. Planlanan idempotent bootstrap akışı
-> [Mimari](ARCHITECTURE.md#95-migration-ve-hedef-bootstrap-modeli) ve
-> [Uygulama Planı](PLAN.md) içinde tanımlıdır.
+Komut idempotenttir. Her satır bir kelimeyi, konu yerleşimini ve öğrenme grubu
+yerleşimini birlikte
+taşır; 700 kelimeyi 66 sıralı konuya bağlar (A1'de 27, A2'de 20, B1'de 14,
+B2'de 5), kaynak anahtarlarının eksiksiz ve benzersiz, konu sırasının her
+level içinde; öğrenme grubu sırasının konu içinde kesintisiz olmasını zorunlu
+tutar. Kelime içeriği ve konu
+üyeliği/sırası her zaman serbestçe düzeltilebilir — kullanıcı ilerlemesi
+kelime bazlı tutulduğu için bu düzeltmeler mevcut ilerlemeyi etkilemez.
+Kaynaktan kaldırılan konular silinmez, `Retired` işaretlenir ve planlamada
+görünmez.
 
 ## Kullanım
 
@@ -90,11 +110,13 @@ dotnet watch --project WordMatch.API
 npm run dev --prefix WordMatch.Web
 ```
 
-Tarayıcıda `http://localhost:5174` adresini açın, hesap oluşturun ve bir
-kategori seçerek çalışmaya başlayın. API'nin local health endpoint'i
-`http://localhost:5164/health` adresindedir.
+Tarayıcıda `http://localhost:5174` adresini açın, hesap oluşturun ve
+`Başla` ile doğrudan ilk soruya geçin. Ana ekran sıradaki konuyu
+(ör. `A1 · Duygular ve Kişilik`) ve o konudaki ilerlemeyi gösterir;
+`Konu değiştir` ile başka bir level/topic seçebilirsiniz. API'nin local health
+endpoint'i `http://localhost:5164/health` adresindedir.
 
-## Geliştirme
+## Doğrulama
 
 API testlerini çalıştırın:
 
@@ -118,6 +140,5 @@ git diff --check
 
 - [Mimari](ARCHITECTURE.md)
 - [Yol Haritası](ROADMAP.md)
-- [Uygulama Planı](PLAN.md)
 - [Değişiklik Kaydı](CHANGELOG.md)
 - [Lisans](LICENSE)

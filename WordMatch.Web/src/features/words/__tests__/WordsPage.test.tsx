@@ -32,7 +32,6 @@ const words: WordResponse[] = [
     isIrregular: false,
     level: "A1",
     topic: "FoodAndDrink",
-    currentOutcome: null,
   },
   {
     id: 2,
@@ -44,7 +43,6 @@ const words: WordResponse[] = [
     isIrregular: true,
     level: "A1",
     topic: "Actions",
-    currentOutcome: null,
   },
   {
     id: 3,
@@ -56,7 +54,6 @@ const words: WordResponse[] = [
     isIrregular: false,
     level: "A2",
     topic: "Descriptions",
-    currentOutcome: null,
   },
 ];
 
@@ -72,7 +69,6 @@ const paginatedWords: WordResponse[] = Array.from(
     isIrregular: false,
     level: "A1",
     topic: "General",
-    currentOutcome: null,
   }),
 );
 
@@ -88,7 +84,6 @@ const verbWords: WordResponse[] = [
     isIrregular: false,
     level: "A1",
     topic: "Actions",
-    currentOutcome: null,
   },
 ];
 
@@ -109,7 +104,6 @@ const topicWords: WordResponse[] = [
   isIrregular: false,
   level: "A1",
   topic,
-  currentOutcome: null,
 }));
 
 afterEach(() => {
@@ -160,64 +154,6 @@ describe("WordsPage", () => {
     expect(
       screen.queryByRole("button", { name: "Önceki sayfa" }),
     ).not.toBeInTheDocument();
-  });
-
-  it("keeps progress indicators out of the word rows", async () => {
-    const wordsWithProgress = words.map((word) =>
-      word.id === 1
-        ? { ...word, currentOutcome: "Wrong" as const }
-        : word.id === 2
-          ? { ...word, currentOutcome: "Review" as const }
-          : word,
-    );
-    vi.stubGlobal(
-      "fetch",
-      vi
-        .fn()
-        .mockResolvedValue({ ok: true, json: async () => wordsWithProgress }),
-    );
-
-    renderWordsPage();
-
-    await screen.findByText("apple");
-
-    expect(screen.queryByLabelText("Answered incorrectly")).toBeNull();
-    expect(screen.queryByLabelText("Marked as unknown")).toBeNull();
-    expect(
-      screen.queryByLabelText("Previously answered incorrectly"),
-    ).toBeNull();
-  });
-
-  it("filters words by their practice progress", async () => {
-    const wordsWithProgress: WordResponse[] = [
-      { ...words[0], currentOutcome: "Wrong" },
-      { ...words[1], currentOutcome: "Review" },
-      {
-        ...words[2],
-        currentOutcome: "Correct",
-      },
-    ];
-    vi.stubGlobal(
-      "fetch",
-      vi.fn().mockResolvedValue({
-        ok: true,
-        json: async () => wordsWithProgress,
-      }),
-    );
-    const user = userEvent.setup();
-
-    renderWordsPage();
-    await screen.findByText("apple");
-
-    await user.click(screen.getByRole("radio", { name: "Doğru" }));
-    const table = screen.getByRole("table");
-    expect(within(table).getByText("beautiful")).toBeInTheDocument();
-    expect(within(table).queryByText("apple")).not.toBeInTheDocument();
-    expect(within(table).queryByText("go")).not.toBeInTheDocument();
-
-    await user.click(screen.getByRole("radio", { name: "Tekrar" }));
-    expect(within(table).getByText("go")).toBeInTheDocument();
-    expect(within(table).queryByText("beautiful")).not.toBeInTheDocument();
   });
 
   it("renders an error and retries the request", async () => {

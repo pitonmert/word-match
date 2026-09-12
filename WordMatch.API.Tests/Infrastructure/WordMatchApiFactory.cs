@@ -1,15 +1,12 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Npgsql;
 using Testcontainers.PostgreSql;
 using WordMatch.API.Data;
-using WordMatch.API.Features.Practice;
+using WordMatch.API.Features.Study;
 using WordMatch.API.Features.Words;
 
 namespace WordMatch.API.Tests.Infrastructure;
@@ -28,7 +25,7 @@ public sealed class WordMatchApiFactory : WebApplicationFactory<Program>, IAsync
 
         await using var scope = Services.CreateAsyncScope();
         var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-        await MigrateAndVerifyDataPreservationAsync(db);
+        await db.Database.MigrateAsync();
 
         if (await db.Words.AnyAsync())
             return;
@@ -83,165 +80,46 @@ public sealed class WordMatchApiFactory : WebApplicationFactory<Program>, IAsync
             }
         );
         await db.SaveChangesAsync();
-    }
 
-    private static async Task MigrateAndVerifyDataPreservationAsync(ApplicationDbContext db)
-    {
-        const string previousMigration = "20260729125942_AddAutomaticQuestionPreference";
-        const string translationArrayMigration = "20260729221533_StoreTurkishTranslationsAsArray";
-        const string migrationUserId = "bidirectional-migration-user";
-        const string migrationSessionId = "10000000-0000-0000-0000-000000000001";
-        const string legacyMixedSessionId = "10000000-0000-0000-0000-000000000002";
-        const string duplicateActiveSessionId = "10000000-0000-0000-0000-000000000003";
-        var migrator = db.GetService<IMigrator>();
-
-        await migrator.MigrateAsync(previousMigration);
-        await db.Database.ExecuteSqlRawAsync(
-            """
-            INSERT INTO "Words"
-                ("English", "TurkishTranslation", "PartOfSpeech", "IsIrregular", "Level", "Topic")
-            VALUES
-                ('MIGRATION_PROBE', 'bir, iki', 'Noun', FALSE, 'A1', 'General');
-            """
-        );
-        await migrator.MigrateAsync(translationArrayMigration);
-        await db.Database.ExecuteSqlRawAsync(
-            $"""
-            INSERT INTO "AspNetUsers"
-                ("Id", "CreatedAtUtc", "EmailConfirmed", "PhoneNumberConfirmed",
-                 "TwoFactorEnabled", "LockoutEnabled", "AccessFailedCount",
-                 "AutomaticallyLoadNextQuestion")
-            VALUES
-                ('{migrationUserId}', NOW(), FALSE, FALSE, FALSE, FALSE, 0, TRUE);
-
-            INSERT INTO "PracticeSessions"
-                ("Id", "UserId", "CategoryKey", "Level", "Topic", "Status",
-                 "StartedAtUtc", "LastActivityAtUtc")
-            VALUES
-                ('{migrationSessionId}', '{migrationUserId}', 'A1|Topic|General',
-                 'A1', 'General', 'Active', NOW(), NOW());
-
-            INSERT INTO "PracticeSessionWords"
-                ("PracticeSessionId", "WordId", "Position", "EnglishSnapshot",
-                 "CorrectAnswerSnapshot")
-            SELECT
-                '{migrationSessionId}', "Id", 0, "English", 'bir, iki'
-            FROM "Words"
-            WHERE "English" = 'MIGRATION_PROBE';
-
-            INSERT INTO "UserWordProgress"
-                ("UserId", "WordId", "CorrectCount", "ReviewCount", "WrongCount",
-                 "LastOutcome", "LastAnsweredAtUtc")
-            SELECT
-                '{migrationUserId}', "Id", 1, 0, 0, 'Correct', NOW()
-            FROM "Words"
-            WHERE "English" = 'MIGRATION_PROBE';
-            """
-        );
-        await migrator.MigrateAsync("20260730105346_AddDefaultPracticeModePreference");
-        await db.Database.ExecuteSqlRawAsync(
-            $"""
-            INSERT INTO "PracticeSessions"
-                ("Id", "UserId", "CategoryKey", "Level", "Topic", "Mode", "Status",
-                 "StartedAtUtc", "LastActivityAtUtc", "CompletedAtUtc")
-            VALUES
-                ('{legacyMixedSessionId}', '{migrationUserId}',
-                 'A1|Topic|General|Mode|Mixed', 'A1', 'General', 'Mixed',
-                 'Completed', NOW(), NOW(), NOW());
-
-            INSERT INTO "PracticeSessionWords"
-                ("PracticeSessionId", "WordId", "Position", "Direction",
-                 "EnglishSnapshot", "PromptSnapshot", "CorrectAnswerSnapshot")
-            SELECT
-                '{legacyMixedSessionId}', "Id", 0, 'EnglishToTurkish',
-                "English", "English", 'bir, iki'
-            FROM "Words"
-            WHERE "English" = 'MIGRATION_PROBE';
-            """
-        );
-        await migrator.MigrateAsync("20260803165906_RemoveDefaultPracticeModePreference");
-        await db.Database.ExecuteSqlRawAsync(
-            $"""
-            INSERT INTO "PracticeSessions"
-                ("Id", "UserId", "CategoryKey", "Level", "Topic", "Mode", "Status",
-                 "StartedAtUtc", "LastActivityAtUtc")
-            VALUES
-                ('{duplicateActiveSessionId}', '{migrationUserId}',
-                 'A1|Topic|General|Mode|TurkishToEnglish', 'A1', 'General',
-                 'TurkishToEnglish', 'Active', NOW() - INTERVAL '1 minute',
-                 NOW() - INTERVAL '1 minute');
-            """
-        );
-        await migrator.MigrateAsync();
-        db.ChangeTracker.Clear();
-
-        var probe = await db.Words.SingleAsync(word => word.English == "MIGRATION_PROBE");
-        if (!probe.TurkishTranslations.SequenceEqual(["bir", "iki"]))
+        var studyWords = await db.Words.OrderBy(word => word.Id).ToListAsync();
+        for (var index = 0; index < TopicOrder.Length; index++)
         {
-            throw new InvalidOperationException(
-                "The Turkish translation array migration did not preserve legacy values."
-            );
+            var topic = new CurriculumTopic
+            {
+                Level = WordLevel.A1,
+                Topic = TopicOrder[index],
+                SortOrder = index + 1,
+            };
+            var topicWords = studyWords.Where(word => word.Topic == TopicOrder[index]).ToList();
+            for (var position = 0; position < topicWords.Count; position++)
+            {
+                topic.Words.Add(
+                    new CurriculumTopicWord
+                    {
+                        WordId = topicWords[position].Id,
+                        SortOrder = position + 1,
+                    }
+                );
+            }
+
+            db.CurriculumTopics.Add(topic);
         }
 
-        var migratedSession = await db
-            .PracticeSessions.Include(session => session.Words)
-            .SingleAsync(session => session.Id == Guid.Parse(migrationSessionId));
-        var migratedProgress = await db.UserWordProgress.SingleAsync(progress =>
-            progress.UserId == migrationUserId && progress.WordId == probe.Id
-        );
-        var invalidatedMixedSession = await db
-            .PracticeSessions.Include(session => session.Words)
-            .SingleAsync(session => session.Id == Guid.Parse(legacyMixedSessionId));
-        var duplicateActiveSession = await db.PracticeSessions.SingleAsync(session =>
-            session.Id == Guid.Parse(duplicateActiveSessionId)
-        );
-
-        if (
-            migratedSession.Mode != PracticeMode.EnglishToTurkish
-            || migratedSession.Status != PracticeSessionStatus.Abandoned
-            || migratedSession.Words.Single().Direction != QuestionDirection.EnglishToTurkish
-            || migratedSession.Words.Single().Format != QuestionFormat.MultipleChoice
-            || migratedSession.Words.Single().PromptSnapshot != "MIGRATION_PROBE"
-            || migratedProgress.Direction != QuestionDirection.EnglishToTurkish
-            || migratedProgress.Format != QuestionFormat.MultipleChoice
-            || invalidatedMixedSession.Status != PracticeSessionStatus.Abandoned
-            || invalidatedMixedSession.CompletedAtUtc is not null
-            || invalidatedMixedSession.Words.Single().Format != QuestionFormat.MultipleChoice
-            || duplicateActiveSession.Status != PracticeSessionStatus.Abandoned
-        )
-        {
-            throw new InvalidOperationException(
-                "The practice migrations did not preserve or classify legacy data correctly."
-            );
-        }
-
-        await Assert.ThrowsAsync<PostgresException>(() =>
-            db.Database.ExecuteSqlInterpolatedAsync(
-                $"""
-                UPDATE "PracticeSessions"
-                SET "Status" = {"Invalid"}
-                WHERE "Id" = {Guid.Parse(migrationSessionId)};
-                """
-            )
-        );
-        await Assert.ThrowsAsync<PostgresException>(() =>
-            db.Database.ExecuteSqlInterpolatedAsync(
-                $"""
-                UPDATE "UserWordProgress"
-                SET "LastOutcome" = {"Invalid"}
-                WHERE "UserId" = {migrationUserId} AND "WordId" = {probe.Id};
-                """
-            )
-        );
-
-        await db.Database.ExecuteSqlInterpolatedAsync(
-            $"""DELETE FROM "AspNetUsers" WHERE "Id" = {migrationUserId};"""
-        );
-        db.ChangeTracker.Clear();
-        probe = await db.Words.SingleAsync(word => word.English == "MIGRATION_PROBE");
-        db.Words.Remove(probe);
         await db.SaveChangesAsync();
     }
+
+    // The curriculum spine is explicit data, not the WordTopic enum order. The
+    // first topic is deliberately the largest so a topic session has several
+    // questions before it completes.
+    public static readonly WordTopic[] TopicOrder =
+    [
+        WordTopic.TechnologyAndMedia,
+        WordTopic.JobsAndWork,
+        WordTopic.Animals,
+        WordTopic.Colors,
+        WordTopic.Education,
+        WordTopic.Actions,
+    ];
 
     async Task IAsyncLifetime.DisposeAsync()
     {

@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using WordMatch.API.Features.Auth;
-using WordMatch.API.Features.Practice;
+using WordMatch.API.Features.Study;
 using WordMatch.API.Features.Words;
 
 namespace WordMatch.API.Data;
@@ -11,11 +11,15 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
 {
     public DbSet<Word> Words => Set<Word>();
 
-    public DbSet<PracticeSession> PracticeSessions => Set<PracticeSession>();
+    public DbSet<CurriculumTopic> CurriculumTopics => Set<CurriculumTopic>();
+    public DbSet<CurriculumTopicWord> CurriculumTopicWords => Set<CurriculumTopicWord>();
 
-    public DbSet<PracticeSessionWord> PracticeSessionWords => Set<PracticeSessionWord>();
+    public DbSet<UserWordIntroduction> UserWordIntroductions => Set<UserWordIntroduction>();
+    public DbSet<UserWordMastery> UserWordMastery => Set<UserWordMastery>();
+    public DbSet<UserStudySkillPause> UserStudySkillPauses => Set<UserStudySkillPause>();
 
-    public DbSet<UserWordProgress> UserWordProgress => Set<UserWordProgress>();
+    public DbSet<StudySession> StudySessions => Set<StudySession>();
+    public DbSet<StudySessionQuestion> StudySessionQuestions => Set<StudySessionQuestion>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

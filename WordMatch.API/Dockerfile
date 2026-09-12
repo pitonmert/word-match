@@ -5,7 +5,8 @@ COPY WordMatch.API.csproj ./
 RUN dotnet restore WordMatch.API.csproj
 
 COPY . ./
-RUN dotnet publish WordMatch.API.csproj -c Release -o /app/publish
+RUN dotnet publish WordMatch.API.csproj -c Release -o /app/publish \
+    && test -f /app/publish/Content/Words.csv
 
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS runtime
 WORKDIR /app

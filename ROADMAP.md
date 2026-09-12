@@ -2,75 +2,84 @@
 BELGE KAPSAMI
 
 AMAÇ:
-Projenin yüksek seviyeli gelecek yönünü ve önceliklerini göstermek.
+Uygulanmamış tüm ürün, teknik iyileştirme ve düzeltme kararlarını tek yerde
+tutmak.
 
 DAHİL:
-- Şu anda öncelikli büyük özellikler veya geliştirmeler
-- Sıradaki yüksek seviyeli çalışmalar
-- Daha sonra değerlendirilecek fikirler ve yönler
+- Sıradaki işler ve öncelikleri
+- Gelecek özelliklerin kabul edilmiş mimari sınırları
+- Mevcut sistemin giderilmesi planlanan eksikleri
 
 DAHİL DEĞİL:
-- Mikro görevlar veya kod düzeyi TODO'lar
-- Aktif işin ayrıntılı fazları ve uygulama adımları → PLAN.md
-- Mevcut sistem mimarisi → ARCHITECTURE.md
-- Tamamlanmış sürümlerin değişiklik geçmişi → CHANGELOG.md
-- Kesin olmayan tarih veya teslim taahhütleri
+- Çalışan sistemin teknik açıklaması → ARCHITECTURE.md
+- Hızlı kurulum ve kullanım → README.md
+- Yayımlanmış değişiklik geçmişi → CHANGELOG.md
 
 KURAL:
-ROADMAP bir görev takip sistemi değildir. Maddeler sonuç/özellik seviyesinde
-kalmalı; uygulama ayrıntıları PLAN.md dosyasına taşınmalıdır.
+Bu dosya uygulanmamış işleri tek kaynaktan açıklar. Bir iş tamamlandığında
+buradan silinir; çalışan davranış ARCHITECTURE.md'ye, kayda değer değişiklik
+CHANGELOG.md'ye taşınır.
 -->
 
 # Yol Haritası
 
-Bu dosya projenin mevcut geliştirme yönünü ve planlanan önemli çalışmaları
-takip eder.
-
-> Planlar ve öncelikler geliştirme sürecine göre değişebilir.
-
-Aktif çalışmanın sıralı uygulama adımları için [PLAN.md](PLAN.md) dosyasına,
-gelecek yatırımların teknik sınırları için
-[ARCHITECTURE.md](ARCHITECTURE.md#23-teknik-kısıtlamalar-ve-planlanan-uzantı-sınırları)
-dosyasına bakın.
-
-Sıralama maliyet ve belirsizliğe göre kurulmuştur: önce uygulamayı çalışır
-kılan ve öğrenme değeri kanıtlanmış işler, sonra doğrulanması gereken yatırımlar
-gelir.
+Öncelikler kullanım verisi ve ürün öğrenimlerine göre değişebilir. Bu dosyadaki
+hiçbir madde, kaynak kodda uygulanmadan mevcut davranış sayılmaz.
 
 ## Şimdi
 
-- [ ] Kelime bootstrap'ını, yazılı mastery çekirdeğini ve ilk Review döngüsünü
-      [PLAN.md](PLAN.md) içindeki fazlarla tamamlamak.
+### Mastery Görünürlüğü
+
+- `/api/words` kullanıcıdan bağımsız, salt okunur katalog olarak kalacak;
+  kullanıcı ilerlemesi bu yanıta eklenmeyecek.
+- Yetkili `GET /api/study/mastery`, yalnız kullanıcının tanıttığı kelimeler
+  için `WordId`, ilk karşılaşma bilgisi ve boyut bazlı mastery durumu
+  (`Stage`, sayaçlar, `NextReviewAtUtc`) döndürecek.
+- `/words`, katalog ve mastery verisini ayrı query'lerle yükleyip `WordId`
+  üzerinden birleştirecek. Kayıtsız kelime “Henüz çalışılmadı” sayılacak.
+- Görünümde dört boyut rozeti, özet durum veya yeni/zayıf/due filtrelerinin
+  hangilerinin gerekli olduğu kullanım ihtiyacına göre belirlenecek; yapay
+  başarı yüzdesi eklenmeyecek.
+
+### Operasyon ve Gözlemlenebilirlik
+
+- Development ortamında OpenAPI belgesini yayımlamak.
+- Metrics, tracing ve yapılandırılmış loglamayı kurmak; planner ve tekrar
+  aralıklarını gerçek kullanım verisiyle değerlendirmek.
+- API/web cache stratejisini, sorgu profillemesini ve otomatik rollback
+  yaklaşımını ihtiyaç ortaya çıktığında tasarlamak.
 
 ## Sırada
 
-- [ ] Development'ta OpenAPI belgesini yayımlamak; bugün yalnızca
-      `AddEndpointsApiExplorer()` kayıtlıdır ve çalışır bir arayüz yoktur.
-- [ ] Metrics, tracing ve yapılandırılmış loglamayı kurmak. Review aralıklarını
-      gerçek kullanım verisiyle kalibre etmenin ön koşuludur.
-- [ ] Curriculum path ve sistem kontrollü Learn akışını; mastery modeli
-      kararlı hale geldikten sonra eklemek.
-- [ ] Hedef temiz şema reset'ini ve kullanıcı/authentication reset'ini
-      uygulamak. Zamanı ve `InitialCreate` içeriği hâlâ açık karardır.
-- [ ] İçerik kalitesi gerektiğinde `Admin` policy, içerik bildirimi ve audit
-      temelini kurmak.
-- [ ] Yetkilendirme, audit ve optimistic concurrency hazır olduğunda yönetici
-      kelime yönetimini eklemek.
+### İçerik Kalitesi ve Yönetim
+
+- İçerik bildirimi, `Admin` policy, audit ve optimistic concurrency temelini
+  kurmak.
+- Bu güvenlik sınırları hazır olduğunda kelime içerik yönetimini eklemek.
+
+### Placement Assessment
+
+- Normal Study oturumundan ayrı, kontrollü kelime örneklemi ve seviye
+  dağılımına sahip başlangıç değerlendirmesini tasarlamak.
+- Sonucun genel CEFR iddiası değil, başlangıç vocabulary seviyesi olduğunu
+  korumak.
 
 ## Daha Sonra
 
-- [ ] Çevrimdışı çalışmayı ve kurulabilir istemciyi değerlendirmek; kelime
-      çalışmanın büyük kısmı bağlantısız ortamda yapılır.
-- [ ] Curriculum ve mastery modeli kararlı olduğunda vocabulary placement
-      assessment'i değerlendirmek.
-- [ ] Cihaz yetenek tespitini ve desteklenmeyen soruların question lifecycle'ını
-      sesli egzersizler gündeme geldiğinde ele almak.
-- [ ] `AuralRecognition` akışını; Review davranışı yerleştikten sonra eklemek.
-- [ ] `SpokenRecall`'u yalnızca STT çalışma yeri, sağlayıcı, gizlilik metni ve
-      retention davranışı kesinleştikten sonra ele almak.
-- [ ] Review davranışı gözlemlendikten sonra sürümlenmiş puan ve motivasyon
-      sistemi eklemek.
-- [ ] Çekirdek `SpokenRecall` çalıştıktan sonra gelişmiş pronunciation ve daha
-      zengin içerik seçeneklerini değerlendirmek.
-- [ ] Tek kullanıcılı öğrenme değerini kanıtladıktan sonra sosyal çalışma ve
-      canlı rekabeti ayrı domain olarak ele almak.
+### Sesli Çalışma
+
+- Cihaz yeteneği, teknik atlama lifecycle'ı ve izin kaybı davranışı
+  kesinleştikten sonra `AuralRecognition`ı etkinleştirmek.
+- `SpokenRecall` için STT çalışma yeri, sağlayıcı, gizlilik metni, retention ve
+  hata davranışlarını belirlemek. Mikrofon/speech sorunu öğrenme sonucu veya
+  mastery güncellemesi üretmemeli.
+- Pronunciation, zengin ses içeriği, örnek cümle ve görselleri çekirdek Study
+  davranışından ayrı ürün kararları olarak değerlendirmek.
+
+### Ürün Genişletmeleri
+
+- Study ve tekrar davranışı gözlemlendikten sonra sürümlenmiş puan/motivasyon
+  modelini değerlendirmek.
+- Çevrimdışı çalışma ve kurulabilir istemciyi değerlendirmek.
+- Sosyal çalışma veya canlı rekabeti; gizlilik, moderasyon, server-authoritative
+  zaman ve reconnect gibi ayrı domain gereksinimleriyle ele almak.

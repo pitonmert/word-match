@@ -3,19 +3,24 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { z } from "zod";
 
-function jsonResponse(body: unknown, init: { status?: number } = {}) {
+function jsonResponse(
+  body: unknown,
+  init: { status?: number; headers?: Record<string, string> } = {},
+) {
   const status = init.status ?? 200;
   return {
     ok: status < 400,
     status,
+    headers: new Headers(init.headers),
     json: async () => body,
   } as unknown as Response;
 }
 
-function emptyResponse(status: number) {
+function emptyResponse(status: number, headers?: Record<string, string>) {
   return {
     ok: status < 400,
     status,
+    headers: new Headers(headers),
     json: async () => {
       throw new Error("no body");
     },
@@ -135,6 +140,43 @@ describe("apiRequest", () => {
     expect(error.message).toBe("Geçersiz istek.");
     expect(error.status).toBe(400);
     expect(error.errors).toEqual({ email: ["Zorunlu alan."] });
+  });
+
+  it("parses a machine-readable code from a JSON error body", async () => {
+    const { apiRequest, ApiError } = await import("@/lib/api/client");
+    const fetchMock = vi.fn().mockResolvedValue(
+      jsonResponse(
+        {
+          code: "study_session_owned_by_another_device",
+          message: "Bu çalışma başka bir cihazda açık.",
+        },
+        { status: 409 },
+      ),
+    );
+    vi.stubGlobal("fetch", fetchMock);
+
+    const error = (await apiRequest("/api/study-sessions", z.unknown()).catch(
+      (caught) => caught,
+    )) as InstanceType<typeof ApiError>;
+
+    expect(error).toBeInstanceOf(ApiError);
+    expect(error.code).toBe("study_session_owned_by_another_device");
+  });
+
+  it("leaves the code null when the error body has none", async () => {
+    const { apiRequest, ApiError } = await import("@/lib/api/client");
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValue(
+        jsonResponse({ message: "Geçersiz istek." }, { status: 400 }),
+      );
+    vi.stubGlobal("fetch", fetchMock);
+
+    const error = (await apiRequest("/api/words", z.unknown()).catch(
+      (caught) => caught,
+    )) as InstanceType<typeof ApiError>;
+
+    expect(error.code).toBeNull();
   });
 
   it("falls back to a generic message when the error response has no JSON body", async () => {

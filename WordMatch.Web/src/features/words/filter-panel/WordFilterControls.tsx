@@ -3,8 +3,7 @@ import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { cn } from "@/lib/utils";
 
-export type WordFilterField =
-  "progress" | "partOfSpeech" | "verbType" | "level" | "topic";
+export type WordFilterField = "partOfSpeech" | "verbType" | "level" | "topic";
 
 export type WordFilterValues = Record<WordFilterField, string>;
 

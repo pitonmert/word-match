@@ -12,11 +12,9 @@ import { queryClient } from "@/lib/queryClient";
 import "@/main.css";
 
 const AuthPage = lazy(() => import("@/features/auth/AuthPage"));
-const QuestionPracticePage = lazy(
-  () => import("@/features/practice/QuestionPracticePage"),
-);
-const CategorySelectionPage = lazy(
-  () => import("@/features/practice/CategorySelectionPage"),
+const StudyHomePage = lazy(() => import("@/features/study/StudyHomePage"));
+const StudySessionPage = lazy(
+  () => import("@/features/study/StudySessionPage"),
 );
 const WordsPage = lazy(() => import("@/features/words/WordsPage"));
 
@@ -41,11 +39,11 @@ createRoot(document.getElementById("root")!).render(
 function Application() {
   const { isLoading, user } = useAuth();
 
-  if (isLoading) return <RouteLoadingState />;
+  if (isLoading) return <ApplicationLoadingState />;
 
   if (!user) {
     return (
-      <Suspense fallback={<RouteLoadingState />}>
+      <Suspense fallback={<ApplicationLoadingState />}>
         <Routes>
           <Route element={<AuthPage />} path="*" />
         </Routes>
@@ -54,31 +52,28 @@ function Application() {
   }
 
   return (
-    <div className="flex h-svh flex-col bg-background">
+    <div className="flex h-svh flex-col overflow-hidden bg-background">
       <Navbar />
       <div className="min-h-0 flex-1">
-        <Suspense fallback={<RouteLoadingState />}>
-          <Routes>
-            <Route element={<CategorySelectionPage />} path="/" />
-            <Route element={<QuestionPracticePage />} path="/practice" />
-            <Route
-              element={<QuestionPracticePage />}
-              path="/practice/results"
-            />
-            <Route
-              element={<QuestionPracticePage />}
-              path="/practice/:sessionId"
-            />
-            <Route element={<WordsPage />} path="/words" />
-            <Route element={<NotFoundPage />} path="*" />
-          </Routes>
-        </Suspense>
+        <ErrorBoundary fallback={<RouteErrorFallback />}>
+          <Suspense fallback={<RouteLoadingState />}>
+            <Routes>
+              <Route element={<StudyHomePage />} path="/" />
+              <Route
+                element={<StudySessionPage />}
+                path="/session/:sessionId"
+              />
+              <Route element={<WordsPage />} path="/words" />
+              <Route element={<NotFoundPage />} path="*" />
+            </Routes>
+          </Suspense>
+        </ErrorBoundary>
       </div>
     </div>
   );
 }
 
-function RouteLoadingState() {
+function ApplicationLoadingState() {
   return (
     <main className="flex h-svh items-center justify-center bg-background">
       <p className="type-body text-muted-foreground">Yükleniyor...</p>
@@ -86,9 +81,17 @@ function RouteLoadingState() {
   );
 }
 
+function RouteLoadingState() {
+  return (
+    <main className="flex h-full items-center justify-center bg-background">
+      <p className="type-body text-muted-foreground">Yükleniyor...</p>
+    </main>
+  );
+}
+
 function NotFoundPage() {
   return (
-    <main className="flex h-svh flex-col items-center justify-center gap-3 bg-background px-4 text-center">
+    <main className="flex h-full flex-col items-center justify-center gap-3 bg-background px-4 text-center">
       <h1 className="type-page-title">Sayfa bulunamadı</h1>
       <p className="type-body text-muted-foreground">
         Aradığınız sayfa mevcut değil veya taşınmış olabilir.
@@ -103,6 +106,24 @@ function NotFoundPage() {
 function ErrorFallback() {
   return (
     <main className="flex h-svh flex-col items-center justify-center gap-3 bg-background px-4 text-center">
+      <h1 className="type-page-title">Bir şeyler ters gitti</h1>
+      <p className="type-body text-muted-foreground">
+        Sayfa yüklenirken beklenmeyen bir hata oluştu.
+      </p>
+      <button
+        className={buttonVariants({ variant: "outline" })}
+        onClick={() => window.location.reload()}
+        type="button"
+      >
+        Sayfayı yenile
+      </button>
+    </main>
+  );
+}
+
+function RouteErrorFallback() {
+  return (
+    <main className="flex h-full flex-col items-center justify-center gap-3 bg-background px-4 text-center">
       <h1 className="type-page-title">Bir şeyler ters gitti</h1>
       <p className="type-body text-muted-foreground">
         Sayfa yüklenirken beklenmeyen bir hata oluştu.
