@@ -16,13 +16,6 @@ import {
 } from "react-router-dom";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button, buttonVariants } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AnswerAnnouncement } from "@/features/question-session/components/AnswerAnnouncement";
 import { QuestionAutoAdvanceNotice } from "@/features/question-session/components/QuestionAutoAdvanceNotice";
@@ -123,6 +116,7 @@ function StudyQuestionCard({ study }: { study: StudyState }) {
     useState(false);
   const queryClient = useQueryClient();
   const titleRef = useRef<HTMLHeadingElement>(null);
+  const resultsRef = useRef<HTMLDivElement>(null);
   const playedAnswerRef = useRef<string | null>(null);
   const session = study.session!;
   const question = session.question!;
@@ -139,8 +133,28 @@ function StudyQuestionCard({ study }: { study: StudyState }) {
   useEffect(() => {
     setAutomaticAdvanceDelayElapsed(false);
     setIsBrowsingResults(false);
-    titleRef.current?.focus();
   }, [question.dimension, question.position, question.wordId]);
+
+  useEffect(() => {
+    if (isBrowsingResults) resultsRef.current?.focus();
+    else titleRef.current?.focus();
+  }, [
+    isBrowsingResults,
+    question.dimension,
+    question.position,
+    question.wordId,
+  ]);
+
+  useEffect(() => {
+    if (!isBrowsingResults) return;
+    const closeResults = (event: KeyboardEvent) => {
+      if (event.key !== "Escape" || event.defaultPrevented) return;
+      event.preventDefault();
+      setIsBrowsingResults(false);
+    };
+    window.addEventListener("keydown", closeResults);
+    return () => window.removeEventListener("keydown", closeResults);
+  }, [isBrowsingResults]);
 
   useEffect(() => {
     if (!hasAnswered || !study.answer) return;
@@ -183,8 +197,8 @@ function StudyQuestionCard({ study }: { study: StudyState }) {
   useEffect(() => {
     if (
       question.kind !== "MultipleChoice" ||
-      hasAnswered ||
-      isSubmitting ||
+      isBrowsingResults ||
+      study.phase !== "answering" ||
       study.answerError
     ) {
       return;
@@ -215,11 +229,12 @@ function StudyQuestionCard({ study }: { study: StudyState }) {
     };
     window.addEventListener("keydown", handleAnswerShortcut);
     return () => window.removeEventListener("keydown", handleAnswerShortcut);
-  }, [hasAnswered, isSubmitting, question, study]);
+  }, [isBrowsingResults, question, study]);
 
   useEffect(() => {
     if (
       question.kind !== "MultipleChoice" ||
+      isBrowsingResults ||
       !hasAnswered ||
       answerOutcome === "Correct" ||
       study.answerError
@@ -252,7 +267,7 @@ function StudyQuestionCard({ study }: { study: StudyState }) {
     };
     window.addEventListener("keydown", handleContinueShortcut);
     return () => window.removeEventListener("keydown", handleContinueShortcut);
-  }, [answerOutcome, hasAnswered, question.kind, study]);
+  }, [answerOutcome, hasAnswered, isBrowsingResults, question.kind, study]);
 
   const toggleResultsBrowser = (category: QuestionResultCategory) => {
     if (study.phase === "confirmingDeferral" || study.phase === "deferring")
@@ -279,16 +294,19 @@ function StudyQuestionCard({ study }: { study: StudyState }) {
   return (
     <QuestionSessionCard
       announcement={
-        <AnswerAnnouncement
-          isLastQuestion={isLastQuestion}
-          outcome={answerOutcome}
-        />
+        isBrowsingResults ? undefined : (
+          <AnswerAnnouncement
+            isLastQuestion={isLastQuestion}
+            outcome={answerOutcome}
+          />
+        )
       }
       contentClassName={isBrowsingResults ? "p-0" : "px-6 pt-1.5 pb-2"}
       footer={
         <QuestionSessionStats
           correctCount={displaySession.progress.correctCount}
           isResultSelectionDisabled={
+            isSubmitting ||
             shouldAutomaticallyAdvance ||
             study.phase === "confirmingDeferral" ||
             study.phase === "deferring"
@@ -305,16 +323,20 @@ function StudyQuestionCard({ study }: { study: StudyState }) {
       }
       footerClassName="p-0"
       header={
-        <StudyCardHeader
-          isReinforcement={displaySession.mode === "Review"}
-          question={question}
-          titleRef={titleRef}
-        />
+        isBrowsingResults ? undefined : (
+          <StudyCardHeader
+            isReinforcement={displaySession.mode === "Review"}
+            question={question}
+            titleRef={titleRef}
+          />
+        )
       }
       layout="question"
     >
       {isBrowsingResults ? (
         <QuestionResultBrowser
+          ref={resultsRef}
+          layout="content"
           reviewRecords={resultGroups.review}
           selectedCategory={selectedResultCategory}
           wrongRecords={resultGroups.wrong}
@@ -499,7 +521,7 @@ function StudyCardHeader({
         ) : null}
         <h1
           ref={titleRef}
-          className="min-w-0 truncate text-center text-xl/7 font-semibold outline-none sm:text-2xl sm:leading-8"
+          className="min-w-0 truncate text-center text-xl/7 font-semibold outline-none sm:text-2xl/8"
           tabIndex={-1}
         >
           {question.prompt}
@@ -593,11 +615,13 @@ function StudyCompletionCard({ session }: { session: StudySession }) {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const groups = toStudyResultGroups(session.summary);
-  const reviewableAnswerCount = groups.review.length + groups.wrong.length;
-  const [isResultsDialogOpen, setResultsDialogOpen] = useState(false);
   const [selectedResultCategory, setSelectedResultCategory] =
     useState<QuestionResultCategory>(() =>
-      groups.wrong.length > 0 ? "wrong" : "review",
+      groups.wrong.length > 0
+        ? "wrong"
+        : groups.review.length > 0
+          ? "review"
+          : "correct",
     );
   const continueStudy = useMutation({
     mutationFn: () => continueAfterStudySession(session.sessionId),
@@ -621,34 +645,35 @@ function StudyCompletionCard({ session }: { session: StudySession }) {
     mutationFn: () => abandonStudySession(session.sessionId),
     onSettled: () => reloadAt("/"),
   });
-  const { progress } = session;
 
   return (
     <main className="h-full min-h-0 overflow-y-auto overscroll-y-contain">
-      <section className="mx-auto grid min-h-full w-full max-w-sm content-center justify-items-center gap-8 px-6 py-10 text-center sm:py-14">
-        <header className="grid gap-2">
-          <h1 className="type-page-title">Oturum tamamlandı</h1>
-          <p className="type-helper tabular-nums">
-            {progress.correctCount} doğru · {progress.wrongCount} yanlış ·{" "}
-            {progress.reviewCount} cevap gösterildi
-          </p>
+      <section className="mx-auto grid min-h-full w-full max-w-md content-start gap-0 px-6 py-10 sm:py-14">
+        <header className="mb-7 grid gap-6">
+          <div className="grid gap-2 text-center">
+            <h1 className="type-page-title">Oturum tamamlandı</h1>
+            <p className="type-body text-muted-foreground">
+              {session.mode === "Topic" && session.topic
+                ? `${session.topic.level} · ${getTopicLabel(session.topic.topic)}`
+                : "Pekiştirme çalışması"}
+            </p>
+          </div>
+          {session.mode === "Topic" && session.topic ? (
+            <CompletionTopicProgress topic={session.topic} />
+          ) : null}
         </header>
 
-        {session.mode === "Topic" && session.topic ? (
-          <CompletionTopicProgress topic={session.topic} />
-        ) : null}
+        <QuestionResultBrowser
+          layout="content"
+          disabled={continueStudy.isPending || returnHome.isPending}
+          correctRecords={groups.correct}
+          reviewRecords={groups.review}
+          selectedCategory={selectedResultCategory}
+          wrongRecords={groups.wrong}
+          onCategoryChange={setSelectedResultCategory}
+        />
 
-        <div className="grid w-full gap-2">
-          {reviewableAnswerCount > 0 ? (
-            <Button
-              disabled={continueStudy.isPending || returnHome.isPending}
-              type="button"
-              variant="outline"
-              onClick={() => setResultsDialogOpen(true)}
-            >
-              {reviewableAnswerCount} cevabı gözden geçir
-            </Button>
-          ) : null}
+        <footer aria-label="Oturum eylemleri" className="grid w-full gap-2">
           {session.summary.canContinue ? (
             <Button
               disabled={continueStudy.isPending || returnHome.isPending}
@@ -665,44 +690,15 @@ function StudyCompletionCard({ session }: { session: StudySession }) {
             variant="ghost"
             onClick={() => returnHome.mutate()}
           >
-            Ana sayfa
+            Ana sayfaya dön
           </Button>
-        </div>
-
-        {continueStudy.isError ? (
-          <p className="type-helper text-destructive" role="alert">
-            Devam edilemedi. Lütfen tekrar dene.
-          </p>
-        ) : null}
+          {continueStudy.isError ? (
+            <p className="type-helper text-destructive" role="alert">
+              Devam edilemedi. Lütfen tekrar dene.
+            </p>
+          ) : null}
+        </footer>
       </section>
-
-      <Dialog open={isResultsDialogOpen} onOpenChange={setResultsDialogOpen}>
-        <DialogContent className="h-[min(32rem,calc(100dvh-2rem))] max-w-lg overflow-hidden p-0">
-          <div className="grid size-full min-h-0 grid-rows-[auto_minmax(0,1fr)_auto]">
-            <DialogHeader className="px-5 pt-5">
-              <DialogTitle>Gözden geçir</DialogTitle>
-              <DialogDescription>
-                Yanlış ve cevabı gösterilen sorular.
-              </DialogDescription>
-            </DialogHeader>
-            <QuestionResultBrowser
-              reviewRecords={groups.review}
-              selectedCategory={selectedResultCategory}
-              wrongRecords={groups.wrong}
-              onCategoryChange={setSelectedResultCategory}
-            />
-            <div className="flex justify-center px-5 py-4">
-              <Button
-                type="button"
-                variant="ghost"
-                onClick={() => setResultsDialogOpen(false)}
-              >
-                Kapat
-              </Button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
     </main>
   );
 }
@@ -719,10 +715,8 @@ function CompletionTopicProgress({
 
   return (
     <section aria-label="Konu ilerlemesi" className="grid w-full gap-2">
-      <div className="flex items-baseline justify-center gap-2">
-        <p className="type-label text-foreground">
-          {getTopicLabel(topic.topic)}
-        </p>
+      <div className="flex items-baseline justify-between gap-2">
+        <p className="type-label text-foreground">Konu ilerlemesi</p>
         <p className="type-helper tabular-nums">
           {topic.introducedWordCount} / {topic.wordCount} kelime
         </p>
@@ -797,15 +791,14 @@ function StudyLoadingCard() {
 type StudyResultGroups = Record<QuestionResultCategory, QuestionResultRecord[]>;
 
 function toStudyResultGroups(summary: StudySummary): StudyResultGroups {
-  const groups: StudyResultGroups = { review: [], wrong: [] };
+  const groups: StudyResultGroups = { correct: [], review: [], wrong: [] };
   summary.results.forEach((result, index) => {
     const category =
       result.outcome === "Review"
         ? "review"
         : result.outcome === "Wrong"
           ? "wrong"
-          : null;
-    if (!category) return;
+          : "correct";
     groups[category].push({
       key: `${result.wordId}-${result.dimension}-${index}`,
       correctAnswer: result.correctAnswer,

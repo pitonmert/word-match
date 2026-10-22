@@ -4,11 +4,13 @@ import { cn } from "@/lib/utils";
 
 type ScrollAreaProps = ScrollAreaPrimitive.Root.Props & {
   contentClassName?: string;
+  scrollbarProps?: ScrollAreaPrimitive.Scrollbar.Props;
 };
 
 function ScrollArea({
   className,
   contentClassName,
+  scrollbarProps,
   children,
   ...props
 }: ScrollAreaProps) {
@@ -29,7 +31,7 @@ function ScrollArea({
           {children}
         </ScrollAreaPrimitive.Content>
       </ScrollAreaPrimitive.Viewport>
-      <ScrollBar />
+      <ScrollBar {...scrollbarProps} />
       <ScrollAreaPrimitive.Corner />
     </ScrollAreaPrimitive.Root>
   );

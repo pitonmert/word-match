@@ -648,9 +648,35 @@ eylemlerini gösterir. Uzun level/topic listesi ayrı bir dialog yüzeyinde aç�
 Soru çözme ekranı sabit soru kartı tasarımını kullanmaya devam eder: soru,
 cevap alanı/seçenekler, geri bildirim ve ilerleme için odaklanmış tek yüzey.
 Başlıkta konu ve yeni/tekrar rozeti, footer'da cevaplanan/toplam sayısı ile
-doğru/bilmiyorum/yanlış sayaçları bulunur. Sayaçlar o ana kadarki sonuç
-listelerini açar. Tamamlanma ekranı konu tamamlandıysa bunu başlıkta belirtir,
-tekrar oturumu için bir eylem sunar ve üç sonuç sekmesini gösterir.
+doğru/bilmiyorum/yanlış sayaçları bulunur. Soru kartında doğru sayısı salt
+bilgidir; bilmiyorum/yanlış sayaçları o ana kadarki ilgili sonuç listelerini
+açar. Tıklanabilir sayaçlarda hover/focus açıklaması bulunur.
+Soru içi incelemede başlık satırı kaldırılır ve alanı listeye verilir.
+Escape veya seçili sayaca yeniden basmak aynı soruya döner; ayrı dönüş butonu
+yoktur. Sıfır değerli sayaçlar da listeyi açar ve boş durum mesajı gösterir.
+İnceleme sırasında soru cevaplama ve ilerleme kısayolları çalışmaz; yazılı
+cevap taslağı korunur. Tamamlanma ekranında `Doğru` (yeşil), `Bilmiyorum`
+(amber) ve `Yanlış` (kırmızı) sekmeleri tek sonuç satırında bulunur.
+Sonuç listesi her zaman açıktır; açma-kapama oku yoktur. Üç sekme doğrudan
+tıklanabilir ve alt çizgiyle seçimi gösterir. İlk seçim yanlışlar, yoksa
+bilmiyorum, ikisi de boşsa doğrular olur.
+Boş listeler de açılabilir. Ayrı bir sayaç
+özeti veya incele butonu yoktur. Tamamlanma ekranında başlık ve konu
+ilerlemesi üstte, sonuç alanı ortada, çalışma eylemleri alttadır.
+Sonuç alanı sayfa yüksekliğine sığdırılmak için sıkıştırılmaz; dar yükseklikte
+sayfa kaydırılır. Son öğeyle eylemler arasındaki boşluk, liste öğeleri
+arasındaki 16 px boşlukla aynıdır (dört öğelik görünümde). Sonuç alanı
+her sekmede dört öğelik yüksekliği ayırır; kısa ve boş listelerde de eylemler
+aynı konumda kalır. Liste ve scrollbar bu sabit alanın içinde animasyon yapar. Bölümler ayırıcı çizgi yerine boşlukla ayrılır.
+`Devam et` sunucunun belirlediği sıradaki
+çalışmayı açar; `Ana sayfaya dön` oturumun devam hakkını serbest bırakır.
+
+Sonuç sekmeleri desktop'ta tıklama ve klavyeyle değiştirilir. Mobilde liste
+alanındaki doğal yatay kaydırma sonuç listelerini ve sekme alt çizgisini
+birlikte hareket ettirir; sekme başlıkları dokunarak seçim içindir. Listeler
+yatay hareketin dışında duran ortak bir dikey kaydırma alanı kullanır.
+Tamamlanma ekranında en fazla dört tam sonuç
+görünür; daha uzun listeler kaydırılır ve liste yüksekliği animasyonla değişir.
 
 `ReviewQuestionCount`, pekiştirme oturumunun **şu anda** kaç soru içereceğidir:
 yalnız vadesi gelmiş ve daha önce yanıtlanmış mastery kayıtları sayılır.
