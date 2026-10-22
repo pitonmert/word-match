@@ -9,6 +9,25 @@ import { QuestionSessionCard } from "@/features/question-session/components/Ques
 afterEach(cleanup);
 
 describe("QuestionSessionCard", () => {
+  it("gives a headerless review the header space while keeping the same card height", () => {
+    const { rerender } = render(
+      <QuestionSessionCard header={<p>Soru</p>} layout="question">
+        <p>İçerik</p>
+      </QuestionSessionCard>,
+    );
+    const card = screen.getByText("İçerik").closest('[data-slot="card"]')!;
+    rerender(
+      <QuestionSessionCard layout="question">
+        <p>İnceleme</p>
+      </QuestionSessionCard>,
+    );
+    expect(screen.getByText("İnceleme").closest('[data-slot="card"]')).toBe(
+      card,
+    );
+    expect(card.querySelector('[data-slot="card-header"]')).toBeNull();
+    expect(card).toHaveClass("h-104", "grid-rows-[minmax(0,1fr)_5rem]");
+    expect(card.parentElement!.children).toHaveLength(1);
+  });
   it("keeps the shared fixed geometry and renders each card region", () => {
     render(
       <QuestionSessionCard

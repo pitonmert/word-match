@@ -33,6 +33,33 @@ kullanır.
 
 ## [Unreleased]
 
+## [v0.2.1](https://github.com/pitonmert/word-match/releases/tag/v0.2.1) - 2026-10-22
+
+### Added
+
+- Added a correct-answer list to completed Study sessions alongside the
+  existing shown-answer and wrong-answer lists.
+
+### Changed
+
+- Replaced the completion review dialog with always-visible, color-coded
+  result tabs that also display the session counts.
+- Unified result browsing across question and completion screens, with
+  animated tab transitions, native horizontal swiping on touch devices,
+  reduced-motion support, and a shared vertical scrollbar.
+- Kept completion actions in place across tabs by reserving space for four
+  complete result rows, with consistent row spacing.
+- Made empty interim result lists available from the question counters and
+  added desktop tooltips explaining their actions.
+
+### Fixed
+
+- Prevented answer and continue keyboard shortcuts from acting on hidden
+  questions while browsing interim results.
+- Restored question focus when leaving interim review, supported Escape to
+  return, and preserved written answer drafts.
+- Smoothed result height and scrollbar transitions as lists grow or shrink.
+
 ## [v0.2.0](https://github.com/pitonmert/word-match/releases/tag/v0.2.0) - 2026-09-12
 
 ### Added

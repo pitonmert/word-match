@@ -1,5 +1,10 @@
 import { CircleCheck, CircleHelp, CircleX } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { QuestionSessionProgress } from "@/features/question-session/components/QuestionSessionProgress";
 import type { QuestionResultCategory } from "@/features/question-session/types";
 import { cn } from "@/lib/utils";
@@ -123,7 +128,7 @@ function Score({
     return (
       <span
         aria-label={`${label}: ${value}`}
-        className="flex h-auto items-center gap-1"
+        className="flex h-auto items-center gap-1 [&_svg]:size-3 [&_svg]:shrink-0"
       >
         {contents}
       </span>
@@ -131,25 +136,38 @@ function Score({
   }
 
   return (
-    <Button
-      aria-label={
-        isSelected
-          ? `${label}: ${value}. Sonuç listesini kapat`
-          : `${label}: ${value}`
-      }
-      aria-pressed={isSelected}
-      className={cn(
-        "h-auto gap-1 bg-transparent p-0 shadow-none hover:bg-transparent hover:shadow-none active:bg-transparent disabled:bg-transparent disabled:shadow-none",
-        isSelected &&
-          "rounded-none bg-transparent px-0 underline decoration-muted-foreground/60 underline-offset-4",
-      )}
-      disabled={disabled || value === 0}
-      size="xs"
-      type="button"
-      variant="ghost"
-      onClick={onSelect}
-    >
-      {contents}
-    </Button>
+    <Tooltip>
+      <TooltipTrigger
+        render={
+          <Button
+            aria-label={
+              isSelected
+                ? `${label}: ${value}. Sonuç listesini kapat`
+                : `${label}: ${value}`
+            }
+            aria-pressed={isSelected}
+            className={cn(
+              "h-auto gap-1 bg-transparent p-0 shadow-none hover:bg-transparent hover:opacity-75 hover:shadow-none active:bg-transparent disabled:bg-transparent disabled:shadow-none",
+              isSelected &&
+                "rounded-none bg-transparent px-0 underline decoration-muted-foreground/60 underline-offset-4",
+            )}
+            disabled={disabled}
+            size="xs"
+            type="button"
+            variant="ghost"
+            onClick={onSelect}
+          />
+        }
+      >
+        {contents}
+      </TooltipTrigger>
+      <TooltipContent>
+        {isSelected
+          ? "Soruya dön"
+          : variant === "review"
+            ? "Gösterilen cevapları incele"
+            : "Yanlış cevapları incele"}
+      </TooltipContent>
+    </Tooltip>
   );
 }

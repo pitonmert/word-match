@@ -1,7 +1,7 @@
 /** @vitest-environment jsdom */
 
 import "@testing-library/jest-dom/vitest";
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
@@ -165,26 +165,74 @@ describe("StudySessionPage", () => {
       screen.getByRole("heading", { name: "Oturum tamamlandı" }),
     ).toBeInTheDocument();
     expect(screen.queryByText("1 soru")).not.toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: "Doğru 0" })).toBeInTheDocument();
     expect(
-      screen.getByText("0 doğru · 1 yanlış · 0 cevap gösterildi"),
+      screen.getByRole("tab", { name: "Bilmiyorum 0" }),
     ).toBeInTheDocument();
-    expect(
-      screen.queryByRole("region", { name: "Çalışma sonuçları" }),
-    ).not.toBeInTheDocument();
-
-    await user.click(
-      screen.getByRole("button", { name: "1 cevabı gözden geçir" }),
-    );
-    expect(
-      screen.getByRole("dialog", { name: "Gözden geçir" }),
-    ).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: "Yanlış 1" })).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: "Yanlış 1" })).toBeEnabled();
     expect(
       screen.getByRole("tabpanel", { name: "Yanlış sonuçları" }),
     ).toBeInTheDocument();
-    await user.click(screen.getByRole("button", { name: "Kapat" }));
+    expect(screen.getAllByRole("tab")).toHaveLength(3);
     expect(
-      screen.getByRole("dialog", { name: "Gözden geçir" }),
-    ).toHaveAttribute("data-closed");
+      screen.queryByRole("button", { name: /Sonuç listesini/ }),
+    ).not.toBeInTheDocument();
+    await user.click(screen.getByRole("tab", { name: "Bilmiyorum 0" }));
+    expect(
+      within(
+        screen.getByRole("tabpanel", { name: "Bilmiyorum sonuçları" }),
+      ).getByText("Gözden geçirilecek cevap yok."),
+    ).toBeInTheDocument();
+    await user.click(screen.getByRole("tab", { name: "Bilmiyorum 0" }));
+    expect(
+      screen.getByRole("tabpanel", { name: "Bilmiyorum sonuçları" }),
+    ).toBeInTheDocument();
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+  });
+
+  it("shows completion results immediately and keeps empty tabs available", async () => {
+    const user = userEvent.setup();
+    renderSession({
+      ...completedSession,
+      progress: {
+        ...completedSession.progress,
+        correctCount: 1,
+        wrongCount: 0,
+        reviewCount: 0,
+      },
+      summary: {
+        ...completedSession.summary,
+        results: completedSession.summary.results.map((result) => ({
+          ...result,
+          outcome: "Correct",
+        })),
+      },
+    });
+    expect(screen.getByRole("tab", { name: "Doğru 1" })).toBeInTheDocument();
+    const review = screen.getByRole("tab", { name: "Bilmiyorum 0" });
+    expect(review).toBeEnabled();
+    expect(
+      screen.getByRole("tabpanel", { name: "Doğru sonuçları" }),
+    ).toBeInTheDocument();
+    const correctPanel = screen.getByRole("tabpanel", {
+      name: "Doğru sonuçları",
+    });
+    expect(within(correctPanel).getByText("cat")).toBeInTheDocument();
+    expect(within(correctPanel).getByText("kedi")).toBeInTheDocument();
+    await user.click(review);
+    expect(
+      within(
+        screen.getByRole("tabpanel", { name: "Bilmiyorum sonuçları" }),
+      ).getByText("Gözden geçirilecek cevap yok."),
+    ).toBeInTheDocument();
+    await user.click(screen.getByRole("tab", { name: "Yanlış 0" }));
+    expect(
+      screen.getByRole("tabpanel", { name: "Yanlış sonuçları" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: /Sonuç listesini/ }),
+    ).not.toBeInTheDocument();
   });
 
   it("keeps topic questions focused on the question and marks reinforcement with an explanation", async () => {
@@ -325,11 +373,9 @@ describe("StudySessionPage", () => {
       screen.getByRole("heading", { name: "Oturum tamamlandı" }),
     ).toBeInTheDocument();
     expect(screen.queryByText("1 soru")).not.toBeInTheDocument();
+    expect(screen.getByLabelText("Oturum özeti")).toBeInTheDocument();
     expect(
-      screen.getByText("0 doğru · 1 yanlış · 0 cevap gösterildi"),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole("button", { name: "Ana sayfa" }),
+      screen.getByRole("button", { name: "Ana sayfaya dön" }),
     ).toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "Devam et" }));
     expect(continueAfterStudySession).toHaveBeenCalledWith(sessionId);
@@ -340,7 +386,7 @@ describe("StudySessionPage", () => {
     const user = userEvent.setup();
     renderSession(completedSession);
 
-    await user.click(screen.getByRole("button", { name: "Ana sayfa" }));
+    await user.click(screen.getByRole("button", { name: "Ana sayfaya dön" }));
 
     expect(abandonStudySession).toHaveBeenCalledWith(sessionId);
     expect(reloadAt).toHaveBeenCalledWith("/");
@@ -383,6 +429,7 @@ describe("StudySessionPage", () => {
       screen.queryByRole("button", { name: "Devam et" }),
     ).not.toBeInTheDocument();
     expect(playCorrectSound).toHaveBeenCalledOnce();
+    expect(screen.getByLabelText("Doğru cevaplar: 1")).toBeInTheDocument();
     expect(
       await screen.findByRole("heading", { name: "dog" }, { timeout: 1_500 }),
     ).toBeInTheDocument();
@@ -545,6 +592,26 @@ describe("StudySessionPage", () => {
     );
   });
 
+  it.each([
+    ["Bilmiyorum cevapları: 0", "Bilmiyorum sonuçları"],
+    ["Yanlış cevaplar: 0", "Yanlış sonuçları"],
+  ])("opens and closes an empty list from %s", async (label, panelName) => {
+    const user = userEvent.setup();
+    renderSession(activeSession);
+    const counter = screen.getByRole("button", { name: label });
+    expect(counter).toBeEnabled();
+    await user.click(counter);
+    const panel = screen.getByRole("tabpanel", { name: panelName });
+    expect(
+      within(panel).getByText("Gözden geçirilecek cevap yok."),
+    ).toBeInTheDocument();
+    await user.click(
+      screen.getByRole("button", { name: `${label}. Sonuç listesini kapat` }),
+    );
+    expect(screen.getByRole("heading", { name: "cat" })).toHaveFocus();
+    expect(answerStudyQuestion).not.toHaveBeenCalled();
+  });
+
   it("opens and closes interim results from footer counters", async () => {
     const user = userEvent.setup();
     renderSession(makeNextQuestionSession("Wrong"));
@@ -556,6 +623,27 @@ describe("StudySessionPage", () => {
     expect(
       screen.getByRole("region", { name: "Çalışma sonuçları" }),
     ).toBeInTheDocument();
+    expect(
+      screen.getByRole("region", { name: "Çalışma sonuçları" }),
+    ).toHaveFocus();
+    expect(
+      screen.queryByRole("heading", { name: "dog" }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "Soruya dön" }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("heading", { name: "Bu oturumdaki cevaplar" }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen
+        .getByRole("region", { name: "Çalışma sonuçları" })
+        .closest('[data-slot="card"]')
+        ?.querySelector('[data-slot="card-header"]'),
+    ).toBeNull();
+    expect(
+      screen.getByLabelText("2 sorudan 1 tanesi cevaplandı"),
+    ).toBeInTheDocument();
     expect(screen.getByText("cat")).toBeInTheDocument();
     await user.click(
       screen.getByRole("button", {
@@ -563,6 +651,94 @@ describe("StudySessionPage", () => {
       }),
     );
     expect(screen.getByRole("button", { name: "köpek" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "dog" })).toHaveFocus();
+  });
+
+  it("blocks hidden answer shortcuts while browsing and returns with Escape or the selected counter", async () => {
+    const user = userEvent.setup();
+    renderSession(makeNextQuestionSession("Wrong"));
+    await user.click(
+      screen.getByRole("button", { name: "Yanlış cevaplar: 1" }),
+    );
+    await user.keyboard("1{Enter}");
+    expect(answerStudyQuestion).not.toHaveBeenCalled();
+    expect(
+      screen.getByRole("region", { name: "Çalışma sonuçları" }),
+    ).toBeInTheDocument();
+    await user.keyboard("{Escape}");
+    expect(screen.getByRole("heading", { name: "dog" })).toHaveFocus();
+    expect(
+      screen.queryByRole("region", { name: "Çalışma sonuçları" }),
+    ).not.toBeInTheDocument();
+    await user.click(
+      screen.getByRole("button", { name: "Yanlış cevaplar: 1" }),
+    );
+    await user.click(
+      screen.getByRole("button", {
+        name: "Yanlış cevaplar: 1. Sonuç listesini kapat",
+      }),
+    );
+    expect(screen.getByRole("heading", { name: "dog" })).toHaveFocus();
+    expect(answerStudyQuestion).not.toHaveBeenCalled();
+  });
+
+  it("does not advance an answered question from the interim review", async () => {
+    vi.mocked(answerStudyQuestion).mockResolvedValue(
+      makeAnswer("Wrong", makeNextQuestionSession("Wrong"), {
+        correctIndex: 1,
+        selectedIndex: 0,
+      }),
+    );
+    const user = userEvent.setup();
+    renderSession({
+      ...activeSession,
+      progress: { ...activeSession.progress, totalCount: 2 },
+    });
+    await user.click(screen.getByRole("button", { name: "köpek" }));
+    await screen.findByRole("button", { name: "Devam et" });
+    await user.click(
+      screen.getByRole("button", { name: "Yanlış cevaplar: 1" }),
+    );
+    await user.keyboard("{Enter}");
+    expect(
+      screen.getByRole("region", { name: "Çalışma sonuçları" }),
+    ).toBeInTheDocument();
+    await user.click(
+      screen.getByRole("button", {
+        name: "Yanlış cevaplar: 1. Sonuç listesini kapat",
+      }),
+    );
+    expect(screen.getByRole("heading", { name: "cat" })).toHaveFocus();
+    await user.keyboard("{Enter}");
+    expect(screen.getByRole("heading", { name: "dog" })).toBeInTheDocument();
+    expect(answerStudyQuestion).toHaveBeenCalledTimes(1);
+  });
+
+  it("preserves a written draft when returning from interim review", async () => {
+    const user = userEvent.setup();
+    renderSession({
+      ...makeNextQuestionSession("Wrong"),
+      question: makeWrittenSession().question,
+    });
+    await user.type(
+      screen.getByRole("textbox", { name: "İngilizce cevap" }),
+      "dog",
+    );
+    await user.click(
+      screen.getByRole("button", { name: "Yanlış cevaplar: 1" }),
+    );
+    expect(
+      screen.queryByRole("textbox", { name: "İngilizce cevap" }),
+    ).not.toBeInTheDocument();
+    await user.click(
+      screen.getByRole("button", {
+        name: "Yanlış cevaplar: 1. Sonuç listesini kapat",
+      }),
+    );
+    expect(
+      screen.getByRole("textbox", { name: "İngilizce cevap" }),
+    ).toHaveValue("dog");
+    expect(answerStudyQuestion).not.toHaveBeenCalled();
   });
 
   it("loads a directly opened session and supports retry after an error", async () => {

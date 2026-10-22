@@ -1,6 +1,6 @@
 export type QuestionOutcome = "Correct" | "Review" | "Wrong";
 
-export type QuestionResultCategory = "review" | "wrong";
+export type QuestionResultCategory = "correct" | "review" | "wrong";
 
 export type QuestionResultRecord = {
   key: string;

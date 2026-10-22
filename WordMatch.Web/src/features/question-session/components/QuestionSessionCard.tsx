@@ -43,7 +43,12 @@ export function QuestionSessionCard({
       className={cn(
         "grid max-h-full min-h-80 w-full gap-0 border border-border py-0 shadow-surface",
         layout === "question"
-          ? "h-104 grid-rows-[3.5rem_minmax(0,1fr)_5rem]"
+          ? cn(
+              "h-104",
+              header === undefined
+                ? "grid-rows-[minmax(0,1fr)_5rem]"
+                : "grid-rows-[3.5rem_minmax(0,1fr)_5rem]",
+            )
           : header === undefined
             ? "h-112 grid-rows-[minmax(0,1fr)_4rem]"
             : "h-112 grid-rows-[4rem_minmax(0,1fr)_4rem]",
@@ -83,7 +88,7 @@ export function QuestionSessionCard({
 
   return (
     <main className="h-full min-h-0 overflow-x-hidden overflow-y-auto overscroll-y-contain">
-      <section className="mx-auto flex size-full min-h-0 w-full max-w-2xl items-center justify-center p-4 sm:px-6 sm:py-8">
+      <section className="mx-auto flex size-full min-h-fit w-full max-w-2xl items-center justify-center p-4 sm:px-6 sm:py-8">
         {card}
       </section>
     </main>
@@ -129,7 +134,7 @@ export function QuestionSessionCardTitle({
   return (
     <CardTitle
       className={cn(
-        "flex min-w-0 items-center justify-center text-center text-xl/7 font-semibold sm:text-2xl sm:leading-8",
+        "flex min-w-0 items-center justify-center text-center text-xl/7 font-semibold sm:text-2xl/8",
         className,
       )}
     >
