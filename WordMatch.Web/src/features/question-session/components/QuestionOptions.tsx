@@ -7,6 +7,7 @@ type QuestionOptionsProps = {
   hasAnswered: boolean;
   isLoading: boolean;
   isAnswerRevealed: boolean;
+  isHoverEnabled?: boolean;
   options: string[];
   selectedIndex: number | null;
   onAnswer: (index: number) => void;
@@ -17,6 +18,7 @@ export function QuestionOptions({
   hasAnswered,
   isLoading,
   isAnswerRevealed,
+  isHoverEnabled = true,
   options,
   selectedIndex,
   onAnswer,
@@ -41,7 +43,11 @@ export function QuestionOptions({
             className={cn(
               "relative size-full min-h-0 justify-center px-4 text-center text-base whitespace-normal sm:px-12",
               !hasAnswered &&
-                "hover:border-info hover:bg-info-subtle hover:text-info hover:shadow-surface focus-visible:border-info focus-visible:ring-info/30",
+                "focus-visible:border-info focus-visible:ring-info/30",
+              !hasAnswered &&
+                (isHoverEnabled
+                  ? "hover:border-info hover:bg-info-subtle hover:text-info hover:shadow-surface"
+                  : "hover:border-border hover:bg-card hover:text-foreground hover:shadow-none"),
               hasAnswered &&
                 isCorrectOption &&
                 "border-success bg-success-subtle text-success shadow-surface hover:bg-success-subtle disabled:border-success disabled:bg-success-subtle disabled:text-success disabled:opacity-100",

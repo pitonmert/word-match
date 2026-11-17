@@ -20,6 +20,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { AnswerAnnouncement } from "@/features/question-session/components/AnswerAnnouncement";
 import { QuestionAutoAdvanceNotice } from "@/features/question-session/components/QuestionAutoAdvanceNotice";
 import { QuestionOptions } from "@/features/question-session/components/QuestionOptions";
+import { useQuestionHover } from "@/features/question-session/hooks/useQuestionHover";
 import { QuestionResultBrowser } from "@/features/question-session/components/QuestionResultBrowser";
 import {
   QuestionSessionCard,
@@ -109,6 +110,7 @@ function StudySessionContent({
 type StudyState = ReturnType<typeof useStudySession>;
 
 function StudyQuestionCard({ study }: { study: StudyState }) {
+  const isHoverEnabled = useQuestionHover();
   const [isBrowsingResults, setIsBrowsingResults] = useState(false);
   const [selectedResultCategory, setSelectedResultCategory] =
     useState<QuestionResultCategory>("wrong");
@@ -386,6 +388,7 @@ function StudyQuestionCard({ study }: { study: StudyState }) {
               />
             ) : (
               <QuestionOptions
+                isHoverEnabled={isHoverEnabled}
                 correctIndex={study.answer?.correctIndex ?? null}
                 hasAnswered={hasAnswered}
                 isLoading={isSubmitting || Boolean(study.answerError)}

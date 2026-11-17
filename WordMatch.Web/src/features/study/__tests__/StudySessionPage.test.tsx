@@ -457,6 +457,14 @@ describe("StudySessionPage", () => {
     screen.getByRole("heading", { name: "cat" }).focus();
     await user.keyboard("{Enter}");
     expect(screen.getByRole("heading", { name: "dog" })).toBeInTheDocument();
+    for (const option of nextSession.question!.options) {
+      expect(screen.getByRole("button", { name: option })).toHaveClass(
+        "hover:bg-card",
+      );
+      expect(screen.getByRole("button", { name: option })).not.toHaveClass(
+        "hover:bg-info-subtle",
+      );
+    }
   });
 
   it("shows an answer as Review and plays the shared reveal sound", async () => {

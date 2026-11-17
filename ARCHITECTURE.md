@@ -651,6 +651,9 @@ Başlıkta konu ve yeni/tekrar rozeti, footer'da cevaplanan/toplam sayısı ile
 doğru/bilmiyorum/yanlış sayaçları bulunur. Soru kartında doğru sayısı salt
 bilgidir; bilmiyorum/yanlış sayaçları o ana kadarki ilgili sonuç listelerini
 açar. Tıklanabilir sayaçlarda hover/focus açıklaması bulunur.
+Klavye kullanımında soru seçeneklerinin hover stilleri bastırılır; bu giriş
+modu sonraki soruda korunur. Gerçek mouse hareketi veya mouse basışı hover'ı
+geri açar; klavye odak göstergesi ve cevap renkleri korunur.
 Soru içi incelemede başlık satırı kaldırılır ve alanı listeye verilir.
 Escape veya seçili sayaca yeniden basmak aynı soruya döner; ayrı dönüş butonu
 yoktur. Sıfır değerli sayaçlar da listeyi açar ve boş durum mesajı gösterir.

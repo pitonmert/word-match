@@ -33,6 +33,15 @@ kullanır.
 
 ## [Unreleased]
 
+## [v0.2.2](https://github.com/pitonmert/word-match/releases/tag/v0.2.2) - 2026-11-17
+
+### Fixed
+
+- Prevented stationary mouse hover from highlighting answer options during
+  keyboard use, including after advancing to the next question.
+- Restored option hover on mouse movement or mouse press while preserving
+  keyboard focus indicators, touch input, and answer feedback colors.
+
 ## [v0.2.1](https://github.com/pitonmert/word-match/releases/tag/v0.2.1) - 2026-10-22
 
 ### Added
