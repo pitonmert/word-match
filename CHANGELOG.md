@@ -33,6 +33,14 @@ kullanır.
 
 ## [Unreleased]
 
+## [v0.2.3](https://github.com/pitonmert/word-match/releases/tag/v0.2.3) - 2026-11-17
+
+### Security
+
+- Updated Zod to 4.6.7 to address a runtime dependency vulnerability.
+- Updated Vite, Vitest, shadcn, and transitive development dependencies
+  to address reported security vulnerabilities.
+
 ## [v0.2.2](https://github.com/pitonmert/word-match/releases/tag/v0.2.2) - 2026-11-17
 
 ### Added
