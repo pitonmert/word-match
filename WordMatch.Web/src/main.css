@@ -6,6 +6,14 @@
 
 @custom-variant dark (&:is(.dark *));
 
+@custom-variant hover {
+  @media (hover: hover) {
+    &:hover:where(:not([data-question-keyboard], [data-question-keyboard] *)) {
+      @slot;
+    }
+  }
+}
+
 @theme inline {
   --font-sans: "Geist Variable", sans-serif;
 

@@ -1,7 +1,13 @@
 /** @vitest-environment jsdom */
 
 import "@testing-library/jest-dom/vitest";
-import { cleanup, render, screen, within } from "@testing-library/react";
+import {
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  within,
+} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
@@ -283,6 +289,7 @@ describe("StudySessionPage", () => {
       screen.getByRole("textbox", { name: "İngilizce cevap" }),
       "dog",
     );
+    moveMouse();
     await user.click(screen.getByRole("button", { name: "Şimdi yazamam" }));
 
     expect(
@@ -293,6 +300,7 @@ describe("StudySessionPage", () => {
     ).not.toBeInTheDocument();
     expect(deferStudySkill).not.toHaveBeenCalled();
 
+    moveMouse();
     await user.click(screen.getByRole("button", { name: "Vazgeç" }));
 
     expect(
@@ -303,7 +311,9 @@ describe("StudySessionPage", () => {
     ).toHaveValue("dog");
     expect(deferStudySkill).not.toHaveBeenCalled();
 
+    moveMouse();
     await user.click(screen.getByRole("button", { name: "Şimdi yazamam" }));
+    moveMouse();
     await user.click(screen.getByRole("button", { name: "Ertele" }));
 
     expect(deferStudySkill).toHaveBeenCalledWith(sessionId, "WrittenRecall");
@@ -435,6 +445,149 @@ describe("StudySessionPage", () => {
     ).toBeInTheDocument();
   });
 
+  it("navigates all four arrows with wrapping without submitting an answer", async () => {
+    const user = userEvent.setup();
+    renderSession(activeSession);
+    const options = activeSession.question!.options.map((option) =>
+      screen.getByRole("button", { name: option }),
+    );
+    const title = screen.getByRole("heading", { name: "cat" });
+    await user.keyboard("{ArrowDown}");
+    expect(options[0]).toHaveFocus();
+    await user.keyboard("{ArrowRight}");
+    expect(options[1]).toHaveFocus();
+    await user.keyboard("{ArrowLeft}");
+    expect(options[0]).toHaveFocus();
+    await user.keyboard("{ArrowUp}");
+    expect(options.at(-1)).toHaveFocus();
+    await user.keyboard("{ArrowDown}");
+    expect(options[0]).toHaveFocus();
+    title.focus();
+    await user.keyboard("{ArrowLeft}");
+    expect(options.at(-1)).toHaveFocus();
+    fireEvent.keyDown(document.activeElement!, {
+      key: "ArrowDown",
+      repeat: true,
+    });
+    expect(options[0]).toHaveFocus();
+    expect(answerStudyQuestion).not.toHaveBeenCalled();
+  });
+
+  it("answers the focused option once with Enter and restores title focus for continuation", async () => {
+    const nextSession = makeNextQuestionSession("Wrong");
+    vi.mocked(answerStudyQuestion).mockResolvedValue(
+      makeAnswer("Wrong", nextSession, { correctIndex: 1, selectedIndex: 0 }),
+    );
+    const user = userEvent.setup();
+    renderSession(activeSession);
+    await user.keyboard("{Enter}");
+    expect(answerStudyQuestion).not.toHaveBeenCalled();
+    await user.keyboard("{ArrowDown}{Enter}");
+    expect(answerStudyQuestion).toHaveBeenCalledExactlyOnceWith(
+      sessionId,
+      0,
+      1,
+      0,
+      null,
+    );
+    expect(screen.getByRole("heading", { name: "cat" })).toHaveFocus();
+    await user.keyboard("{Enter}");
+    expect(screen.getByRole("heading", { name: "dog" })).toHaveFocus();
+    expect(screen.getByRole("main")).toHaveClass("cursor-none");
+    await user.keyboard("{Enter}");
+    expect(answerStudyQuestion).toHaveBeenCalledTimes(1);
+  });
+
+  it.each(["movement", "press"])(
+    "ignores Enter after mouse %s until arrow navigation resumes",
+    async (wake) => {
+      vi.mocked(answerStudyQuestion).mockResolvedValue(
+        makeAnswer("Wrong", completedSession, {
+          correctIndex: 0,
+          selectedIndex: 1,
+        }),
+      );
+      const user = userEvent.setup();
+      renderSession(activeSession);
+      await user.keyboard("{ArrowDown}");
+      const page = screen.getByRole("main");
+      if (wake === "movement") moveMouse();
+      else await user.pointer({ target: page, keys: "[MouseLeft]" });
+      expect(page).not.toHaveClass("cursor-none");
+      await user.keyboard("{Enter}{Enter}");
+      expect(answerStudyQuestion).not.toHaveBeenCalled();
+      expect(page).not.toHaveClass("cursor-none");
+      await user.keyboard("{ArrowRight}{Enter}");
+      expect(answerStudyQuestion).toHaveBeenCalledExactlyOnceWith(
+        sessionId,
+        0,
+        1,
+        1,
+        null,
+      );
+    },
+  );
+
+  it("hides the page cursor only in keyboard mode and restores it for mouse input", async () => {
+    const user = userEvent.setup();
+    renderSession(activeSession);
+    const page = screen.getByRole("main");
+    const move = (movementX = 0) => {
+      const event = new Event("pointermove", { bubbles: true });
+      Object.assign(event, {
+        pointerType: "mouse",
+        clientX: 100,
+        clientY: 100,
+        movementX,
+        movementY: 0,
+      });
+      fireEvent(window, event);
+    };
+    move();
+    await user.keyboard("{ArrowDown}");
+    expect(page).toHaveClass("cursor-none", "**:cursor-none");
+    move();
+    expect(page).toHaveClass("cursor-none");
+    move(1);
+    expect(page).not.toHaveClass("cursor-none");
+    await user.keyboard("{ArrowUp}");
+    expect(page).toHaveClass("cursor-none");
+    await user.pointer({ target: page, keys: "[MouseLeft]" });
+    expect(page).not.toHaveClass("cursor-none");
+  });
+
+  it("does not redirect arrows from footer controls or while browsing results", async () => {
+    const user = userEvent.setup();
+    renderSession(activeSession);
+    const counter = screen.getByRole("button", { name: "Yanlış cevaplar: 0" });
+    counter.focus();
+    await user.keyboard("{ArrowDown}1");
+    expect(counter).toHaveFocus();
+    expect(answerStudyQuestion).not.toHaveBeenCalled();
+    await user.keyboard("{Enter}");
+    expect(
+      screen.getByRole("region", { name: "Çalışma sonuçları" }),
+    ).toHaveFocus();
+    expect(screen.getByRole("main")).not.toHaveClass("cursor-none");
+    await user.keyboard("{ArrowDown}{ArrowRight}1");
+    expect(answerStudyQuestion).not.toHaveBeenCalled();
+    await user.keyboard("{Escape}");
+    expect(screen.getByRole("heading", { name: "cat" })).toHaveFocus();
+    expect(screen.getByRole("main")).toHaveClass("cursor-none");
+  });
+
+  it("leaves arrow keys in written inputs and keeps their caret visible", async () => {
+    const user = userEvent.setup();
+    renderSession(makeWrittenSession());
+    const input = screen.getByRole("textbox", { name: "İngilizce cevap" });
+    await user.type(input, "dog");
+    await user.keyboard("{ArrowLeft}");
+    expect(input).toHaveFocus();
+    expect(input).toHaveProperty("selectionStart", 2);
+    expect(input).not.toHaveClass("caret-transparent");
+    expect(answerStudyQuestion).not.toHaveBeenCalled();
+  });
+
   it("supports number shortcuts and manual continuation after a wrong answer", async () => {
     const nextSession = makeNextQuestionSession("Wrong");
     vi.mocked(answerStudyQuestion).mockResolvedValue(
@@ -457,6 +610,14 @@ describe("StudySessionPage", () => {
     screen.getByRole("heading", { name: "cat" }).focus();
     await user.keyboard("{Enter}");
     expect(screen.getByRole("heading", { name: "dog" })).toBeInTheDocument();
+    for (const option of nextSession.question!.options) {
+      expect(screen.getByRole("button", { name: option })).toHaveClass(
+        "hover:bg-card",
+      );
+      expect(screen.getByRole("button", { name: option })).not.toHaveClass(
+        "hover:bg-info-subtle",
+      );
+    }
   });
 
   it("shows an answer as Review and plays the shared reveal sound", async () => {
@@ -483,6 +644,111 @@ describe("StudySessionPage", () => {
     const revealedOption = screen.getByRole("button", { name: "kedi" });
     expect(revealedOption).toHaveClass("bg-warning-subtle");
     expect(revealedOption).not.toHaveClass("bg-success-subtle");
+  });
+
+  it.each([
+    { label: "Cevabı göster", selectedIndex: null },
+    { label: "köpek", selectedIndex: 0 },
+  ])(
+    "uses the first stationary mouse click on $label only to wake the cursor",
+    async ({ label, selectedIndex }) => {
+      vi.mocked(answerStudyQuestion).mockResolvedValue(
+        makeAnswer("Review", completedSession, {
+          correctIndex: 1,
+          selectedIndex: null,
+        }),
+      );
+      const user = userEvent.setup();
+      renderSession(activeSession);
+      const reveal = screen.getByRole("button", { name: label });
+      await user.keyboard("{ArrowDown}");
+      expect(screen.getByRole("main")).toHaveAttribute(
+        "data-question-keyboard",
+      );
+      await user.pointer({ target: reveal, keys: "[MouseLeft]" });
+      expect(answerStudyQuestion).not.toHaveBeenCalled();
+      expect(screen.getByRole("main")).not.toHaveAttribute(
+        "data-question-keyboard",
+      );
+      expect(screen.getByRole("main")).not.toHaveClass("cursor-none");
+      await user.pointer({ target: reveal, keys: "[MouseLeft]" });
+      expect(answerStudyQuestion).toHaveBeenCalledExactlyOnceWith(
+        sessionId,
+        0,
+        1,
+        selectedIndex,
+        null,
+      );
+    },
+  );
+
+  it("allows the first click after real mouse movement", async () => {
+    vi.mocked(answerStudyQuestion).mockResolvedValue(
+      makeAnswer("Review", completedSession, {
+        correctIndex: 1,
+        selectedIndex: null,
+      }),
+    );
+    const user = userEvent.setup();
+    renderSession(activeSession);
+    await user.keyboard("{ArrowDown}");
+    const move = new Event("pointermove", { bubbles: true });
+    Object.assign(move, {
+      pointerType: "mouse",
+      clientX: 10,
+      clientY: 10,
+      movementX: 1,
+      movementY: 0,
+    });
+    fireEvent(window, move);
+    await user.pointer({
+      target: screen.getByRole("button", { name: "Cevabı göster" }),
+      keys: "[MouseLeft]",
+    });
+    expect(answerStudyQuestion).toHaveBeenCalledExactlyOnceWith(
+      sessionId,
+      0,
+      1,
+      null,
+      null,
+    );
+  });
+
+  it("keeps touch and keyboard activation available while the cursor is hidden", async () => {
+    vi.mocked(answerStudyQuestion).mockResolvedValue(
+      makeAnswer("Review", completedSession, {
+        correctIndex: 1,
+        selectedIndex: null,
+      }),
+    );
+    const user = userEvent.setup();
+    renderSession(activeSession);
+    await user.keyboard("{ArrowDown}");
+    const reveal = screen.getByRole("button", { name: "Cevabı göster" });
+    reveal.focus();
+    await user.keyboard("{Enter}");
+    expect(answerStudyQuestion).toHaveBeenCalledExactlyOnceWith(
+      sessionId,
+      0,
+      1,
+      null,
+      null,
+    );
+    cleanup();
+    vi.mocked(answerStudyQuestion).mockClear();
+    renderSession(activeSession);
+    await user.keyboard("{ArrowDown}");
+    await user.pointer({
+      target: screen.getByRole("button", { name: "Cevabı göster" }),
+      keys: "[TouchA]",
+    });
+    expect(answerStudyQuestion).toHaveBeenCalledExactlyOnceWith(
+      sessionId,
+      0,
+      1,
+      null,
+      null,
+    );
   });
 
   it("submits written answers while keeping correctness server-authoritative", async () => {
@@ -557,6 +823,7 @@ describe("StudySessionPage", () => {
       name: "İngilizce cevap",
     });
     await user.type(answerField, "dog");
+    moveMouse();
     await user.click(screen.getByRole("button", { name: "Cevabı kontrol et" }));
 
     await screen.findByRole("button", { name: "Sonuçları gör" });
@@ -657,6 +924,7 @@ describe("StudySessionPage", () => {
   it("blocks hidden answer shortcuts while browsing and returns with Escape or the selected counter", async () => {
     const user = userEvent.setup();
     renderSession(makeNextQuestionSession("Wrong"));
+    moveMouse();
     await user.click(
       screen.getByRole("button", { name: "Yanlış cevaplar: 1" }),
     );
@@ -670,9 +938,11 @@ describe("StudySessionPage", () => {
     expect(
       screen.queryByRole("region", { name: "Çalışma sonuçları" }),
     ).not.toBeInTheDocument();
+    moveMouse();
     await user.click(
       screen.getByRole("button", { name: "Yanlış cevaplar: 1" }),
     );
+    moveMouse();
     await user.click(
       screen.getByRole("button", {
         name: "Yanlış cevaplar: 1. Sonuç listesini kapat",
@@ -724,12 +994,14 @@ describe("StudySessionPage", () => {
       screen.getByRole("textbox", { name: "İngilizce cevap" }),
       "dog",
     );
+    moveMouse();
     await user.click(
       screen.getByRole("button", { name: "Yanlış cevaplar: 1" }),
     );
     expect(
       screen.queryByRole("textbox", { name: "İngilizce cevap" }),
     ).not.toBeInTheDocument();
+    moveMouse();
     await user.click(
       screen.getByRole("button", {
         name: "Yanlış cevaplar: 1. Sonuç listesini kapat",
@@ -758,6 +1030,18 @@ describe("StudySessionPage", () => {
     expect(fetchStudySession).toHaveBeenCalledTimes(2);
   });
 });
+
+function moveMouse() {
+  const event = new Event("pointermove", { bubbles: true });
+  Object.assign(event, {
+    pointerType: "mouse",
+    clientX: 100,
+    clientY: 100,
+    movementX: 1,
+    movementY: 0,
+  });
+  fireEvent(window, event);
+}
 
 function makeWrittenSession(): StudySession {
   return {

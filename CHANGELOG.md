@@ -33,6 +33,28 @@ kullanır.
 
 ## [Unreleased]
 
+## [v0.2.2](https://github.com/pitonmert/word-match/releases/tag/v0.2.2) - 2026-11-17
+
+### Added
+
+- Added wrapping arrow-key navigation and Enter activation for question
+  options while preserving number shortcuts and native keyboard focus.
+
+### Fixed
+
+- Suppressed mouse hover effects throughout the question area during keyboard
+  use, including the show-answer button and after advancing to the next question.
+- Made the first stationary mouse click while the cursor is hidden restore
+  mouse mode without activating a control; clicks after movement work normally.
+- Hid the question-page mouse cursor during keyboard use, restoring it on
+  mouse movement, mouse press, or interim result browsing.
+- Matched keyboard option highlighting to mouse hover and cleared it when
+  switching back to the mouse, preserving touch input and answer colors.
+- Restored question-title focus after answer feedback so Enter continuation
+  does not get stuck on a disabled option.
+- Prevented Enter from submitting a previously focused answer option in
+  mouse mode until keyboard navigation resumes.
+
 ## [v0.2.1](https://github.com/pitonmert/word-match/releases/tag/v0.2.1) - 2026-10-22
 
 ### Added

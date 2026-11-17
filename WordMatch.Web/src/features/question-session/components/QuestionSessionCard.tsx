@@ -16,6 +16,7 @@ type QuestionSessionCardProps = {
   footerClassName?: string;
   header?: ReactNode;
   headerClassName?: string;
+  hideCursor?: boolean;
   layout?: "default" | "question";
   transitionDirection?: "back" | "forward" | "none";
 };
@@ -28,6 +29,7 @@ export function QuestionSessionCard({
   footerClassName,
   header,
   headerClassName,
+  hideCursor = false,
   layout = "default",
   transitionDirection = "forward",
 }: QuestionSessionCardProps) {
@@ -87,7 +89,13 @@ export function QuestionSessionCard({
   );
 
   return (
-    <main className="h-full min-h-0 overflow-x-hidden overflow-y-auto overscroll-y-contain">
+    <main
+      data-question-keyboard={hideCursor ? "" : undefined}
+      className={cn(
+        "h-full min-h-0 overflow-x-hidden overflow-y-auto overscroll-y-contain",
+        hideCursor && "cursor-none **:cursor-none",
+      )}
+    >
       <section className="mx-auto flex size-full min-h-fit w-full max-w-2xl items-center justify-center p-4 sm:px-6 sm:py-8">
         {card}
       </section>

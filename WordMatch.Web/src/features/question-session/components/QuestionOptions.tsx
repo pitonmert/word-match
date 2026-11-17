@@ -1,28 +1,33 @@
+import type { Ref } from "react";
 import { CircleCheck, CircleX } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 type QuestionOptionsProps = {
+  ref?: Ref<HTMLDivElement>;
   correctIndex: number | null;
   hasAnswered: boolean;
   isLoading: boolean;
   isAnswerRevealed: boolean;
+  isHoverEnabled?: boolean;
   options: string[];
   selectedIndex: number | null;
   onAnswer: (index: number) => void;
 };
 
 export function QuestionOptions({
+  ref,
   correctIndex,
   hasAnswered,
   isLoading,
   isAnswerRevealed,
+  isHoverEnabled = true,
   options,
   selectedIndex,
   onAnswer,
 }: QuestionOptionsProps) {
   return (
-    <div className="grid h-full grid-rows-4 gap-1.5">
+    <div ref={ref} className="grid h-full grid-rows-4 gap-1.5">
       {options.map((option, index) => {
         const isCorrectOption = !isAnswerRevealed && correctIndex === index;
         const isRevealedOption = isAnswerRevealed && correctIndex === index;
@@ -40,8 +45,11 @@ export function QuestionOptions({
             aria-keyshortcuts={String(index + 1)}
             className={cn(
               "relative size-full min-h-0 justify-center px-4 text-center text-base whitespace-normal sm:px-12",
+              !hasAnswered && "focus-visible:ring-0",
               !hasAnswered &&
-                "hover:border-info hover:bg-info-subtle hover:text-info hover:shadow-surface focus-visible:border-info focus-visible:ring-info/30",
+                (isHoverEnabled
+                  ? "hover:border-info hover:bg-info-subtle hover:text-info hover:shadow-surface focus-visible:border-border hover:focus-visible:border-info"
+                  : "hover:border-border hover:bg-card hover:text-foreground hover:shadow-none focus-visible:border-info focus-visible:bg-info-subtle focus-visible:text-info focus-visible:shadow-surface"),
               hasAnswered &&
                 isCorrectOption &&
                 "border-success bg-success-subtle text-success shadow-surface hover:bg-success-subtle disabled:border-success disabled:bg-success-subtle disabled:text-success disabled:opacity-100",
@@ -60,6 +68,21 @@ export function QuestionOptions({
             disabled={isLoading || hasAnswered}
             type="button"
             variant="outline"
+            onKeyDown={(event) => {
+              if (event.key !== "Enter") return;
+              event.preventDefault();
+              if (
+                !isHoverEnabled &&
+                !event.repeat &&
+                !event.altKey &&
+                !event.ctrlKey &&
+                !event.metaKey &&
+                !isLoading &&
+                !hasAnswered
+              ) {
+                onAnswer(index);
+              }
+            }}
             onClick={() => onAnswer(index)}
           >
             <span

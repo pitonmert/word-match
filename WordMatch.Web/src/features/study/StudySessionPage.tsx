@@ -20,6 +20,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { AnswerAnnouncement } from "@/features/question-session/components/AnswerAnnouncement";
 import { QuestionAutoAdvanceNotice } from "@/features/question-session/components/QuestionAutoAdvanceNotice";
 import { QuestionOptions } from "@/features/question-session/components/QuestionOptions";
+import { useQuestionHover } from "@/features/question-session/hooks/useQuestionHover";
 import { QuestionResultBrowser } from "@/features/question-session/components/QuestionResultBrowser";
 import {
   QuestionSessionCard,
@@ -109,6 +110,7 @@ function StudySessionContent({
 type StudyState = ReturnType<typeof useStudySession>;
 
 function StudyQuestionCard({ study }: { study: StudyState }) {
+  const isHoverEnabled = useQuestionHover();
   const [isBrowsingResults, setIsBrowsingResults] = useState(false);
   const [selectedResultCategory, setSelectedResultCategory] =
     useState<QuestionResultCategory>("wrong");
@@ -116,6 +118,7 @@ function StudyQuestionCard({ study }: { study: StudyState }) {
     useState(false);
   const queryClient = useQueryClient();
   const titleRef = useRef<HTMLHeadingElement>(null);
+  const optionsRef = useRef<HTMLDivElement>(null);
   const resultsRef = useRef<HTMLDivElement>(null);
   const playedAnswerRef = useRef<string | null>(null);
   const session = study.session!;
@@ -139,6 +142,7 @@ function StudyQuestionCard({ study }: { study: StudyState }) {
     if (isBrowsingResults) resultsRef.current?.focus();
     else titleRef.current?.focus();
   }, [
+    hasAnswered,
     isBrowsingResults,
     question.dimension,
     question.position,
@@ -208,8 +212,7 @@ function StudyQuestionCard({ study }: { study: StudyState }) {
         event.altKey ||
         event.ctrlKey ||
         event.defaultPrevented ||
-        event.metaKey ||
-        event.repeat
+        event.metaKey
       ) {
         return;
       }
@@ -221,6 +224,37 @@ function StudyQuestionCard({ study }: { study: StudyState }) {
       ) {
         return;
       }
+      const options = Array.from(
+        optionsRef.current?.querySelectorAll<HTMLButtonElement>(
+          "button:not(:disabled)",
+        ) ?? [],
+      );
+      if (
+        target instanceof HTMLElement &&
+        target.closest('a, button, [role="button"], [role="tab"]') &&
+        !optionsRef.current?.contains(target)
+      ) {
+        return;
+      }
+      if (
+        ["ArrowDown", "ArrowRight", "ArrowUp", "ArrowLeft"].includes(event.key)
+      ) {
+        if (options.length === 0) return;
+        event.preventDefault();
+        const index = options.indexOf(
+          document.activeElement as HTMLButtonElement,
+        );
+        const forward = event.key === "ArrowDown" || event.key === "ArrowRight";
+        const nextIndex =
+          index === -1
+            ? forward
+              ? 0
+              : options.length - 1
+            : (index + (forward ? 1 : -1) + options.length) % options.length;
+        options[nextIndex].focus();
+        return;
+      }
+      if (event.repeat) return;
       const optionIndex = Number(event.key) - 1;
       if (!Number.isInteger(optionIndex) || optionIndex < 0) return;
       if (optionIndex >= question.options.length) return;
@@ -322,6 +356,7 @@ function StudyQuestionCard({ study }: { study: StudyState }) {
         />
       }
       footerClassName="p-0"
+      hideCursor={!isHoverEnabled && !isBrowsingResults}
       header={
         isBrowsingResults ? undefined : (
           <StudyCardHeader
@@ -386,6 +421,8 @@ function StudyQuestionCard({ study }: { study: StudyState }) {
               />
             ) : (
               <QuestionOptions
+                ref={optionsRef}
+                isHoverEnabled={isHoverEnabled}
                 correctIndex={study.answer?.correctIndex ?? null}
                 hasAnswered={hasAnswered}
                 isLoading={isSubmitting || Boolean(study.answerError)}

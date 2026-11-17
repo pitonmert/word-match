@@ -651,6 +651,29 @@ Başlıkta konu ve yeni/tekrar rozeti, footer'da cevaplanan/toplam sayısı ile
 doğru/bilmiyorum/yanlış sayaçları bulunur. Soru kartında doğru sayısı salt
 bilgidir; bilmiyorum/yanlış sayaçları o ana kadarki ilgili sonuç listelerini
 açar. Tıklanabilir sayaçlarda hover/focus açıklaması bulunur.
+Klavye kullanımında soru seçeneklerinin hover stilleri bastırılır; bu giriş
+modu sonraki soruda korunur. Gerçek mouse hareketi veya mouse basışı hover'ı
+geri açar; klavye odak göstergesi ve cevap renkleri korunur.
+Klavye modunda soru sayfası ve alt öğelerindeki mouse imleci gizlenir;
+sonuç listesinde normal imleç kullanılır. Aşağı/sağ sonraki, yukarı/sol
+önceki seçeneğe odaklanır ve uçlarda döner. Seçenek odaklı değilse
+aşağı/sağ ilk, yukarı/sol son seçeneğe gider. Enter odaklanan seçeneği,
+numara tuşları doğrudan ilgili seçeneği cevaplar. Yeni soruda ve cevap
+geri bildiriminde odak başlığa döner. Yazı alanları ve diğer kontrollerin
+ok tuşları devralınmaz; gönderim sırasında seçenek gezintisi kapanır.
+Seçeneklerin klavye odağı, mouse hover ile aynı mavi arka planı, metin
+rengini, kenarlığı ve gölgeyi kullanır; ek odak halkası çizilmez.
+Mouse moduna dönüldüğünde klavye vurgusu kaldırılır; yalnız hover görünür.
+Gerçek buton odağı sonraki klavye gezintisi için korunur.
+Mouse modunda seçenek odağı kalsa bile Enter cevap göndermez ve tek başına
+klavye modunu açmaz. Ok/Tab tuşlarıyla klavye kullanımına dönüldüğünde Enter
+yeniden çalışır; diğer kontrollerin Enter davranışı korunur.
+`data-question-keyboard` işaretli soru alanında tüm Tailwind hover stilleri
+bastırılır; Cevabı göster, devam ve sayaçlar da bu kapsamdadır. İmleç
+gizliyken hareket etmeden yapılan ilk sol mouse tıklaması yalnız mouse
+modunu açar; pointer basışı ve ilgili click işlemi çalıştırılmaz. Gerçek
+hareketten sonraki tıklama ve ikinci tıklama normal çalışır. Klavye/yardımcı
+teknoloji aktivasyonları ve touch tıklamaları bu engelden etkilenmez.
 Soru içi incelemede başlık satırı kaldırılır ve alanı listeye verilir.
 Escape veya seçili sayaca yeniden basmak aynı soruya döner; ayrı dönüş butonu
 yoktur. Sıfır değerli sayaçlar da listeyi açar ve boş durum mesajı gösterir.
