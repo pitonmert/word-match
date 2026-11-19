@@ -2,6 +2,7 @@
 
 import "@testing-library/jest-dom/vitest";
 import {
+  act,
   cleanup,
   fireEvent,
   render,
@@ -12,6 +13,8 @@ import userEvent from "@testing-library/user-event";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { Navbar } from "@/components/Navbar";
+import { AuthProvider } from "@/features/auth/AuthProvider";
 import StudySessionPage from "@/features/study/StudySessionPage";
 import {
   abandonStudySession,
@@ -309,6 +312,9 @@ describe("StudySessionPage", () => {
     expect(
       screen.getByRole("textbox", { name: "İngilizce cevap" }),
     ).toHaveValue("dog");
+    expect(
+      screen.getByRole("textbox", { name: "İngilizce cevap" }),
+    ).toHaveFocus();
     expect(deferStudySkill).not.toHaveBeenCalled();
 
     moveMouse();
@@ -572,8 +578,232 @@ describe("StudySessionPage", () => {
     await user.keyboard("{ArrowDown}{ArrowRight}1");
     expect(answerStudyQuestion).not.toHaveBeenCalled();
     await user.keyboard("{Escape}");
-    expect(screen.getByRole("heading", { name: "cat" })).toHaveFocus();
+    expect(document.body).toHaveFocus();
     expect(screen.getByRole("main")).toHaveClass("cursor-none");
+  });
+
+  it("resumes writing from a blank area without losing or duplicating characters", async () => {
+    const user = userEvent.setup();
+    renderSession(makeWrittenSession());
+    const input = screen.getByRole("textbox", { name: "İngilizce cevap" });
+
+    moveMouse();
+    await user.click(screen.getByRole("main"));
+    expect(input).not.toHaveFocus();
+    await user.keyboard("ç{Shift>}A{/Shift}");
+    expect(input).toHaveFocus();
+    expect(input).toHaveValue("çA");
+
+    await user.keyboard("{ArrowLeft}");
+    moveMouse();
+    await user.click(screen.getByRole("main"));
+    await user.keyboard("{b>3/}");
+    expect(input).toHaveValue("çAbbb");
+    expect(answerStudyQuestion).not.toHaveBeenCalled();
+  });
+
+  it("preserves shortcuts, selected text, and focus on other controls", async () => {
+    const user = userEvent.setup();
+    renderSession(makeWrittenSession());
+    const input = screen.getByRole("textbox", { name: "İngilizce cevap" });
+    moveMouse();
+    await user.click(screen.getByRole("main"));
+
+    await user.keyboard(
+      "{Control>}a{/Control}{Meta>}f{/Meta}{Alt>}s{/Alt}{ArrowLeft}",
+    );
+    expect(input).not.toHaveFocus();
+    expect(input).toHaveValue("");
+
+    const button = screen.getByRole("button", { name: "Cevabı göster" });
+    button.focus();
+    await user.keyboard("a");
+    expect(button).toHaveFocus();
+    expect(input).toHaveValue("");
+
+    screen.getByRole("heading", { name: "kedi" }).focus();
+    const selection = window.getSelection()!;
+    selection.selectAllChildren(screen.getByRole("heading", { name: "kedi" }));
+    await user.keyboard("b");
+    expect(input).not.toHaveFocus();
+    expect(input).toHaveValue("");
+    selection.removeAllRanges();
+  });
+
+  it("only releases focus with Escape and resumes writing on a character key", async () => {
+    const user = userEvent.setup();
+    renderSession(makeWrittenSession());
+    const input = screen.getByRole("textbox", { name: "İngilizce cevap" });
+    await user.keyboard("ca{Escape}");
+    expect(input).not.toHaveFocus();
+    expect(input).toHaveValue("ca");
+
+    await user.keyboard("{Escape}");
+    expect(document.body).toHaveFocus();
+    await user.keyboard("t{Escape}");
+    expect(input).not.toHaveFocus();
+    await user.keyboard("s");
+    expect(input).toHaveFocus();
+    expect(input).toHaveValue("cats");
+    expect(answerStudyQuestion).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    ["written", makeWrittenSession(), "Cevabı göster"],
+    ["multiple choice", activeSession, "köpek"],
+  ])(
+    "releases Tab focus with Escape in %s questions",
+    async (_, session, label) => {
+      const user = userEvent.setup();
+      renderSession(session);
+      await user.tab();
+      const button = screen.getByRole("button", { name: label });
+      expect(button).toHaveFocus();
+
+      await user.keyboard("{Escape}");
+      expect(document.body).toHaveFocus();
+      expect(answerStudyQuestion).not.toHaveBeenCalled();
+
+      if (session.question?.kind === "Written") {
+        await user.keyboard("cat");
+        expect(screen.getByRole("textbox")).toHaveFocus();
+        expect(screen.getByRole("textbox")).toHaveValue("cat");
+      }
+    },
+  );
+
+  it("releases focus from both the actual navbar and the question after Tab navigation", async () => {
+    const user = userEvent.setup();
+    renderSession(makeWrittenSession(), true);
+
+    await user.tab({ shift: true });
+    expect(
+      screen.getByRole("button", { name: "Hesap menüsünü aç" }),
+    ).toHaveFocus();
+    await user.keyboard("{Escape}");
+    expect(document.body).toHaveFocus();
+
+    await user.keyboard("{Escape}");
+    expect(document.body).toHaveFocus();
+    await user.keyboard("a");
+    expect(screen.getByRole("textbox")).toHaveFocus();
+    await user.tab();
+    expect(screen.getByRole("button", { name: "Cevabı göster" })).toHaveFocus();
+    await user.keyboard("{Escape}");
+    expect(document.body).toHaveFocus();
+    expect(answerStudyQuestion).not.toHaveBeenCalled();
+  });
+
+  it("does not activate the deferral button with Enter after dismissing Tab focus", async () => {
+    const user = userEvent.setup();
+    renderSession(makeWrittenSession());
+    await user.tab();
+    await user.tab();
+    const button = screen.getByRole("button", { name: "Şimdi yazamam" });
+    expect(button).toHaveFocus();
+
+    await user.keyboard("{Escape}{Enter}");
+    expect(document.body).toHaveFocus();
+    expect(button).not.toHaveFocus();
+    expect(
+      screen.queryByRole("group", { name: "Yazma sorularını erteleme onayı" }),
+    ).not.toBeInTheDocument();
+    expect(deferStudySkill).not.toHaveBeenCalled();
+    expect(answerStudyQuestion).not.toHaveBeenCalled();
+  });
+
+  it("does not continue to the next question with Enter after dismissing button focus", async () => {
+    vi.mocked(answerStudyQuestion).mockResolvedValue(
+      makeAnswer("Wrong", makeNextQuestionSession("Wrong"), {
+        correctIndex: 1,
+        selectedIndex: 0,
+      }),
+    );
+    const user = userEvent.setup();
+    renderSession(activeSession);
+    await user.click(screen.getByRole("button", { name: "köpek" }));
+    await screen.findByRole("button", { name: "Devam et" });
+    await user.tab();
+    expect(screen.getByRole("button", { name: "Devam et" })).toHaveFocus();
+
+    await user.keyboard("{Escape}{Enter}");
+    expect(document.body).toHaveFocus();
+    expect(screen.getByRole("heading", { name: "cat" })).toBeInTheDocument();
+    expect(answerStudyQuestion).toHaveBeenCalledTimes(1);
+  });
+
+  it("blurs the written input with Escape even when page text is selected", async () => {
+    const user = userEvent.setup();
+    renderSession(makeWrittenSession());
+    const input = screen.getByRole("textbox", { name: "İngilizce cevap" });
+    const selection = window.getSelection()!;
+    selection.selectAllChildren(screen.getByRole("heading", { name: "kedi" }));
+
+    await user.keyboard("{Escape}");
+    selection.removeAllRanges();
+    expect(input).not.toHaveFocus();
+    await user.keyboard("{Escape}");
+    expect(document.body).toHaveFocus();
+  });
+
+  it("does not redirect writing while browsing results or confirming deferral", async () => {
+    const user = userEvent.setup();
+    renderSession(makeWrittenSession());
+    moveMouse();
+    await user.click(
+      screen.getByRole("button", { name: "Yanlış cevaplar: 0" }),
+    );
+    await user.keyboard("cat");
+    expect(
+      screen.getByRole("region", { name: "Çalışma sonuçları" }),
+    ).toHaveFocus();
+    await user.keyboard("{Escape}");
+    expect(screen.getByRole("textbox")).toHaveValue("");
+
+    moveMouse();
+    await user.click(screen.getByRole("button", { name: "Şimdi yazamam" }));
+    await user.keyboard("cat");
+    expect(screen.queryByRole("textbox")).not.toBeInTheDocument();
+    expect(answerStudyQuestion).not.toHaveBeenCalled();
+    expect(deferStudySkill).not.toHaveBeenCalled();
+  });
+
+  it("closes written results with Escape without restoring focus and resumes the draft on typing", async () => {
+    const user = userEvent.setup();
+    renderSession(makeWrittenSession());
+    await user.keyboard("ca");
+    moveMouse();
+    await user.click(
+      screen.getByRole("button", { name: "Yanlış cevaplar: 0" }),
+    );
+
+    await user.keyboard("{Escape}{Enter}{Escape}");
+    expect(document.body).toHaveFocus();
+    expect(
+      screen.queryByRole("region", { name: "Çalışma sonuçları" }),
+    ).not.toBeInTheDocument();
+    expect(screen.getByRole("textbox")).toHaveValue("ca");
+    expect(answerStudyQuestion).not.toHaveBeenCalled();
+
+    await user.keyboard("t");
+    expect(screen.getByRole("textbox")).toHaveFocus();
+    expect(screen.getByRole("textbox")).toHaveValue("cat");
+  });
+
+  it("releases focus from deferral confirmation controls without confirming or cancelling", async () => {
+    const user = userEvent.setup();
+    renderSession(makeWrittenSession());
+    await user.click(screen.getByRole("button", { name: "Şimdi yazamam" }));
+    await user.tab();
+    expect(screen.getByRole("button", { name: "Ertele" })).toHaveFocus();
+
+    await user.keyboard("{Escape}{Enter}{Escape}");
+    expect(document.body).toHaveFocus();
+    expect(
+      screen.getByRole("group", { name: "Yazma sorularını erteleme onayı" }),
+    ).toBeInTheDocument();
+    expect(deferStudySkill).not.toHaveBeenCalled();
+    expect(answerStudyQuestion).not.toHaveBeenCalled();
   });
 
   it("leaves arrow keys in written inputs and keeps their caret visible", async () => {
@@ -776,7 +1006,8 @@ describe("StudySessionPage", () => {
       "placeholder",
       "İngilizce karşılığını yazın",
     );
-    await user.type(answerField, "cat");
+    expect(answerField).toHaveFocus();
+    await user.keyboard("cat");
     await user.keyboard("{Enter}");
 
     expect(answerStudyQuestion).toHaveBeenCalledWith(
@@ -790,6 +1021,110 @@ describe("StudySessionPage", () => {
     expect(
       screen.getByRole("button", { name: "Sonuçları gör" }),
     ).toBeInTheDocument();
+    await user.keyboard("{Enter}");
+    expect(
+      screen.getByRole("heading", { name: "Oturum tamamlandı" }),
+    ).toBeInTheDocument();
+    expect(answerStudyQuestion).toHaveBeenCalledTimes(1);
+  });
+
+  it.each(["Correct", "Wrong", "Review"] as const)(
+    "keeps an Escape-dismissed input unfocused when a pending %s answer arrives",
+    async (outcome) => {
+      let resolveAnswer!: (answer: StudyAnswer) => void;
+      vi.mocked(answerStudyQuestion).mockReturnValue(
+        new Promise<StudyAnswer>((resolve) => {
+          resolveAnswer = resolve;
+        }),
+      );
+      const user = userEvent.setup();
+      renderSession(makeWrittenSession());
+      await user.keyboard("cat{Enter}");
+      const input = screen.getByRole("textbox");
+      expect(input).toHaveAttribute("readonly");
+      await user.keyboard("dog{Enter}");
+      expect(input).toHaveValue("cat");
+      expect(answerStudyQuestion).toHaveBeenCalledExactlyOnceWith(
+        sessionId,
+        0,
+        1,
+        null,
+        "cat",
+      );
+
+      await user.keyboard("{Escape}");
+      expect(document.body).toHaveFocus();
+      await act(async () => {
+        resolveAnswer(
+          makeAnswer(outcome, completedSession, {
+            correctIndex: null,
+            selectedIndex: null,
+          }),
+        );
+      });
+      expect(document.body).toHaveFocus();
+      expect(input).toHaveAttribute("readonly");
+      await user.keyboard("{Enter}");
+      expect(screen.getByRole("heading", { name: "kedi" })).toBeInTheDocument();
+      expect(answerStudyQuestion).toHaveBeenCalledTimes(1);
+    },
+  );
+
+  it("focuses a new written question after Escape dismissed focus on the previous answer", async () => {
+    const writtenSession = makeWrittenSession();
+    vi.mocked(answerStudyQuestion).mockResolvedValue(
+      makeAnswer(
+        "Correct",
+        {
+          ...makeNextQuestionSession("Correct"),
+          question: {
+            ...writtenSession.question!,
+            position: 1,
+            wordId: 2,
+            prompt: "köpek",
+          },
+        },
+        { correctIndex: null, selectedIndex: null },
+      ),
+    );
+    const user = userEvent.setup();
+    renderSession(writtenSession);
+    await user.keyboard("cat{Enter}");
+    await screen.findByText("Sonraki soru…");
+    await user.keyboard("{Escape}");
+    expect(document.body).toHaveFocus();
+
+    await screen.findByRole("heading", { name: "köpek" }, { timeout: 1_500 });
+    expect(screen.getByRole("textbox")).toHaveFocus();
+    expect(screen.getByRole("textbox")).toHaveValue("");
+    expect(screen.getByRole("textbox")).not.toHaveAttribute("readonly");
+  });
+
+  it("focuses the next written question after continuing with Enter", async () => {
+    const writtenSession = makeWrittenSession();
+    vi.mocked(answerStudyQuestion).mockResolvedValue(
+      makeAnswer(
+        "Wrong",
+        {
+          ...makeNextQuestionSession("Wrong"),
+          question: { ...writtenSession.question!, position: 1, wordId: 2 },
+        },
+        { correctIndex: null, selectedIndex: null },
+      ),
+    );
+    const user = userEvent.setup();
+    renderSession(writtenSession);
+
+    await user.keyboard("dog{Enter}");
+    await screen.findByRole("button", { name: "Devam et" });
+    expect(screen.getByRole("textbox")).toHaveFocus();
+    await user.keyboard("{Enter}");
+
+    expect(screen.getByRole("textbox")).toHaveFocus();
+    expect(screen.getByRole("textbox")).toHaveValue("");
+    await user.keyboard("cat");
+    expect(screen.getByRole("textbox")).toHaveValue("cat");
+    expect(answerStudyQuestion).toHaveBeenCalledTimes(1);
   });
 
   it("shows the correct written answer after the learner reveals it", async () => {
@@ -934,7 +1269,7 @@ describe("StudySessionPage", () => {
       screen.getByRole("region", { name: "Çalışma sonuçları" }),
     ).toBeInTheDocument();
     await user.keyboard("{Escape}");
-    expect(screen.getByRole("heading", { name: "dog" })).toHaveFocus();
+    expect(document.body).toHaveFocus();
     expect(
       screen.queryByRole("region", { name: "Çalışma sonuçları" }),
     ).not.toBeInTheDocument();
@@ -1010,6 +1345,13 @@ describe("StudySessionPage", () => {
     expect(
       screen.getByRole("textbox", { name: "İngilizce cevap" }),
     ).toHaveValue("dog");
+    expect(
+      screen.getByRole("textbox", { name: "İngilizce cevap" }),
+    ).toHaveFocus();
+    await user.keyboard("s");
+    expect(
+      screen.getByRole("textbox", { name: "İngilizce cevap" }),
+    ).toHaveValue("dogs");
     expect(answerStudyQuestion).not.toHaveBeenCalled();
   });
 
@@ -1112,9 +1454,17 @@ function makeAnswer(
   };
 }
 
-function renderSession(initialSession: StudySession | null) {
+function renderSession(
+  initialSession: StudySession | null,
+  withNavbar = false,
+) {
+  const queryClient = createTestQueryClient();
+  if (withNavbar) {
+    queryClient.setQueryDefaults(["auth", "session"], { staleTime: Infinity });
+    queryClient.setQueryData(["auth", "session"], null);
+  }
   render(
-    <QueryClientProvider client={createTestQueryClient()}>
+    <QueryClientProvider client={queryClient}>
       <MemoryRouter
         initialEntries={[
           {
@@ -1123,6 +1473,11 @@ function renderSession(initialSession: StudySession | null) {
           },
         ]}
       >
+        {withNavbar ? (
+          <AuthProvider>
+            <Navbar />
+          </AuthProvider>
+        ) : null}
         <Routes>
           <Route path="/session/:sessionId" element={<StudySessionPage />} />
         </Routes>

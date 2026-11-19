@@ -118,9 +118,11 @@ function StudyQuestionCard({ study }: { study: StudyState }) {
     useState(false);
   const queryClient = useQueryClient();
   const titleRef = useRef<HTMLHeadingElement>(null);
+  const writtenAnswerRef = useRef<HTMLInputElement>(null);
   const optionsRef = useRef<HTMLDivElement>(null);
   const resultsRef = useRef<HTMLDivElement>(null);
   const playedAnswerRef = useRef<string | null>(null);
+  const focusDismissedRef = useRef(false);
   const session = study.session!;
   const question = session.question!;
   const displaySession = study.pendingSession ?? session;
@@ -129,31 +131,124 @@ function StudyQuestionCard({ study }: { study: StudyState }) {
   const isSubmitting = study.phase === "submitting";
   const isLastQuestion = Boolean(study.answer?.isComplete);
   const isWrittenQuestion = question.kind === "Written";
+  const isDeferringSkill = study.deferral !== null;
   const canDeferCurrentSkill = !hasAnswered && study.phase === "answering";
   const shouldAutomaticallyAdvance = answerOutcome === "Correct";
   const resultGroups = toStudyResultGroups(displaySession.summary);
 
   useEffect(() => {
+    focusDismissedRef.current = false;
     setAutomaticAdvanceDelayElapsed(false);
     setIsBrowsingResults(false);
   }, [question.dimension, question.position, question.wordId]);
 
   useEffect(() => {
+    if (focusDismissedRef.current) return;
     if (isBrowsingResults) resultsRef.current?.focus();
+    else if (isWrittenQuestion && !isDeferringSkill)
+      writtenAnswerRef.current?.focus();
     else titleRef.current?.focus();
   }, [
     hasAnswered,
     isBrowsingResults,
+    isDeferringSkill,
+    isWrittenQuestion,
     question.dimension,
     question.position,
     question.wordId,
   ]);
 
   useEffect(() => {
+    if (isBrowsingResults) return;
+
+    const handleFocusIn = (event: FocusEvent) => {
+      if (
+        event.target !== document.body &&
+        event.target !== document.documentElement
+      )
+        focusDismissedRef.current = false;
+    };
+
+    const handleQuestionFocus = (event: KeyboardEvent) => {
+      if (
+        event.defaultPrevented ||
+        event.ctrlKey ||
+        event.metaKey ||
+        event.altKey ||
+        event.isComposing ||
+        document.querySelector(
+          '[role="dialog"], [role="alertdialog"], [role="menu"], [role="listbox"], dialog[open]',
+        )
+      ) {
+        return;
+      }
+      if (event.key === "Escape") {
+        if (event.repeat) return;
+        event.preventDefault();
+        event.stopPropagation();
+        focusDismissedRef.current = true;
+        const focusedElement = document.activeElement;
+        if (
+          focusedElement instanceof HTMLElement &&
+          focusedElement !== document.body &&
+          focusedElement !== document.documentElement
+        ) {
+          focusedElement.blur();
+        }
+        return;
+      }
+      if (
+        (Array.from(event.key).length !== 1 && event.key !== "Dead") ||
+        window.getSelection()?.isCollapsed === false
+      ) {
+        return;
+      }
+      if (!isWrittenQuestion || study.phase !== "answering") return;
+      const input = writtenAnswerRef.current;
+      if (!input) return;
+      const target = event.target;
+      if (
+        target instanceof HTMLElement &&
+        target !== input &&
+        (target.isContentEditable ||
+          target.closest(
+            'input, textarea, select, button, a, [contenteditable="true"], [role="button"], [role="tab"], [role="combobox"], [role="menuitem"]',
+          ))
+      ) {
+        return;
+      }
+
+      if (document.activeElement === input) {
+        return;
+      }
+      input.focus({ preventScroll: true });
+      input.setSelectionRange(input.value.length, input.value.length);
+    };
+
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") handleQuestionFocus(event);
+    };
+    const handleTyping = (event: KeyboardEvent) => {
+      if (event.key !== "Escape") handleQuestionFocus(event);
+    };
+    window.addEventListener("keydown", handleEscape, true);
+    window.addEventListener("keydown", handleTyping);
+    window.addEventListener("focusin", handleFocusIn);
+    return () => {
+      window.removeEventListener("keydown", handleEscape, true);
+      window.removeEventListener("keydown", handleTyping);
+      window.removeEventListener("focusin", handleFocusIn);
+    };
+  }, [isBrowsingResults, isDeferringSkill, isWrittenQuestion, study.phase]);
+
+  useEffect(() => {
     if (!isBrowsingResults) return;
     const closeResults = (event: KeyboardEvent) => {
       if (event.key !== "Escape" || event.defaultPrevented) return;
       event.preventDefault();
+      focusDismissedRef.current = true;
+      if (document.activeElement instanceof HTMLElement)
+        document.activeElement.blur();
       setIsBrowsingResults(false);
     };
     window.addEventListener("keydown", closeResults);
@@ -288,11 +383,13 @@ function StudyQuestionCard({ study }: { study: StudyState }) {
       }
       const target = event.target;
       if (
-        target instanceof HTMLElement &&
-        (target.isContentEditable ||
-          target.closest(
-            "a, button, input, select, textarea, [contenteditable=true]",
-          ))
+        target === document.body ||
+        target === document.documentElement ||
+        (target instanceof HTMLElement &&
+          (target.isContentEditable ||
+            target.closest(
+              "a, button, input, select, textarea, [contenteditable=true]",
+            )))
       ) {
         return;
       }
@@ -408,6 +505,7 @@ function StudyQuestionCard({ study }: { study: StudyState }) {
                     : []
                 }
                 hasAnswered={hasAnswered}
+                inputRef={writtenAnswerRef}
                 isLastQuestion={isLastQuestion}
                 isLoading={isSubmitting}
                 isSubmittingAnswer={isSubmitting}

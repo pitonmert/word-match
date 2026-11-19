@@ -1,3 +1,4 @@
+import type { RefObject } from "react";
 import { Button } from "@/components/ui/button";
 import { QuestionAutoAdvanceNotice } from "@/features/question-session/components/QuestionAutoAdvanceNotice";
 import { Input } from "@/components/ui/input";
@@ -15,6 +16,7 @@ type WrittenAnswerFieldProps = {
   canAdvance: boolean;
   correctAnswers: string[];
   hasAnswered: boolean;
+  inputRef?: RefObject<HTMLInputElement | null>;
   isLastQuestion: boolean;
   isLoading: boolean;
   isSubmittingAnswer: boolean;
@@ -34,6 +36,7 @@ export function WrittenAnswerField({
   canAdvance,
   correctAnswers,
   hasAnswered,
+  inputRef,
   isLastQuestion,
   isLoading,
   isSubmittingAnswer,
@@ -45,6 +48,7 @@ export function WrittenAnswerField({
   onShowAnswer,
   verticallyCentered = false,
 }: WrittenAnswerFieldProps) {
+  const isReadOnly = hasAnswered || isSubmittingAnswer;
   const correctAnswer = correctAnswers.join(", ");
   const displayedValue =
     answerOutcome === "Review" && correctAnswer
@@ -75,7 +79,6 @@ export function WrittenAnswerField({
             <div
               className={cn(
                 "flex h-12 items-center rounded-lg border border-input bg-card px-4 text-left transition-[background-color,border-color,box-shadow]",
-                !hasAnswered && "focus-within:border-muted-foreground",
                 answerOutcome === "Correct" &&
                   "border-success bg-success-subtle text-success",
                 answerOutcome === "Wrong" &&
@@ -85,13 +88,14 @@ export function WrittenAnswerField({
               )}
             >
               <Input
+                ref={inputRef}
                 autoComplete="off"
                 aria-label={`${answerLanguage} cevap`}
                 aria-invalid={answerOutcome === "Wrong"}
                 className={cn(
                   "h-full border-0 bg-transparent p-0 text-left font-semibold select-text placeholder:text-xs placeholder:font-normal placeholder:text-muted-foreground/60 focus-visible:border-transparent focus-visible:ring-0 aria-invalid:border-0 aria-invalid:ring-0",
                   answerOutcome !== null && "text-inherit",
-                  hasAnswered && "cursor-default caret-transparent",
+                  isReadOnly && "cursor-default caret-transparent",
                 )}
                 enterKeyHint={hasAnswered ? "next" : "done"}
                 placeholder={
@@ -99,15 +103,20 @@ export function WrittenAnswerField({
                     ? undefined
                     : `${answerLanguage} karşılığını yazın`
                 }
-                readOnly={hasAnswered}
+                readOnly={isReadOnly}
                 value={displayedValue}
                 onChange={(event) => onChange(event.currentTarget.value)}
                 onKeyDown={(event) => {
-                  if (event.key !== "Enter" || event.nativeEvent.isComposing)
-                    return;
+                  if (event.nativeEvent.isComposing) return;
+                  if (event.key !== "Enter") return;
                   event.preventDefault();
+                  if (isSubmittingAnswer) return;
                   if (hasAnswered) {
-                    if (answerOutcome !== "Correct" && canAdvance) onContinue();
+                    if (
+                      (answerOutcome !== "Correct" || isLastQuestion) &&
+                      canAdvance
+                    )
+                      onContinue();
                   } else if (value.trim().length > 0) {
                     onCheck();
                   }

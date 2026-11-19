@@ -33,6 +33,26 @@ kullanır.
 
 ## [Unreleased]
 
+## [v0.2.4](https://github.com/pitonmert/word-match/releases/tag/v0.2.4) - 2026-11-19
+
+### Changed
+
+- Removed the focus-only border highlight from written answers while
+  preserving answer feedback colors.
+
+### Fixed
+
+- Automatically focused written questions and resumed typing from blank
+  areas without losing the first character or existing drafts.
+- Made Escape release focus from question and navigation controls without
+  moving it elsewhere, including skill deferral confirmations and interim results.
+- Prevented asynchronous answer feedback from restoring Escape-dismissed
+  focus while keeping automatic focus for each new written question.
+- Prevented Enter from activating a dismissed control or continuing an
+  unfocused answered question.
+- Allowed Enter to open session results after the final correct written answer.
+- Kept written answers read-only during submission to preserve the submitted text.
+
 ## [v0.2.3](https://github.com/pitonmert/word-match/releases/tag/v0.2.3) - 2026-11-17
 
 ### Security
